@@ -3,7 +3,6 @@ import os
 
 class Config:
     def __init__(self, app):
-        self.DEBUG = False
         self.SECRET_KEY = 'sua_chave_secreta'
         self.SESSION_PERMANENT = False
         self.SESSION_TYPE = "filesystem"
