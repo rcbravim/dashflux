@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang='en-us'>
+  <head>
+    <meta charset='utf-8' />
+    <title>Invo | Planilha Financeira</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta content='financial spreadsheet' name='description' />
+    <meta content='Telurio' name='author' />
+    <!-- App favicon -->
+    <link rel='shortcut icon' href="{{ url_for('static', filename='global/icon/favicon.ico') }}">
+    <link rel='apple-touch-icon' sizes='180x180' href="{{ url_for('static', filename='global/icon/apple-touch-icon.png') }}">
+    <link rel='icon' type='image/png' sizes='32x32' href="{{ url_for('static', filename='global/icon/favicon-32x32.png') }}">
+    <link rel='icon' type='image/png' sizes='16x16' href="{{ url_for('static', filename='global/icon/favicon-16x16.png') }}">
+    <link rel='manifest' href="{{ url_for('static', filename='global/icon/site.webmanifest') }}">
+    <meta name='msapplication-TileColor' content='#0972BA'>
+    <meta name='theme-color' content='#0972BA'>
+
+    <!-- select2 css -->
+    <link href="{{ url_for('static', filename='board/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- custom css -->
+    <link href="{{ url_for('static', filename='board/libs/select2/css/theme.min.css') }}" rel="stylesheet" type="text/css" />
+
+    <!-- Bootstrap Css -->
+    <link href="{{ url_for('static', filename='global/css/bootstrap.min.css') }}" id='bootstrap-style' rel='stylesheet' type='text/css' />
+    <!-- Icons Css -->
+    <link href="{{ url_for('static', filename='global/css/icons.min.css') }}" rel='stylesheet' type='text/css' />
+    <!-- App Css-->
+    <link href="{{ url_for('static', filename='global/css/app.min.css') }}" id='app-style' rel='stylesheet' type='text/css' />
+  </head>

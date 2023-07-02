@@ -1,0 +1,134 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+  <div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+      <div class='page-content'>
+        <div class='container-fluid'>
+          <!-- start page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                <h4 class='mb-sm-0 font-size-18'>Adicionar Cliente</h4>
+                <div class='page-title-right'>
+                  <ol class='breadcrumb m-0'>
+                    <li class='breadcrumb-item'>Etiquetass</li>
+                    <li class='breadcrumb-item active'>Formulario do Cliente</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='card'>
+                <div class='card-body'>
+                  <div class='row mb-2'>
+                    <div class='col-sm-4'>
+                      <h4 class='card-title'>Informação do Cliente</h4>
+                      <p class='card-title-desc'>Preencha as Informações Abaixo</p>
+                    </div>
+                    <div class='col-sm-8'>
+                      <div class='text-sm-end'>
+                        <a class='btn btn-outline-secondary waves-effect waves-light mb-3 w-md' href="{{ url_for('board.labels_clients') }}">
+                          Retornar
+                        </a>
+                      </div>
+                    </div><!-- end col-->
+                  </div>
+                  {% if success %}
+                    <div class='alert alert-success mb-4' role='alert'>{{ success }}</div>
+                  {% elif error %}
+                    <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                  {% endif %}
+                  <form class='needs-validation' method='post' action="{{ url_for('board.labels_clients_form_new') }}" novalidate>
+                    {{ csrf_token }}
+                    <div class='row'>
+                      <div class='col-md-12'>
+                        <div class='mb-3'>
+                          <label for='client' class='form-label'>Nome do Cliente<span class='text-danger'>*</span></label>
+                          <input type='text' class='form-control valid_entry' id='client' name='client'
+                            placeholder='Digite o nome do cliente' required>
+                          <div class='invalid-feedback'>Por favor insira o nome do Cliente</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='row'>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='country' class='form-label'>País<span class='text-danger'>*</span></label>
+                          <select class='form-select select2-search-disable select country_select' id='country' name='country' required>
+                            <option value='' selected disabled>Insira o País do Cliente</option>
+                            {% for row in context.countries %}
+                              <option value='{{ row.id|md5 }}'>{{ row.cou_name }}</option>
+                            {% endfor %}
+                          </select>
+                          <div class='invalid-feedback'>Selecione o país de origem do seu cliente</div>
+                        </div>
+                      </div>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='state' class='form-label'>Estado<span class='text-danger'>*</span></label>
+                          <select class='form-select select2 select state_display' id='state' name='state' required>
+                            <option value='' selected disabled>Escolha o estado do cliente</option>
+                          </select>
+                          <div class='invalid-feedback'>Selecione o estado de origem do seu cliente</div>
+                        </div>
+                      </div>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='city' class='form-label'>Cidade<span class='text-danger'>*</span></label>
+                          <input type='text' class='form-control valid_entry_nd' id='city' name='city'
+                            placeholder='Insira a cidade do cliente' required>
+                          <div class='invalid-feedback'>Insira a cidade de origem do seu cliente</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='row'>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='email' class='form-label'>Email de contato</label>
+                          <input type='text' class='form-control valid_opt_email' id='email' name='email'
+                            placeholder='Digite o e-mail do cliente'>
+                            <div class='invalid-feedback'></div>
+                        </div>
+                      </div>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='phone' class='form-label'>Telefone</label>
+                          <input type='text' class='form-control mask_phone_client' id='phone' name='phone'
+                            placeholder='Insira o número de telefone do cliente com o código do estado'>
+                        </div>
+                      </div>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='responsible' class='form-label'>Responsavel</label>
+                          <input type='text' class='form-control valid_opt_entry' id='responsible' name='responsible'
+                            placeholder='Insira o Responsavel pelo Cliente'>
+                          <div class='invalid-feedback'></div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='d-flex flex-wrap gap-2'>
+                      <button type='submit' class='btn btn-primary waves-effect waves-light'>Salvar Etiqueta</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div> <!-- container-fluid -->
+      </div>
+      <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+  </div>
+</body>
+
+{% include 'board/partials/footer.html' %}

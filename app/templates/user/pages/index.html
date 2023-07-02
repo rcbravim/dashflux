@@ -1,0 +1,727 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+  <div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start main content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+      <div class='page-content'>
+        <div class='container-fluid'>
+
+          <!-- start page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                <h4 class='mb-sm-0 font-size-18'>Painel</h4>
+                <div class='page-title-right'>
+                  <ol class='breadcrumb m-0'>
+                    <li class='breadcrumb-item'>Na Tela</li>
+                    <li class='breadcrumb-item active'>Barra Lateral</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end page title -->
+
+          <div class='col-xl'>
+            <div class='row'>
+              <div class='col-md-3'>
+                <div class='card mini-stats-wid'>
+                  <div class='card-body'>
+                    <div class='d-flex'>
+                      <div class='flex-grow-1'>
+                        <p class='text-muted fw-medium'>Receita Mensal</p>
+                        <h4 class='mb-0'>
+                           R$ {% if context.analytic %}{{ context.analytic.monthly.revenue }}{% else %}0,00{% endif %}
+                        </h4>
+                      </div>
+                      <div class='flex-shrink-0 align-self-center'>
+                        <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
+                          <span class='avatar-title rounded-circle bg-primary'>
+                            <i class='mdi mdi-call-received font-size-24'></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class='col-md-3'>
+                <div class='card mini-stats-wid'>
+                  <div class='card-body'>
+                    <div class='d-flex'>
+                      <div class='flex-grow-1'>
+                        <p class='text-muted fw-medium'>Gasto Mensal</p>
+                        <h4 class='mb-0 text-danger'>
+                          R$ {% if context.analytic %}{{ context.analytic.monthly.expenses }}{% else %}0,00{% endif %}
+                        </h4>
+                      </div>
+                      <div class='flex-shrink-0 align-self-center'>
+                        <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
+                          <span class='avatar-title rounded-circle bg-primary'>
+                            <i class='mdi mdi-call-made font-size-24'></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class='col-md-3'>
+                <div class='card mini-stats-wid'>
+                  <div class='card-body'>
+                    <div class='d-flex'>
+                      <div class='flex-grow-1'>
+                        <p class='text-muted fw-medium'>Balanço Mensal</p>
+                        <h4 class='mb-0'>
+                          R$ {% if context.analytic %}{{ context.analytic.monthly.balance }}{% else %}0,00{% endif %}
+                        </h4>
+                      </div>
+                      <div class='flex-shrink-0 align-self-center'>
+                        <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
+                          <span class='avatar-title rounded-circle bg-primary'>
+                            <i class='mdi mdi-cached font-size-24'></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class='col-md-3'>
+                <div class='card mini-stats-wid'>
+                  <div class='card-body'>
+                    <div class='d-flex'>
+                      <div class='flex-grow-1'>
+                        <p class='text-muted fw-medium'>Saldo Atual</p>
+                        <h4 class='mb-0'>
+                          R$ {% if context.analytic %}{{ context.analytic.overall }}{% else %}0,00{% endif %}
+                        </h4>
+                      </div>
+                      <div class='flex-shrink-0 align-self-center'>
+                        <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
+                          <span class='avatar-title rounded-circle bg-primary'>
+                            <i class='mdi mdi-contrast font-size-24'></i>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- end row -->
+          </div>
+
+          {% if success %}
+            <div class='alert alert-success mb-4 text-center' role='alert'>{{ success }}</div>
+          {% elif error %}
+            <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+          {% endif %}
+
+          <div class='row'>
+            <div class='col-lg-12'>
+              <div class='card'>
+                <div class='card-body'>
+                  <h4 class='card-title mb-4'>Relatório Financeiro Mensal</h4>
+                  <div id='right'>
+                    <div id='menu' class='mb-3'>
+                      <span id='menu-navi' class='d-sm-flex flex-wrap text-center text-sm-start justify-content-sm-between'>
+                        <div class='d-sm-flex flex-wrap gap-1'>
+                          <div class='btn-group mb-2' role='group' aria-label='Basic example'>
+                            <button type='button' class='btn btn-primary move-day' data-value='move-prev'>
+                              <i class='calendar-icon ic-arrow-line-left mdi mdi-chevron-left' data-action='move-prev'></i>
+                            </button>
+                            <button type='button' class='btn btn-primary move-day' data-value='move-next'>
+                              <i class='calendar-icon ic-arrow-line-right mdi mdi-chevron-right' data-action='move-next'></i>
+                            </button>
+                          </div>
+                          <div class='dropdown mb-2'>
+                            <button class='btn btn-primary dropdown-toggle' type='button'
+                              data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Ir Para
+                            </button>
+                            <div class='dropdown-menu dropdown-menu-md dropdown-menu-start'>
+                              <div class='form-group m-0 p-3'>
+                                <div class='input-group'>
+                                  <input type='text' class='form-control mask_date_short' id='goto' placeholder='MM/YYYY'>
+                                  <button class='btn btn-primary move-day' type='button' data-value='goto'><i class='mdi mdi-magnify'></i></button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <button type='button' class='btn btn-primary move-today mb-2' data-action='move-today'>Atual</button>
+                        </div>
+                          <h4 class='render-range fw-bold pt-1 mx-3'>{{ context.filter.displayed_str }}</h4>
+                            <input type='hidden' id='renderRange' value='{{ context.filter.displayed_int }}' />
+                        <div class='dropdown align-self-start mt-3 mt-sm-0 mb-2'>
+                          <button class='btn btn-primary dropdown-toggle' type='button' data-bs-toggle='modal'
+                            data-bs-target='.newEntryModal'>
+                            <i class='mdi mdi-plus'></i> Adicionar Entrada
+                          </button>
+                        </div>
+                      </span>
+                    </div>
+                  </div>
+                  {% if context.entries %}
+                    <div class='table-responsive'>
+                      <table class='table align-middle table-nowrap mb-0'>
+                        <thead class='table-light'>
+                          <tr>
+                            <th class='align-middle'>Data da Entrada</th>
+                            <th class='align-middle'>Categoria</th>
+                            <th class='align-middle'>Subcategoria</th>
+                            <th class='align-middle'>Estado</th>
+                            <th class='align-middle'>Quantia</th>
+                            <th class='align-middle'>Balanço Mensal</th>
+                            <th class='align-middle'>Saldo Atual</th>
+                            <th class='align-middle'></th>
+                            <th class='align-middle'></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for row in context.entries %}
+                            <tr>
+
+                              <td>{{ row.subcategory__category__cat_name|upper }}</td>
+                              <td>{{ row.subcategory__sub_name|upper }}</td>
+                              <td>
+                                {% if row.rel_gen_status == 1 %}
+                                  <span class='badge badge-pill badge-soft-primary font-size-12'>Pago</span>
+                                {% elif row.rel_gen_status == 2 %}
+                                  <span class='badge badge-pill badge-soft-secondary font-size-12'>Aberto</span>
+                                {% elif row.rel_gen_status == 3 %}
+                                  <span class='badge badge-pill badge-soft-danger font-size-12'>Em Negociação</span>
+                                {% elif row.rel_gen_status == 4 %}
+                                  <span class='badge badge-pill badge-soft-success font-size-12'>Recebido</span>
+                                {% elif row.rel_gen_status == 5 %}
+                                  <span class='badge badge-pill badge-soft-warning font-size-12'>Agendado</span>
+                                {% endif %}
+                              </td>
+                              <td>
+                                <span class=''>
+                                  row.subcategory__category__cat_type|danger_type_class $ {{ row.rel_amount }}
+                                </span>
+                              </td>
+                                <span class=''>
+                                 template_tags danger value class $ {{ row.rel_monthly_balance }}
+                                </span>
+                              <td>
+                                <span class=''>
+                                  template_tags danger value class $ {{ row.rel_overall_balance }}
+                                </span>
+                              </td>
+                              <td>
+                                <!-- Button trigger modal -->
+                                <button type='button' class='btn btn-primary btn-sm btn-rounded index_details'
+
+                                  Ver Detalhes
+                                </button>
+                              </td>
+                              <td>
+                                <div class='d-flex gap-3'>
+
+                                    class='text-success index_edit' style='cursor:pointer;'><i class='mdi mdi-pencil font-size-18'></i></a>
+
+                                    class='text-danger index_del' style='cursor:pointer;'><i class='mdi mdi-delete font-size-18'></i></a>
+                                </div>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- end table-responsive -->
+                    <form action="{{ url_for('board.index') }}" method='get'>
+                      <input type='hidden' name='m' value='{{ filter.month }}'/>
+                      <input type='hidden' name='y' value='{{ filter.year }}'/>
+                      <ul class='pagination pagination-rounded justify-content-end mb-2'>
+                        <li class='page-item {% if pages.pg == 1 %}disabled{% endif %}'>
+                          <button class='page-link' type='submit' name='pg' value='1' aria-label='First'>
+                            <i class='mdi mdi-chevron-double-left'></i>
+                          </button>
+                        </li>
+                        {% for item in pages.pg_range %}
+                          <li class='page-item {% if pages.pg == item %}active{% endif %}'>
+                            <button class='page-link' type='submit' name='pg' value='{{ item }}'>{{ item }}</button>
+                          </li>
+                        {% endfor %}
+                        <li class='page-item {% if pages.pg == pages.total_pg %}disabled{% endif %}'>
+                          <button class='page-link' type='submit' name='pg' value='{{ pages.total_pg }}' aria-label='Last'>
+                            <i class='mdi mdi-chevron-double-right'></i>
+                          </button>
+                        </li>
+                      </ul>
+                    </form>
+                    <!-- end page footer -->
+                  {% else %}
+                    <div class='table-responsive'>
+                      <div class='card-body'>Nenhuma entrada registrada para o período de tempo selecionado.</div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div> <!-- container-fluid -->
+      </div>
+      <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+  </div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- newEntryModal Modal -->
+<div class='modal fade newEntryModal' id='newEntryModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Adicionar Nova Entrada</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' action="{{ url_for('board.index_new') }}" novalidate method='post'>
+        {{ csrf_token }}
+        <div class='modal-body'>
+          <div class='content mt-1'>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='entry_date' class='form-label'>Data de Entrada<span class='text-danger'>*</span></label>
+                  <input type='date' class='form-control valid_date' id='entry_date' name='entry_date' value='' required>
+                  <div class='invalid-feedback'>Por favor ensira a data de entrada</div>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='category' class='form-label'>Categoria<span class='text-danger'>*</span></label>
+                  <select class='form-select category_modal' id='category' required>
+                    {% if context.categories %}
+                      <option value='' selected disabled>Escolha a Categoria</option>
+                      {% for row in context.categories %}
+                        <option value='{{ row.cat_slug|md5 }}'>{{ row.cat_name }}</option>
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Registre uma categoria antes de continuar</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Selecione uma categoria</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='subcategory' class='form-label'>Subcategoria<span class='text-danger'>*</span></label>
+                  <select class='form-select' id='subcategory' name='subcategory' required>
+                    <option value='' selected disabled>Escolha a Subcategoria</option>
+                  </select>
+                  <div class='invalid-feedback'>Selecione uma subcategoria</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='description' class='form-label'>Observações</label>
+                  <input type='text' class='form-control valid_opt_entry' id='description' name='description'
+                    placeholder='Insira suas Observações' maxlength='128'>
+                  <div class='invalid-feedback'></div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='beneficiary' class='form-label'>Beneficiario<span class='text-danger'>*</span></label>
+                  <select class='form-select' id='beneficiary' name='beneficiary' required>
+                    {% if context.beneficiaries %}
+                      <option value='' selected disabled>Escolha o Beneficiario</option>
+                      {% for row in context.beneficiaries %}
+                        <option value='{{ row.ben_slug|md5 }}'>{{ row.cat_description|upper|slice3 }}-{{ row.ben_name }}</option>
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Registre um beneficiário antes de continuar</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Selecione um beneficiário, mesmo que seja você mesmo</div>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='client' class='form-label'>Cliente</label>
+                  <select class='form-select' id='client' name='client'>
+                    <option value='' selected disabled>Escolha o cliente, se aplicável</option>
+                    {% for row in context.clients %}
+                      <option value='{{ row.cli_slug|md5 }}'>{{ row.cli_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='cost_center' class='form-label'>Centro de Custo</label>
+                  <select class='form-select' id='cost_center' name='cost_center'>
+                    <option value='' selected disabled>Escolha o centro de custo, se aplicável</option>
+                    {% for row in context.cost_centers %}
+                      <option value='{{ row.fin_slug|md5 }}'>{{ row.fin_cost_center }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='condition' class='form-label'>Estado<span class='text-danger'>*</span></label>
+                  <select class='form-select' id='condition' name='condition'>
+                    <option value='1' selected>Pago</option>
+                    <option value='2'>Aberto</option>
+                    <option value='3'>Em Negociação</option>
+                    <option value='4'>Recebido</option>
+                    <option value='5'>Agendado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='account' class='form-label'>Conta<span class='text-danger'>*</span></label>
+                  <select class='form-select' id='account' name='account' required>
+                    {% if context.accounts %}
+                      <option value='' selected disabled>Escolha a conta usada</option>
+                      {% for row in context.accounts %}
+                        <option value='{{ row.fin_slug|md5 }}'>{{ row.fin_bank_name }}:
+                          {% if row.fin_bank_branch %}
+                            {{ row.fin_bank_branch }} / {{ row.fin_bank_account }}
+                          {% else %}
+                            Transação utilizando dinheiro
+                          {% endif %}
+                        </option>
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Registre uma conta antes de continuar</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='amount' class='form-label'>Quantia<span class='text-danger'>*</span></label>
+                  <input type='text' class='form-control mask_money' id='amount' name='amount' placeholder='Digite o valor da entrada' required>
+                  <div class='invalid-feedback'>Digite o valor da entrada</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='submit' class='btn btn-primary'>Adicionar Entrada</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end newEntryModal -->
+
+<!-- labelDetailsModal -->
+<div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes de entrada</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <div class='modal-body'>
+        <div class='form-row col-md d-flex justify-content-between'>
+          <p class='mb-2 modal_entry_date'>Data de entrada: <span class='text-primary'></span></p>
+          <span class='modal_entry_status badge badge-pill font-size-12 mb-2'></span>
+        </div>
+        <p class='mb-2 modal_entry_amount'>Quantia: <span class='text-primary'></span></p>
+        <p class='mb-4 modal_entry_description d-none'>Descrição: <span class='text-primary'></span></p>
+        <h6>Categoria de entrada</h6>
+        <hr class='m-0 mb-3'>
+        <div class='form-row col-md d-flex justify-content-between'>
+          <p class='mb-2 modal_category'>Categoria: <span class='text-primary'></span></p>
+          <span class='modal_category_type badge badge-pill font-size-12 mb-2'></span>
+        </div>
+        <p class='mb-4 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
+        <h6>Beneficiário da entrada</h6>
+        <hr class='m-0 mb-3'>
+        <p class='mb-2 modal_beneficiary_category'>Categoria do Beneficiário: <span class='text-primary'></span></p>
+        <p class='mb-4 modal_beneficiary_name'>Nome do Beneficiário: <span class='text-primary'></span></p>
+        <h6>Informação Financeira</h6>
+        <hr class='m-0 mb-3'>
+        <div class='d-none bank_account_modal'>
+          <p class='mb-2 modal_bank'>Nome do Banco: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_branch'>Número da agência: <span class='text-primary'></span></p>
+          <p class='mb-4 modal_account'>Número da conta: <span class='text-primary'></span></p>
+        </div>
+        <div class='d-none cash_pay_modal'>
+          <p class='mb-4 modal_cash'>Fonte: <span class='text-primary'></span></p>
+        </div>
+        <div class='d-none cost_center_modal'>
+          <p class='mb-2 modal_cost_center'>Centro de Custo: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_description d-none'>Descrição: <span class='text-primary'></span></p>
+        </div>
+        <div class='d-none client_modal'>
+          <h6>Informação do Cliente</h6>
+          <hr class='m-0 mb-3'>
+          <p class='mb-4 modal_client'>Nome do Cliente: <span class='text-primary'></span></p>
+          <h6>Localização do Cliente</h6>
+          <hr class='m-0 mb-3'>
+          <div class='form-row col-md d-flex justify-content-between'>
+            <p class='mb-2 modal_region'>País: <span class='text-primary'></span></p>
+            <img class='modal_flag' alt='' height='20'>
+          </div>
+          <p class='mb-2 modal_state'>Estado: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_city'>Cidade: <span class='text-primary'></span></p>
+          <div class='d-none extra_client_modal'>
+            <h6>Outras Informações</h6>
+            <hr class='m-0 mb-3'>
+            <p class='mb-2 modal_email d-none'>E-mail: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_phone d-none'>Telefone: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_responsible d-none'>Responsavel: <span class='text-primary'></span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end labelDetailsModal -->
+
+<!-- labelEditModal Modal -->
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Editar Entrada</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' method='post' action="{{ url_for('board.index_edit') }}" novalidate>
+        {{ csrf_token }}
+        <input type='hidden' id='edit_index' name='edit_index'/>
+        <div class='modal-body'>
+          <div class='content mt-1'>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='entry_date_edit' class='form-label'>Data de Entrada<span class='text-danger'>*</span></label>
+                  <input type='date' class='form-control valid_date_nd entry_val' id='entry_date_edit' name='entry_date_edit' value='' required>
+                  <div class='invalid-feedback'>Insira a data de entrada</div>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='category' class='form-label'>Categoria<span class='text-danger'>*</span></label>
+                  <select class='form-select category_modal_edit' id='category_edit' required>
+                    {% if context.categories %}
+                      <option value='' selected disabled>Selecione a categoria</option>
+                      {% for row in context.categories %}
+
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Registre uma categoria antes de continuar</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Por favor, selecione uma categoria</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='subcategory_edit' class='form-label'>Subcategoria<span class='text-danger'>*</span></label>
+                  <select class='form-select subcategory_modal' id='subcategory_edit' name='subcategory_edit' required>
+                    <option value='' selected disabled>Selecione uma Subcategoria</option>
+                  </select>
+                  <div class='invalid-feedback'>Selecione uma subcategoria</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='description_edit' class='form-label'>Observações</label>
+                  <input type='text' class='form-control valid_opt_entry_nd note_modal' id='description_edit' name='description_edit'
+                    placeholder='Insira suas Observações' maxlength='128'>
+                    <div class='invalid-feedback'></div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='beneficiary_edit' class='form-label'>Beneficiario<span class='text-danger'>*</span></label>
+                  <select class='form-select beneficiary_modal' id='beneficiary_edit' name='beneficiary_edit' required>
+                    {% if context.beneficiaries %}
+                      <option value='' selected disabled>Selecione o beneficiario</option>
+                      {% for row in context.beneficiaries %}
+
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Please register one beneficiary before continue</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Selecione um beneficiário, mesmo que seja você mesmo</div>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='client_edit' class='form-label'>Cliente</label>
+                  <select class='form-select client_edit_modal' id='client_edit' name='client_edit'>
+                    <option value='' selected disabled>Escolha o cliente, se aplicável</option>
+                    {% for row in context.clients %}
+
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='cost_center_edit' class='form-label'>Centro de Custo</label>
+                  <select class='form-select cost_center_edit_modal' id='cost_center_edit' name='cost_center_edit'>
+                    <option value='' selected disabled>Escolha o centro de custo, se aplicável</option>
+                    {% for row in context.cost_centers %}
+
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='condition_edit' class='form-label'>Estado<span class='text-danger'>*</span></label>
+                  <select class='form-select status_modal' id='condition_edit' name='condition_edit'>
+                    <option value='1' selected>Pago</option>
+                    <option value='2'>Aberto</option>
+                    <option value='3'>Em Negociação</option>
+                    <option value='4'>Recebido</option>
+                    <option value='5'>Agendado</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='account_edit' class='form-label'>Conta<span class='text-danger'>*</span></label>
+                  <select class='form-select account_modal' id='account_edit' name='account_edit' required>
+                    {% if context.accounts %}
+                      <option value='' selected disabled>Escolha a conta usada</option>
+                      {% for row in context.accounts %}
+
+                          {% if row.fin_bank_branch %}
+                            {{ row.fin_bank_branch }} / {{ row.fin_bank_account }}
+                          {% else %}
+                            Transaction using cash
+                          {% endif %}
+                        </option>
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Registre uma conta antes de continuar</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
+                </div>
+              </div>
+              <div class='col-lg-6'>
+                <div class='mb-3'>
+                  <label for='amount_edit' class='form-label'>Quantia<span class='text-danger'>*</span></label>
+                  <input type='text' class='form-control mask_money amount_modal' id='amount_edit' name='amount_edit' placeholder='Insira o valor da entrada' required>
+                  <div class='invalid-feedback'>Insira o valor da entrada</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='submit' class='btn btn-primary'>Editar Entrada</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end labelEditModal -->
+
+<!-- labelRemoveModal Modal -->
+<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Remover Entrada</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' action="{{ url_for('board.index_delete') }}" novalidate method='post'>
+        {{ csrf_token }}
+        <input type='hidden' id='del_index' name='del_index'/>
+        <div class='modal-body'>
+          <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção desta entrada?</p>
+          <div class='form-row col-md d-flex justify-content-between'>
+            <p class='mb-2 modal_entry_date'>Data da Entrada: <span class='text-primary'></span></p>
+            <span class='modal_entry_status badge badge-pill font-size-12 mb-2'></span>
+          </div>
+          <p class='mb-2 modal_entry_amount'>Quantia: <span class='text-primary'></span></p>
+          <p class='mb-4 modal_entry_description d-none'>Descrição: <span class='text-primary'></span></p>
+          <h6>Categoria da Entrada</h6>
+          <hr class='m-0 mb-3'>
+          <div class='form-row col-md d-flex justify-content-between'>
+            <p class='mb-2 modal_category'>Categoria: <span class='text-primary'></span></p>
+            <span class='modal_category_type badge badge-pill font-size-12 mb-2'></span>
+          </div>
+          <p class='mb-4 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
+          <h6>Beneficiário da entrada</h6>
+          <hr class='m-0 mb-3'>
+          <p class='mb-2 modal_beneficiary_category'>Categoria Beneficiária: <span class='text-primary'></span></p>
+          <p class='mb-4 modal_beneficiary_name'>Nome do Beneficiário: <span class='text-primary'></span></p>
+          <h6>Informação Financeira</h6>
+          <hr class='m-0 mb-3'>
+          <div class='d-none bank_account_modal'>
+            <p class='mb-2 modal_bank'>Nome do Banco: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_branch'>Número da Agência: <span class='text-primary'></span></p>
+            <p class='mb-4 modal_account'>Número da Conta: <span class='text-primary'></span></p>
+          </div>
+          <div class='d-none cash_pay_modal'>
+            <p class='mb-4 modal_cash'>Fonte: <span class='text-primary'></span></p>
+          </div>
+          <div class='d-none cost_center_modal'>
+            <p class='mb-2 modal_cost_center'>Centro de Custo: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_description d-none'>Descrição: <span class='text-primary'></span></p>
+          </div>
+          <div class='d-none client_modal'>
+            <h6>Informações do Cliente</h6>
+            <hr class='m-0 mb-3'>
+            <p class='mb-4 modal_client'>Nome do Cliente: <span class='text-primary'></span></p>
+            <h6>Localização do Cliente</h6>
+            <hr class='m-0 mb-3'>
+            <div class='form-row col-md d-flex justify-content-between'>
+              <p class='mb-2 modal_region'>País: <span class='text-primary'></span></p>
+              <img class='modal_flag' alt='' height='20'>
+            </div>
+            <p class='mb-2 modal_state'>Estado: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_city'>Cidade: <span class='text-primary'></span></p>
+            <div class='d-none extra_client_modal'>
+              <h6>Outras Informações</h6>
+              <hr class='m-0 mb-3'>
+              <p class='mb-2 modal_email d-none'>E-mail: <span class='text-primary'></span></p>
+              <p class='mb-2 modal_phone d-none'>Telefone: <span class='text-primary'></span></p>
+              <p class='mb-2 modal_responsible d-none'>Responsavel: <span class='text-primary'></span></p>
+            </div>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar</button>
+          <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover Entrada</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end labelRemoveModal -->

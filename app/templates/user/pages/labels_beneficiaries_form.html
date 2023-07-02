@@ -1,0 +1,143 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+
+<body data-topbar='dark'>
+  <div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+      <div class='page-content'>
+        <div class='container-fluid'>
+          <!-- start page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                <h4 class='mb-sm-0 font-size-18'>Adicionar Beneficiário</h4>
+                <div class='page-title-right'>
+                  <ol class='breadcrumb m-0'>
+                    <li class='breadcrumb-item'>Etiquetas</li>
+                    <li class='breadcrumb-item active'>Formulário de Beneficiário</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='card'>
+                <div class='card-body'>
+                  <div class='row mb-2'>
+                    <div class='col-sm-4'>
+                      <h4 class='card-title'>Informação do Beneficiário</h4>
+                      <p class='card-title-desc'>Preencha todas as informações abaixo</p>
+                    </div>
+                    <div class='col-sm-8'>
+                      <div class='text-sm-end'>
+                        <a class='btn btn-outline-secondary waves-effect waves-light mb-3 w-md me-2' href="{{ url_for('board.labels_beneficiaries') }}">
+                          Retornar
+                        </a>
+                        <button type='button' class='btn btn-primary waves-effect waves-light mb-3 w-md' data-bs-toggle='modal' data-bs-target='.typeRemoveModal'>
+                          <i class='mdi mdi-delete-outline'></i> Remover tipo
+                        </button>
+                      </div>
+                    </div><!-- end col-->
+                  </div>
+                  {% if success %}
+                    <div class='alert alert-success mb-4' role='alert'>{{ success }}</div>
+                  {% elif error %}
+                    <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                  {% endif %}
+                  <form class='needs-validation' method='post' action="{{ url_for('board.labels_beneficiaries_form_new') }}" novalidate>
+                    {{ csrf_token }}
+                    <div class='row'>
+                      <div class='col-md-4'>
+                        <div class='mb-3'>
+                          <label for='description' class='form-label'>Tipo<span class='text-danger'>*</span></label>
+                          <select class='form-select select2 select s2_tags_true' id='description' name='description' required>
+                            {% if context.types %}
+                              <option value='' selected disabled>Escolha o tipo de beneficiário ou adicione um</option>
+                              {% for row in context.types %}
+                                <option value='{{ row.cat_slug }}'>{{ row.cat_description }}</option>
+                              {% endfor %}
+                            {% else %}
+                              <option value='' selected disabled>Registre pelo menos um tipo antes de continuar</option>
+                            {% endif %}
+                          </select>
+                          <div class='invalid-feedback'>Selecione um tipo de beneficiário</div>
+                        </div>
+                      </div>
+                      <div class='col-md-8'>
+                        <div class='mb-3'>
+                          <label for='name' class='form-label'>Nome<span class='text-danger'>*</span></label>
+                          <input type='text' class='form-control valid_entry' id='name' name='name'
+                            placeholder='Digite o nome do beneficiário (por exemplo, você mesmo)' required>
+                          <div class='invalid-feedback'>Insira o nome do beneficiário</div>
+                        </div>
+                      </div>
+                    </div>
+                    <div class='d-flex flex-wrap gap-2'>
+                      <button type='submit' class='btn btn-primary waves-effect waves-light'>Salvar etiqueta</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div> <!-- container-fluid -->
+      </div>
+      <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+  </div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- typeRemoveModal Modal -->
+<div class='modal fade typeRemoveModal' id='typeRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Remover Tipo de Beneficiário</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' action="{{ url_for('board.labels_beneficiaries_form_delete_type') }}" novalidate method='post'>
+        {{ csrf_token }}
+        <div class='modal-body'>
+          <p class='mb-3'>Lembre-se, quando você remove um tipo de beneficiário, você remove todos os nomes de beneficiários anexados a ele</p>
+          <div class='content mt-1'>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='cost-center-input' class='form-label'>Tipo</label>
+                  <select class='form-select' name='description' required>
+                    {% if context.types %}
+                      <option value='' selected disabled>Escolha o tipo de beneficiário</option>
+                      {% for row in context.types %}
+                        {% if row.user_id %}
+                          <option value='{{ row.cat_slug|md5 }}'>{{ row.cat_description }}</option>
+                        {% endif %}
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Nenhum tipo disponível para remoção</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Escolha um tipo de beneficiário</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar</button>
+          <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover Tipo</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end typeRemoveModal -->

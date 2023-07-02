@@ -1,0 +1,169 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+  <div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+      <div class='page-content'>
+        <div class='container-fluid'>
+          <!-- start page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                <h4 class='mb-sm-0 font-size-18'>Adicionar Categoria</h4>
+                <div class='page-title-right'>
+                  <ol class='breadcrumb m-0'>
+                    <li class='breadcrumb-item'>Etiquetas</li>
+                    <li class='breadcrumb-item active'>Formulário da Categoria</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='card'>
+                <div class='card-body'>
+                  <div class='row mb-2'>
+                    <div class='col-sm-4'>
+                      <h4 class='card-title'>Informações da categoria</h4>
+                      <p class='card-title-desc'>Preencha todas as informações abaixo</p>
+                    </div>
+                    <div class='col-sm-8'>
+                      <div class='text-sm-end'>
+                        <a class='btn btn-outline-secondary waves-effect waves-light mb-3 w-md me-2' href="{{ url_for('board.labels_categories') }}">
+                          Retornar
+                        </a>
+                        <button type='button' class='btn btn-primary waves-effect waves-light mb-3 w-md' data-bs-toggle='modal' data-bs-target='.categoryRemoveModal'>
+                          <i class='mdi mdi-delete-outline'></i> Remover categoria
+                        </button>
+                      </div>
+                    </div><!-- end col-->
+                  </div>
+                  {% if success %}
+                    <div class='alert alert-success mb-4' role='alert'>{{ success }}</div>
+                  {% elif error %}
+                    <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                  {% endif %}
+                  <form class='needs-validation outer-repeater' method='post' action="{{ url_for('board.labels_categories_form_new') }}" novalidate>
+                    {{ csrf_token }}
+                    <div data-repeater-list='outer-group' class='outer'>
+                      <div data-repeater-item class='outer'>
+                        <div class='mb-3'>
+                          <label class='d-block mb-3'>Tipo de Categoria :<span class='text-danger'>*</span></label>
+                          <div class='form-check form-check-inline'>
+                            <input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio1' value='1' required>
+                            <label class='form-check-label' for='inlineRadio1'>Renda</label>
+                          </div>
+                          <div class='form-check form-check-inline'>
+                            <input class='form-check-input' type='radio' name='inlineRadioOptions' id='inlineRadio2' value='2' required>
+                            <label class='form-check-label' for='inlineRadio2'>Gasto</label>
+                          </div>                                                          
+                        </div>
+                        <div class='row'>
+                          <div class='col-md'>
+                            <div class='mb-3'>
+                              <label for='name' class='form-label'>Nome da Categoria<span class='text-danger'>*</span></label>
+                              <select class='form-select select2 select s2_tags_true valid_entry check_existence' id='name' name='name' required>
+                                <option value='' selected>Escolha o nome da categoria ou adicione um (por exemplo, receita financeira)</option>
+                                {% for row in context.categories %}
+                                  <option value='{{ row.cat_slug|md5 }}'>{{ row.cat_name }}</option>
+                                {% endfor %}
+                              </select>
+                              <div class='invalid-feedback'>Selecione ou insira um nome de categoria</div>
+                            </div>
+                          </div>
+                        </div>
+                        <div class='inner-repeater row'>
+                          <div class='col-md'>
+                            <div data-repeater-list='inner-group' class='inner'>
+                              <label for='ban_account' class='form-label'>Nome da Subcategoria<span class='text-danger'>*</span></label>
+                              <div data-repeater-item class='inner mb-3 row'>
+                                <div class='col-md-11 mb-3'>
+                                  <input type='text' class='form-control valid_entry_nd' id='subname' name='subname'
+                                    placeholder='Digite o nome da subcategoria (por exemplo, lucro com ações)' required>
+                                  <div class='invalid-feedback'>Insira o nome da subcategoria</div>
+                                </div>
+                                <div class='col-md-1 mb-3'>
+                                  <div class='d-grid'>
+                                    <input data-repeater-delete type='button' class='btn btn-primary inner' value='Deletar'/>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                            <div class='row'>
+                              <div class='col-sm-12'>
+                                <div class='text-sm-end'>
+                                  <a data-repeater-create type='button' class='btn btn-link inner mb-3'><i class='mdi mdi-plus'></i> Adicionar subcategoria</a>
+                                </div>
+                              </div><!-- end col-->
+                            </div>
+                          </div>
+                        </div>
+                        <div class='d-flex flex-wrap gap-2'>
+                          <button type='submit' class='btn btn-primary waves-effect waves-light'>Salvar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div> <!-- container-fluid -->
+      </div>
+      <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+  </div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- categoryRemoveModal Modal -->
+<div class='modal fade categoryRemoveModal' id='categoryRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Remover Categoria</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' action="{{ url_for('board.labels_category_form_delete_category') }}" novalidate method='post'>
+        {{ csrf_token }}
+        <div class='modal-body'>
+          <p class='mb-3'>Lembre-se, ao remover uma categoria, você remove todas as subcategorias anexadas a ela</p>
+          <div class='content mt-1'>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='cost-center-input' class='form-label'>Nome da Categoria</label>
+                  <select class='form-select' name='name' required>
+                    {% if context.categories %}
+                      <option value='' selected disabled>Escolher categoria</option>
+                      {% for row in context.categories %}
+                        <option value='{{ row.cat_slug|md5}}'>{{ row.cat_name }}</option>
+                      {% endfor %}
+                    {% else %}
+                      <option value='' selected disabled>Nenhuma categoria disponível para remoção</option>
+                    {% endif %}
+                  </select>
+                  <div class='invalid-feedback'>Escolha um nome de categoria</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar</button>
+          <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover categoria</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end categoryRemoveModal -->

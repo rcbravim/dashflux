@@ -1,0 +1,333 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+  <div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+      <div class='page-content'>
+        <div class='container-fluid'>
+          <!-- start page title -->
+          <div class='row'>
+            <div class='col-12'>
+              <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                <h4 class='mb-sm-0 font-size-18'>Clientes</h4>
+                <div class='page-title-right'>
+                  <ol class='breadcrumb m-0'>
+                    <li class='breadcrumb-item'>Etiquetas</li>
+                    <li class='breadcrumb-item active'>Clientes</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end page title -->
+
+          <div class='row'>
+            <div class='col-12'>
+              <div class='card'>
+                <div class='card-body'>
+                  <div class='row'>
+                    <div class='col-sm-12'>
+                      <div class='text-sm-end'>
+                        <a class='btn btn-primary waves-effect waves-light mb-3' href="{{ url_for('board.labels_clients_form') }}">
+                          <i class='mdi mdi-plus'></i> Adicionar cliente
+                        </a>
+                      </div>
+                    </div><!-- end col-->
+                  </div>
+                  <hr class='mt-0 mb-3'>
+                  <form class='form-horizontal' action="{{ url_for('board.labels_clients') }}" method='get'>
+                    <div class='row mb-3 align-items-end'>
+                      <div class='col-sm-4 mb-3'>
+                        <label for='type'>País</label>
+                        <select class='form-select select2-search-disable' id='country' name='country'>
+                          {% if context.countries %}
+                            <option value='' {% if not context.filter.country %}selected{% endif %}>Todos os países</option>
+                            {% for row in context.countries %}
+                              <option {% if context.filter.country == row.id|md5 %}selected{% endif %} value='{{ row.id|md5 }}'>
+                                {{ row.cou_name }}
+                              </option>
+                            {% endfor %}
+                          {% else %}
+                            <option value='' selected disabled>Nenhum país disponível</option>
+                          {% endif %}
+                        </select>
+                      </div>
+                      <div class='col-sm-6 mb-3'>
+                        <label for='search'>Nome do cliente</label>
+                        <input type='text' class='form-control' id='search' name='search' 
+                          placeholder='Pesquise pelo nome do cliente'
+                          value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
+                      </div>
+                      <div class='col-sm mb-3 align-self-end'>
+                        <div class='d-grid'>
+                          <button type='submit' class='btn btn-primary w-xs'>Procurar</button>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                  {% if success %}
+                    <div class='alert alert-success mb-4' role='alert'>{{ success }}</div>
+                  {% elif error %}
+                    <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                  {% endif %}
+                  {% if context.clients %}
+                    <div class='table-responsive'>
+                      <table class='table align-middle table-nowrap table-check'>
+                        <thead class='table-light'>
+                          <tr>
+                            <th class='align-middle'>Data de Registo</th>
+                            <th class='align-middle'>País</th>
+                            <th class='align-middle'>Estado</th>
+                            <th class='align-middle'>Nome do Cliente</th>
+                            <th class='align-middle'></th>
+                            <th class='align-middle'></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for row in context.clients %}
+                            <tr>
+                              <td>{{ row.cli_date_created|date }}</td>
+                              <td>
+                                <img src="{{ url_for('static', filename='board/images/flags/') }}" alt='' height='15'>&nbsp;&nbsp;
+                                {{ row.cou_name|upper }}{% if row.country__cou_name|length > 15 %}...{% endif %}
+                              </td>
+                              <td>{{ row.sta_name|upper }}</td>
+                              <td>
+                                {{ row.cli_name|upper }}{% if row.cli_name|length > 30 %}...{% endif %}
+                              </td>
+                              <td>
+                                <!-- Button trigger modal -->
+                                <button type='button' class='btn btn-primary btn-sm btn-rounded clients_details' 
+                                  data-bs-toggle='modal' data-bs-target='.labelDetailsModal' data-value='{{ row.cli_slug|md5 }}'>
+                                  Ver detalhes
+                                </button>
+                              </td>
+                              <td>
+                                <div class='d-flex gap-3'>
+                                  <a data-bs-toggle='modal' data-bs-target='.labelEditModal' data-value='{{ row.cli_slug|md5 }}'
+                                    class='text-success clients_edit' style='cursor:pointer;'><i class='mdi mdi-pencil font-size-18'></i></a>
+                                  <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal' data-value='{{ row.cli_slug|md5 }}'
+                                    class='text-danger clients_del' style='cursor:pointer;'><i class='mdi mdi-delete font-size-18'></i></a>
+                                </div>
+                              </td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                    <form action="{{ url_for('board.labels_clients') }}" method='get'>
+                      <input type='hidden' name='country' value='{{ context.filter.country }}'/>
+                      <input type='hidden' name='search' value='{{ context.filter.search }}'/>
+                      <ul class='pagination pagination-rounded justify-content-end mb-2'>
+                        <li class='page-item {% if context.pages.pg == 1 %}disabled{% endif %}'>
+                          <button class='page-link' type='submit' name='pg' value='1' aria-label='First'>
+                            <i class='mdi mdi-chevron-double-left'></i>
+                          </button>
+                        </li>
+                        {% for item in context.pages.pg_range %}
+                          <li class='page-item {% if context.pages.pg == item %}active{% endif %}'>
+                            <button class='page-link' type='submit' name='pg' value='{{ item }}'>{{ item }}</button>
+                          </li>
+                        {% endfor %}
+                        <li class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
+                          <button class='page-link' type='submit' name='pg' value='{{ context.pages.total_pg }}' aria-label='Last'>
+                            <i class='mdi mdi-chevron-double-right'></i>
+                          </button>
+                        </li>
+                      </ul>
+                    </form>
+                  {% else %}
+                    <div class='table-responsive'>
+                      <div class='card-body'>Nenhum cliente registrado.</div>
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- end row -->
+        </div>
+        <!-- container-fluid -->
+      </div>
+      <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+  </div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- labelDetailsModal -->
+<div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes da etiqueta do cliente</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <div class='modal-body'>
+        <p class='mb-2 modal_register_date'>Data de Registo: <span class='text-primary'></span></p>
+        <p class='mb-4 modal_client'>Nome do Cliente: <span class='text-primary'></span></p>
+        
+        <h6>Localização do Cliente</h6>
+        <hr class='m-0 mb-3'>
+        <div class='form-row col-md d-flex justify-content-between'>
+          <p class='mb-2 modal_region'>País: <span class='text-primary'></span></p>
+          <img class='modal_flag' alt='' height='20'>
+        </div>
+        <p class='mb-2 modal_state'>Estado: <span class='text-primary'></span></p>
+        <p class='mb-4 modal_city'>Cidade: <span class='text-primary'></span></p>
+        <div class='other_information d-none'>
+          <h6>Outras informações</h6>
+          <hr class='m-0 mb-3'>
+          <p class='mb-2 modal_email d-none'>Email: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_phone d-none'>Telefone: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_responsible d-none'>Responsavel: <span class='text-primary'></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end labelDetailsModal -->
+
+<!-- labelEditModal Modal -->
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Editar etiqueta do cliente</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' method='post' action="{{ url_for('board.labels_clients_edit') }}" novalidate>
+        {{ csrf_token }}
+        <input type='hidden' id='edit_client' name='edit_client'/>
+        <div class='modal-body'>
+          <div class='content mt-1'>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='client' class='form-label'>Nome do cliente</label>
+                  <input type='text' class='form-control valid_entry' id='client' name='client'
+                    placeholder='Digite o nome do cliente' required>
+                  <div class='invalid-feedback'>Por favor, insira o nome do seu cliente</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='country' class='form-label'>País</label>
+                  <select class='form-select country_modal' name='country' id='country' required>
+                    <option value='' selected disabled>Choose client country</option>
+                    {% for row in context.countries %}
+                      <option value='{{ row.id|md5 }}'>{{ row.cou_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='state' class='form-label'>Estado</label>
+                  <select class='form-select' name='state' id='state' required>
+                    <option value='' selected disabled>Escolha o estado do cliente</option>
+                  </select>
+                  <div class='invalid-feedback'>Selecione o estado de origem do seu cliente</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='city' class='form-label'>Cidade</label>
+                  <input type='text' class='form-control valid_entry_nd' id='city' name='city'
+                    placeholder='Insira a cidade do cliente' required>
+                  <div class='invalid-feedback'>Insira a cidade de origem do seu cliente</div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='email' class='form-label'>Email de contato</label>
+                  <input type='text' class='form-control valid_opt_email' id='email' name='email'
+                    placeholder='Insira o email cliente'>
+                  <div class='invalid-feedback'></div>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='phone' class='form-label'>Telefone</label>
+                  <input type='text' class='form-control' id='phone' name='phone'
+                    placeholder='Insira o número de telefone do cliente com o código do estado'>
+                </div>
+              </div>
+            </div>
+            <div class='row'>
+              <div class='col-lg-12'>
+                <div class='mb-3'>
+                  <label for='responsible' class='form-label'>Responsavel</label>
+                  <input type='text' class='form-control valid_opt_entry' id='responsible' name='responsible'
+                    placeholder='Informe o responsável pelo cliente'>
+                  <div class='invalid-feedback'></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='submit' class='btn btn-primary'>Editar etiqueta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end labelEditModal -->
+
+<!-- labelRemoveModal Modal -->
+<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title'>Remover etiqueta do cliente</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <form class='needs-validation' action="{{ url_for('board.labels_clients_delete') }}" novalidate method='post'>
+        {{ csrf_token }}
+        <input type='hidden' id='del_client' name='del_client'/>
+        <div class='modal-body'>
+          <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção da etiqueta da subcategoria?</p>
+          <p class='mb-4 modal_client'>Nome do cliente: <span class='text-primary'></span></p>
+          
+          <h6>Localização do cliente</h6>
+          <hr class='m-0 mb-3'>
+          <div class='form-row col-md d-flex justify-content-between'>
+            <p class='mb-2 modal_region'>País: <span class='text-primary'></span></p>
+            <img class='modal_flag' alt='' height='20'>
+          </div>
+          <p class='mb-2 modal_state'>Estado: <span class='text-primary'></span></p>
+          <p class='mb-4 modal_city'>Cidade: <span class='text-primary'></span></p>
+          <div class='other_information d-none'>
+            <h6>Outras Informações</h6>
+            <hr class='m-0 mb-3'>
+            <p class='mb-2 modal_email d-none'>Email: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_phone d-none'>Telefone: <span class='text-primary'></span></p>
+            <p class='mb-2 modal_responsible d-none'>Responsavel: <span class='text-primary'></span></p>
+          </div>
+        </div>
+        <div class='modal-footer'>
+          <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar</button>
+          <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover etiqueta</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- end labelRemoveModal -->

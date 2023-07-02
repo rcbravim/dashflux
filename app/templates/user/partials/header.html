@@ -1,0 +1,37 @@
+{% include 'board/partials/head.html' %}
+
+<div id='layout-wrapper'>
+  <header id='page-topbar'>
+    <div class='navbar-header'>
+      <div class='d-flex'>
+        <!-- LOGO -->
+        <div class='navbar-brand-box'>
+          <a href="{{ url_for('board.index') }}" class='logo logo-light'>
+            <span class='logo-lg'>
+              <img src="{{ url_for('static', filename='global/images/logo-letter.svg') }}" alt='' height='26'>
+            </span>
+          </a>
+        </div>
+        <button type='button' class='btn btn-sm px-4 font-size-16 header-item waves-effect mobile-view' id='vertical-menu-btn'>
+          <i class='mdi mdi-menu'></i>
+        </button>
+      </div>
+
+      <div class='d-flex'>
+        <div class='dropdown d-inline-block'>
+          <button type='button' class='btn header-item waves-effect' id='page-header-user-dropdown'
+            data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
+            <img class='rounded-circle header-profile-user' src="{{ url_for('static', filename='global/images/logo-symbol.svg') }}" alt='Header Avatar'>
+            <i class='mdi mdi-chevron-down d-none d-xl-inline-block'></i>
+          </button>
+          <div class='dropdown-menu dropdown-menu-end'>
+            <!-- item-->
+            <a class='dropdown-item' href="{{ url_for('board.profile') }}"><i class='bx bx-user font-size-16 align-middle me-1'></i> <span key='t-profile'>Perfil</span></a>
+            <div class='dropdown-divider'></div>
+            <a class='dropdown-item text-danger' href="{{ url_for('auth.logout') }}"><i class='bx bx-power-off font-size-16 align-middle me-1 text-danger'></i> <span key='t-logout'>Desconectar</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+</div>

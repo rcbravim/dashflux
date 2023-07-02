@@ -1,0 +1,136 @@
+{% include 'guest/partials/head.html' %}
+
+<body>
+  <div class='account-pages my-5 pt-sm-5'>
+    <div class='container'>
+      {% if valid %}
+        <div class='row justify-content-center'>
+          <div class='col-md-8 col-lg-6 col-xl-5'>
+            <div class='card overflow-hidden'>
+              <div class='bg-primary bg-soft'>
+                <div class='row'>
+                  <div class='col-7'>
+                    <div class='text-primary p-4'>
+                      <h5 class='text-primary'>Recuperar Senha</h5>
+                      <p>Preencha as informações abaixo para recuperar sua senha.</p>
+                    </div>
+                  </div>
+                  <div class='col-5 align-self-end'>
+                    <img src="{{ url_for('static', filename= 'guest/images/profile-img.png') }}" alt='' class='img-fluid'>
+                  </div>
+                </div>
+              </div>
+              <div class='card-body pt-0'> 
+                <div>
+                  <a href="{{ url_for('auth.login') }}">
+                    <div class='avatar-md profile-user-wid mb-2'>
+                      <span class='avatar-title rounded-circle bg-light'>
+                        <img src="{{ url_for('static', filename= 'guest/images/logo.svg') }}" alt='' height='40'>
+                      </span>
+                    </div>
+                  </a>
+                </div>
+                
+                <div class='p-2'>
+                  {% if error %}
+                    <div class='alert alert-danger' role='alert'>{{ error|safe }}</div>
+                  {% endif %}
+                  <form class='needs-validation' action="{{ url_for('auth.recovery') }}" novalidate method='post'>
+                    {{ csrf_token }}
+                    <input type='hidden' id='pwd_id' name='pwd_id' value='{{ pwd_id }}' required>
+                    <div class='mb-3'>
+                      <label for='password' class='form-label'>Senha</label>
+                      <input type='password' class='form-control valid_pass' id='password' 
+                        name='password' placeholder='Digite a senha' required>
+                      <div class='invalid-feedback'>Por favor, digite a senha</div>
+                    </div>
+                    <div class='mb-3'>
+                      <label for='confirm_password' class='form-label'>Confirmar senha</label>
+                      <input type='password' class='form-control valid_pass_confirm' id='confirm_password' 
+                        name='confirm_password' placeholder='Digite a confirmação da senha' required>
+                      <div class='invalid-feedback'>Por favor, confirme a senha</div>
+                    </div>
+                    <div class='mt-4 d-grid'>
+                      <button class='btn btn-success waves-effect waves-light' type='submit'>Aplicar Senha</button>
+                    </div>
+                    <div class='mt-3 text-center'>
+                      <a href='#' data-bs-toggle='modal' data-bs-target='.passwordRulesModal' class='text-muted'>
+                        <i class='mdi mdi-lock me-1'></i> Regras da Senha
+                      </a>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+            <div class='mt-4 text-center'>
+              <div>
+                <p>Lembrou? <a href="{{ url_for('auth.login') }}" class='fw-medium text-primary'> Faça login aqui:</a> </p>
+                <p>© <script>document.write(new Date().getFullYear())</script> <i class='mdi mdi-heart text-danger'></i> Planilha Financeira.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% else %}
+        <div class='row'>
+          <div class='col-lg-12'>
+            <div class='text-center mb-5 text-muted'>
+              <a href="{{ url_for('auth.login') }}" class='d-block auth-logo'>
+                <img src="{{ url_for('static', filename= 'guest/images/full-logo.png') }}" alt='' height='50' class='auth-logo-dark mx-auto'>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- end row -->
+        <div class='row justify-content-center'>
+          <div class='col-md-8 col-lg-6 col-xl-5'>
+            <div class='card'>
+              <div class='card-body'> 
+                <div class='p-2'>
+                  <div class='text-center'>
+                    <div class='avatar-md mx-auto'>
+                      <div class='avatar-title rounded-circle bg-light'>
+                        <i class='mdi mdi-alert h1 mb-0 text-primary'></i>
+                      </div>
+                    </div>
+                    <div class='p-2 mt-4'>
+                      <h4 class='text-danger'>Falha na verificação !</h4>
+                      <p>Infelizmente o pedido que procura não existe, expirou ou já foi executado.</p>
+                      <p>Caso ainda não tenha redefinido sua senha, clique no botão abaixo e tente novamente.</p>
+                      <div class='mt-4'>
+                        <a href="{{ url_for('auth.forgot') }}" class='btn btn-primary'>Voltar para redefinição de senha</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class='mt-4 text-center'>
+              <p>© <script>document.write(new Date().getFullYear())</script> <i class='mdi mdi-heart text-danger'></i> Planilha Financeira.</p>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</body>
+
+{% include 'guest/partials/footer.html' %}
+
+<!-- passwordRulesModal -->
+<div class='modal fade passwordRulesModal' tabindex='-1' role='dialog' aria-labelledby='passwordRulesModalLabel' aria-hidden='true'>
+  <div class='modal-dialog modal-dialog-centered' role='document'>
+    <div class='modal-content'>
+      <div class='modal-header'>
+        <h5 class='modal-title' id='passwordRulesModalLabel'>Regras de senha</h5>
+        <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+      </div>
+      <div class='modal-body'>
+        <p class='mb-2'>&#9679; Deve conter pelo menos UM número em sua composição</p>
+        <p class='mb-2'>&#9679; Deve conter pelo menos UMA letra maiúscula em sua composição</p>
+        <p class='mb-2'>&#9679; Deve conter pelo menos UMA letra minúscula em sua composição</p>
+        <p class='mb-2'>&#9679; Deve conter no mínimo 8 dígitos em sua composição</p>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- end modal -->

@@ -1,0 +1,61 @@
+{% include 'home/partials/head.html' %}
+
+<body>
+  <div class='account-pages my-5 pt-sm-5'>
+    <div class='container'>
+      <div class='row justify-content-center'>
+        <div class='col-md-8 col-lg-6 col-xl-5'>
+          <div class='card overflow-hidden'>
+            <div class='bg-primary bg-soft'>
+              <div class='row'>
+                <div class='col-7'>
+                  <div class='text-primary p-4'>
+                    <h5 class='text-primary'>Redefinir senha</h5>
+                    <p>Digite seu e-mail e enviaremos as instruções!</p>
+                  </div>
+                </div>
+                <div class='col-5 align-self-end'>
+                  <img src="{{ url_for('static', filename='home/images/profile-img.png') }}" alt='' class='img-fluid'>
+                </div>
+              </div>
+            </div>
+            <div class='card-body pt-0'> 
+              <div>
+                <a href="{{ url_for('auth.login') }}" class='auth-logo-dark'>
+                  <div class='avatar-md profile-user-wid mb-2'>
+                    <span class='avatar-title rounded-circle bg-light'>
+                      <img src="{{ url_for('static', filename='home/images/logo.svg') }}" alt='' height='40'>
+                    </span>
+                  </div>
+                </a>
+              </div>
+              <div class='p-2'>
+                {% if error %}
+                  <div class='alert alert-danger' role='alert'>{{ error }}</div>
+                {% endif %}
+                <form class='form-horizontal needs-validation' action="{{ url_for('auth.forgot') }}" novalidate method='post'>
+                  {{ csrf_token }}
+                  <div class='mb-3'>
+                    <label for='email' class='form-label'>Email</label>
+                    <input type='email' class='form-control valid_email' id='email' name='email'
+                      placeholder='Digite o e-mail' required>
+                    <div class='invalid-feedback'>Por favor, insira o e-mail</div>
+                  </div>
+                  <div class='mt-4 d-grid'>
+                    <button class='btn btn-primary w-md waves-effect waves-light' type='submit'>Redefinir senha</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <div class='mt-4 text-center'>
+            <p>Lembrou? <a href="{{ url_for('auth.login') }}" class='fw-medium text-primary'> Entre aqui</a> </p>
+            <p>© <script>document.write(new Date().getFullYear())</script> <i class='mdi mdi-heart text-danger'></i> Planilha Financeira.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+{% include 'home/partials/footer.html' %}

@@ -1,0 +1,6 @@
+/venv/
+venv
+home.sqlite
+*.pyc
+./sendgrid.env
+.env

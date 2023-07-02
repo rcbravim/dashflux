@@ -1,0 +1,1 @@
+.mobile-view {display: none !important;} @media only screen and (max-width: 768px) {.mobile-view{display: block !important;}.navbar-brand-box {display: none !important;}}hr.m-0{margin: 0;}
