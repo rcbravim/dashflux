@@ -185,7 +185,7 @@ CREATE TABLE IF NOT EXISTS board_state (
 );
 
 
-CREATE TABLE IF NOT EXISTS home_userlog (
+CREATE TABLE IF NOT EXISTS logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
   log_user_agent varchar(250) NOT NULL,
   log_ip_address varchar(250) NOT NULL,

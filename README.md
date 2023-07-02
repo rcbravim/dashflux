@@ -28,13 +28,13 @@ $ pip install -r requirements.txt
 ### Initiate Database
 
 ```bash
-$ python flask --app home init-db
+$ python flask init-db
 ```
 
 ### Run Application
 
 ```bash
-$ python flask --app home run
+$ python flask run --debug
 ```
 
 ### PyCharm Community
@@ -42,8 +42,8 @@ $ python flask --app home run
 # Module name: 
     flask
 # Parameters:
-    --app home init-db (to init database)
-    --app home run (to run application)
+    --app init-db (to init database)
+    --app run --debug (to run application, in debug mode)
 ```
 
 ## Deploy (AWS EC2)

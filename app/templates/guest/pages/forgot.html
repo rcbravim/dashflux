@@ -1,4 +1,4 @@
-{% include 'home/partials/head.html' %}
+{% include 'guest/partials/head.html' %}
 
 <body>
   <div class='account-pages my-5 pt-sm-5'>
@@ -15,7 +15,7 @@
                   </div>
                 </div>
                 <div class='col-5 align-self-end'>
-                  <img src="{{ url_for('static', filename='home/images/profile-img.png') }}" alt='' class='img-fluid'>
+                  <img src="{{ url_for('static', filename='guest/images/profile-img.png') }}" alt='' class='img-fluid'>
                 </div>
               </div>
             </div>
@@ -24,7 +24,7 @@
                 <a href="{{ url_for('auth.login') }}" class='auth-logo-dark'>
                   <div class='avatar-md profile-user-wid mb-2'>
                     <span class='avatar-title rounded-circle bg-light'>
-                      <img src="{{ url_for('static', filename='home/images/logo.svg') }}" alt='' height='40'>
+                      <img src="{{ url_for('static', filename='guest/images/logo.svg') }}" alt='' height='40'>
                     </span>
                   </div>
                 </a>
@@ -58,4 +58,4 @@
   </div>
 </body>
 
-{% include 'home/partials/footer.html' %}
+{% include 'guest/partials/footer.html' %}

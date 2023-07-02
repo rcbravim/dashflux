@@ -1,4 +1,4 @@
-{% include 'home/partials/head.html' %}
+{% include 'guest/partials/head.html' %}
 
 <body>
   <div class='account-pages my-5 pt-5'>
@@ -17,7 +17,7 @@
       <div class='row justify-content-center'>
         <div class='col-md-8 col-xl-6'>
           <div>
-            <img src="{{ url_for('static', filename= 'home/images/error-img.png') }}" alt='' class='img-fluid'>
+            <img src="{{ url_for('static', filename= 'guest/images/error-img.png') }}" alt='' class='img-fluid'>
           </div>
         </div>
       </div>
@@ -25,4 +25,4 @@
   </div>
 </body>
 
-{% include 'home/partials/footer.html' %}
+{% include 'guest/partials/footer.html' %}

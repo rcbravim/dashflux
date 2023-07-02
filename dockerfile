@@ -8,7 +8,7 @@ RUN apt-get update -qq \
     && pip install -r requirements.txt
 
 # database
-RUN flask --app home init-db
+RUN flask init-db
 
 # countries and cities -> TODO: ajustar para ocorrer na primeira vez
 # RUN python3 scripts/etl-paises-db.py

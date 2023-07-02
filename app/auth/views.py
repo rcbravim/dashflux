@@ -42,7 +42,7 @@ def login():
             # userlog(request, risk, comment)
             return redirect(url_for('board.index'))
 
-        return render_template('home/pages/login.html', error=error)
+        return render_template('guest/pages/login.html', error=error)
 
 @bp.route('/forgot', methods=('GET', 'POST'))
 def forgot():
@@ -60,11 +60,11 @@ def forgot():
         if error is None:
             session.clear()
             session['user_id'] = user['id']
-            return redirect(url_for('templates/home/pages/success.html'))
+            return redirect(url_for('templates/guest/pages/success.html'))
 
         flash(error)
 
-    return render_template('home/pages/forgot.html')
+    return render_template('guest/pages/forgot.html')
 
 @bp.route('/register', methods=('GET', 'POST'))
 def register():
@@ -102,4 +102,4 @@ def register():
             return redirect(url_for('auth.verify'))
 
     elif request.method == 'GET':
-        return render_template('home/pages/register.html')
+        return render_template('guest/pages/register.html')

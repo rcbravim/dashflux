@@ -40,8 +40,8 @@ jobs:
             sudo docker build -t $CONTAINER_NAME .
             
             echo Copy database if not exists
-            if [ ! -e /instance/home.sqlite ]; then
-              sudo docker cp flask-invofinance:/app/instance/home.sqlite $(pwd)/instance/home.sqlite
+            if [ ! -e /instance/db.sqlite ]; then
+              sudo docker cp flask-invofinance:/app/instance/db.sqlite $(pwd)/instance/db.sqlite
             fi
             
             echo Stop and remove the existing container
