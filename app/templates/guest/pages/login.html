@@ -6,23 +6,16 @@
       <div class='row justify-content-center'>
         <div class='col-md-8 col-lg-6 col-xl-5'>
           <div class='card overflow-hidden'>
-            <div class='bg-primary bg-soft'>
-              <div class='row'>
-                <div class='col-7'>
-                  <div class='text-primary p-4'>
-                    <h5 class='text-primary'>Bem-Vindo de volta!</h5>
-                    <p>Faça login para continuar no Invo.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class='card-body pt-0'>
-              <div class='auth-logo'>
+            <div class='card-body p-3'>
+              <div class='auth-logo pt-5'>
                 <a href="{{ url_for('auth.login') }}" class='auth-logo-dark'>
-                  <div class='avatar-md profile-user-wid mb-2'>
-                    <span class='avatar-title rounded-circle bg-light'>
-                      <img src="{{ url_for('static', filename='guest/images/logo.svg') }}" alt='' height='40'>
+                  <div class='profile-user-wid mb-2 text-center'>
+                    <span class='bg-primary d-inline-block'>
+                      <img src="{{ url_for('static', filename='guest/images/profile-img.png') }}" alt='' height='40'>
                     </span>
+                    <div class='text-primary pt-4'>
+                    <h5 class='text-primary'>Seu gerenciador financeiro!</h5>
+                  </div>
                   </div>
                 </a>
               </div>
@@ -63,7 +56,8 @@
           <div class='mt-4 text-center'>
             <div>
               <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}" class='fw-medium text-primary'> Inscreva-se agora</a></p>
-              <p>© <script>document.write(new Date().getFullYear())</script> <i class='mdi mdi-heart text-danger'></i> Planilha Financeira.</p>
+              <p>© <script>document.write(new Date().getFullYear())</script> <i
+                      class='mdi mdi-heart text-danger'></i> <a href='mailto:raphael.bravim@gmail.com'>Contact</a></p>
             </div>
           </div>
         </div>
