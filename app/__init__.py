@@ -8,14 +8,15 @@ def create_app():
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_object(Config(app))
 
+    from app.auth import models
+    from app.board import models
+    from app.db.database import init_db, db
+
     @app.cli.command('init-db')
     def init_db_command():
-        from app.db.database import init_db
         init_db(app)
         click.echo('Initialized the database.')
 
-    from app.auth import models
-    from app.board import models
     from app.db.database import db
     db.init_app(app)
 
