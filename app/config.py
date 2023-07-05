@@ -5,8 +5,8 @@ class Config:
     def __init__(self, app):
         self.SECRET_KEY = 'sua_chave_secreta'
         self.SESSION_PERMANENT = False
-        self.SESSION_TYPE = "filesystem"
-        self.DATABASE = os.path.join(app.instance_path, 'db.sqlite')
+        self.SESSION_TYPE = 'filesystem'
+        self.SQLALCHEMY_DATABASE_URI = os.path.join('sqlite:///' + app.instance_path, 'database.db')
         self.TEMPLATE_FOLDER = 'app/templates'
 
         # SESSION_FILE_DIR = os.path.join(app.root_path, 'logs')  # todo: resolver

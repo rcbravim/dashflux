@@ -1,29 +1,30 @@
-import hashlib
-import os
-
+import click
 from flask import Flask
-from app.Config import Config
-from app.auth.views import bp
-from app.db import db
+from app.config import Config
+from app.auth.routes import bp as auth_bp
 
 
-def create_app(test_config=None):
+def create_app():
     app = Flask(__name__, instance_relative_config=True)
-    app.template_filter("md5")(md5_filter)
     app.config.from_object(Config(app))
 
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    @app.cli.command('init-db')
+    def init_db_command():
+        from app.db.database import init_db
+        init_db(app)
+        click.echo('Initialized the database.')
 
+    from app.auth import models
+    from app.board import models
+    from app.db.database import db
     db.init_app(app)
 
-    app.register_blueprint(bp)
+    app.register_blueprint(auth_bp)
 
     return app
 
 
-def md5_filter(value):
-    return hashlib.md5(str(value).encode()).hexdigest()
+# todo: validar utilização
+# app.template_filter("md5")(md5_filter)
+# def md5_filter(value):
+#     return hashlib.md5(str(value).encode()).hexdigest()
