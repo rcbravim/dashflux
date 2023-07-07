@@ -9,21 +9,21 @@ def redirection():
     return redirect(url_for('auth.login_route'))
 
 
-@bp.route('/login', methods=('GET', 'POST'))
+@bp.route('/login', methods=['GET', 'POST'])
 def login():
     return login_controller()
 
 
-@bp.route('/register', methods=('GET', 'POST'))
+@bp.route('/register', methods=['GET', 'POST'])
 def register():
     return register_controller()
 
 
-@bp.route('/forgot', methods=('GET', 'POST'))
+@bp.route('/forgot', methods=['GET', 'POST'])
 def forgot():
     return forgot_controller()
 
 
-bp.route('/verify', methods=['GET', 'POST'])
+@bp.route('/verify', methods=['GET', 'POST'])
 def verify(max_attempts=3):
     return verify_controller()
