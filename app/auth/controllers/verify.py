@@ -1,9 +1,8 @@
-import os
 import random
 import string
 
 from flask import request, session, render_template
-from sendgrid import Mail, SendGridAPIClient
+from app.library.mail import send_email
 
 
 def verify_controller(max_attempts=3):
@@ -15,27 +14,14 @@ def verify_controller(max_attempts=3):
             )
 
         else:
-            sender = os.getenv('MAIL_DEFAULT_SENDER')
-            api_key = os.getenv('SENDGRID_API_KEY')
-
             session["counter"] = 0
             session["email_code"] = ''.join(random.choices(string.digits, k=4))
-            message = Mail(
-                from_email=sender,
-                to_emails=session['mail'],
-                subject='Código de Verificação',
-                html_content=f'Segue o seu Código de Verificação: {session.get("email_code")}'
+
+            response = send_email(
+                session['mail'],
+                'Código de Verificação',
+                f'Segue o seu Código de Verificação: {session.get("email_code")}'
             )
-            # message.reply_to('noreply@dashflux.com.br')
-
-            try:
-                sg = SendGridAPIClient(api_key)
-                response = sg.send(message)
-                print(response.status_code)
-                print(response.body)
-
-            except Exception as e:
-                print(e)
 
             return render_template(
                 'auth/pages/verify.html',
