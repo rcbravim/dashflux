@@ -1,4 +1,4 @@
-{% include 'db/partials/head.html' %}
+{% include 'auth/partials/head.html' %}
 
 <body>
   <div class='account-pages my-5 pt-sm-5'>
@@ -21,7 +21,7 @@
                 <a href="{{ url_for('auth.login') }}" class='auth-logo-dark'>
                   <div class='avatar-md profile-user-wid mb-2'>
                     <span class='avatar-title rounded-circle bg-light'>
-                      <img src="{{ url_for('static', filename='db/images/logo.svg') }}" alt='' height='40'>
+                      <img src="{{ url_for('static', filename='static/auth/images/logo.svg') }}" alt='' height='40'>
                     </span>
                   </div>
                 </a>
@@ -63,7 +63,7 @@
           <div class='mt-4 text-center'>
             <div>
               <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}" class='fw-medium text-primary'> Inscreva-se agora</a></p>
-              <p>© <script>document.write(new Date().getFullYear())</script> <i class='mdi mdi-heart text-danger'></i> Planilha Financeira.</p>
+              {% include 'auth/partials/bottom.html' %}
             </div>
           </div>
         </div>
@@ -72,4 +72,4 @@
   </div>
 </body>
 
-{% include 'db/partials/footer.html' %}
+{% include 'auth/partials/footer.html' %}

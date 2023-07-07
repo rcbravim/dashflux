@@ -1,4 +1,4 @@
-{% include 'db/partials/head.html' %}
+{% include 'auth/partials/head.html' %}
 
 <body>
   <div class='account-pages my-5 pt-sm-5'>
@@ -11,11 +11,11 @@
                 <div class='col-7'>
                   <div class='text-primary p-4'>
                     <h5 class='text-primary'>Conta gratuita</h5>
-                    <p>Obtenha sua conta Invo gratuita agora.</p>
+                    <p>Obtenha sua conta gratuita agora.</p>
                   </div>
                 </div>
                 <div class='col-5 align-self-end'>
-                  <img src="{{ url_for('static', filename='db/images/profile-img.png') }}" alt='' class='img-fluid'>
+                  <img src="{{ url_for('static', filename='static/global/images/profile-img.png') }}" alt='' class='img-fluid'>
                 </div>
               </div>
             </div>
@@ -24,7 +24,7 @@
                 <a href="{{ url_for('auth.login') }}">
                   <div class='avatar-md profile-user-wid mb-2'>
                     <span class='avatar-title rounded-circle bg-light'>
-                      <img src="{{ url_for('static', filename='db/images/logo.svg') }}" alt='' height='40'>
+                      <img src="{{ url_for('static', filename='static/auth/images/logo.svg') }}" alt='' height='40'>
                     </span>
                   </div>
                 </a>
@@ -68,7 +68,7 @@
             <div class='mt-4 text-center'>
               <div>
                 <p>Já tem uma conta ? <a href="{{ url_for('auth.login') }}" class='fw-medium text-primary'> Login</a></p>
-                <p>© <script>document.write(new Date().getFullYear())</script> <i class='mdi mdi-heart text-danger'></i> Planilha Financeira.</p>
+                {% include 'auth/partials/bottom.html' %}
               </div>
             </div>
           </div>
@@ -77,7 +77,7 @@
   </div>
 </body>
 
-{% include 'db/partials/footer.html' %}
+{% include 'auth/partials/footer.html' %}
 
 <!-- passwordRulesModal -->
 <div class='modal fade passwordRulesModal' tabindex='-1' role='dialog' aria-labelledby='passwordRulesModalLabel' aria-hidden='true'>
