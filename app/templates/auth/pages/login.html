@@ -1,68 +1,74 @@
 {% include 'auth/partials/head.html' %}
 
 <body>
-  <div class='account-pages my-5 pt-sm-5'>
+<div class='account-pages my-5 pt-sm-5'>
     <div class='container'>
-      <div class='row justify-content-center'>
-        <div class='col-md-8 col-lg-6 col-xl-5'>
-          <div class='card overflow-hidden'>
-            <div class='card-body p-3'>
-              <div class='auth-logo pt-5'>
-                <a href="{{ url_for('auth.login') }}" class='auth-logo-dark'>
-                  <div class='profile-user-wid mb-2 text-center'>
+        <div class='row justify-content-center'>
+            <div class='col-md-8 col-lg-6 col-xl-5'>
+                <div class='card overflow-hidden'>
+                    <div class='card-body p-3'>
+                        <div class='auth-logo pt-5'>
+                            <a href="{{ url_for('auth.login') }}" class='auth-logo-dark'>
+                                <div class='profile-user-wid mb-2 text-center'>
                     <span class='bg-primary d-inline-block'>
-                      <img src="{{ url_for('static', filename='static/auth/images/profile-img.png') }}" alt='' height='40'>
+                      <img src="{{ url_for('static', filename='static/auth/images/profile-img.png') }}" alt=''
+                           height='40'>
                     </span>
-                    <div class='text-primary pt-4'>
-                    <h5 class='text-primary'>Seu gerenciador financeiro!</h5>
-                  </div>
-                  </div>
-                </a>
-              </div>
-              <div class='p-2'>
-                {% if success %}
-                  <div class='alert alert-success' role='alert'>{{ success }}</div>
-                {% elif error %}
-                  <div class='alert alert-danger' role='alert'>{{ error }}</div>
-                {% endif %}
-                <form class='form-horizontal needs-validation' action="{{ url_for('auth.login') }}" novalidate method='post'>
-                  {{ csrf_token }}
-                  <div class='mb-3'>
-                    <label for='username' class='form-label'>Email</label>
-                    <input type='email' class='form-control valid_email' id='username'
-                      name='username' placeholder='Digite o e-mail' required>
-                    <div class='invalid-feedback'>Por favor, insira o e-mail</div>
-                  </div>
-                  <div class='mb-3'>
-                    <label for='password' class='form-label'>Senha</label>
-                    <div class='input-group auth-pass-inputgroup'>
-                      <input type='password' class='form-control valid_pass bypass' placeholder='Digite a senha' aria-label='Password'
-                        aria-describedby='password-addon' id='password' name='password' required>
-                      <button class='btn btn-light ' type='button' id='password-addon'>
-                        <i class='mdi mdi-eye-outline'></i></button>
-                      <div class='invalid-feedback'>Por favor, digite a senha</div>
+                                    <div class='text-primary pt-4'>
+                                        <h5 class='text-primary'>Seu gerenciador financeiro!</h5>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                        <div class='p-2'>
+                            {% if success %}
+                            <div class='alert alert-success' role='alert'>{{ success }}</div>
+                            {% elif error %}
+                            <div class='alert alert-danger' role='alert'>{{ error }}</div>
+                            {% endif %}
+                            <form class='form-horizontal needs-validation' action="{{ url_for('auth.login') }}"
+                                  novalidate method='post'>
+                                {{ csrf_token }}
+                                <div class='mb-3'>
+                                    <label for='username' class='form-label'>Email</label>
+                                    <input type='email' class='form-control valid_email' id='username'
+                                           name='username' placeholder='Digite o e-mail' required>
+                                    <div class='invalid-feedback'>Por favor, insira o e-mail</div>
+                                </div>
+                                <div class='mb-3'>
+                                    <label for='password' class='form-label'>Senha</label>
+                                    <div class='input-group auth-pass-inputgroup'>
+                                        <input type='password' class='form-control valid_pass bypass'
+                                               placeholder='Digite a senha' aria-label='Password'
+                                               aria-describedby='password-addon' id='password' name='password' required>
+                                        <button class='btn btn-light ' type='button' id='password-addon'>
+                                            <i class='mdi mdi-eye-outline'></i></button>
+                                        <div class='invalid-feedback'>Por favor, digite a senha</div>
+                                    </div>
+                                </div>
+                                <div class='mt-4 d-grid'>
+                                    <button class='btn btn-success waves-effect waves-light' type='submit'>Entrar
+                                    </button>
+                                </div>
+                                <div class='mt-3 text-center'>
+                                    <a href="{{ url_for('auth.forgot') }}" class='text-muted'><i
+                                            class='mdi mdi-lock me-1'></i> Esqueceu sua senha?</a>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                  </div>
-                  <div class='mt-4 d-grid'>
-                    <button class='btn btn-success waves-effect waves-light' type='submit'>Entrar</button>
-                  </div>
-                  <div class='mt-3 text-center'>
-                    <a href="{{ url_for('auth.forgot') }}" class='text-muted'><i class='mdi mdi-lock me-1'></i> Esqueceu sua senha?</a>
-                  </div>
-                </form>
-              </div>
+                </div>
+                <div class='mt-4 text-center'>
+                    <div>
+                        <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}" class='fw-medium text-primary'>
+                            Inscreva-se agora</a></p>
+                        {% include 'auth/partials/bottom.html' %}
+                    </div>
+                </div>
             </div>
-          </div>
-          <div class='mt-4 text-center'>
-            <div>
-              <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}" class='fw-medium text-primary'> Inscreva-se agora</a></p>
-              {% include 'auth/partials/bottom.html' %}
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
+</div>
 </body>
 
 {% include 'auth/partials/footer.html' %}
