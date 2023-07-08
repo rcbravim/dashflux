@@ -2,6 +2,7 @@ import random
 import string
 
 from flask import request, session, render_template
+
 from app.library.mail import send_email
 
 
@@ -17,7 +18,7 @@ def verify_controller(max_attempts=3):
             session["counter"] = 0
             session["email_code"] = ''.join(random.choices(string.digits, k=4))
 
-            response = send_email(
+            send_email(
                 session['mail'],
                 'Código de Verificação',
                 f'Segue o seu Código de Verificação: {session.get("email_code")}'
