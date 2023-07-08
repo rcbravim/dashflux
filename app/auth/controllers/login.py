@@ -18,16 +18,16 @@ def login_controller():
 
         if user is None:
             error = 'Usuário não encontrado!'
-        elif not check_password_hash(user['use_password'], use_password):
-            if not user['use_is_valid']:
-                return redirect(url_for('auth.verify'))  # todo: check
-
+        elif not user.use_is_valid:
+            return redirect(url_for('auth.verify'))
+        elif not check_password_hash(user.use_password, use_password):
             error = 'Senha incorreta!'
+
         if error is not None:
             return render_template('auth/pages/login.html', error=error)
 
         if error is None:
             session.clear()
-            session['user_id'] = user['id']
-            session['user_login'] = user['use_login']
+            session['user_id'] = user.id
+            session['user_login'] = user.use_login
             return redirect(url_for('board.index'))

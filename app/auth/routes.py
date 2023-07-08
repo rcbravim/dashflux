@@ -36,5 +36,5 @@ def forgot():
 
 
 @bp.route('/verify', methods=['GET', 'POST'])
-def verify(max_attempts):
+def verify(max_attempts=3):
     return verify_controller(max_attempts)

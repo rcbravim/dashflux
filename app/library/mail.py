@@ -12,4 +12,4 @@ def send_email(to_emails, subject, html_content, sender=None):
     if sender:
         msg.sender = sender
 
-    mail.send(msg)
+    # mail.send(msg)
