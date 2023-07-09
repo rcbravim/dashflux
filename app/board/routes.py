@@ -1,8 +1,9 @@
 from flask import Blueprint
+from .controllers import *
 
-bp = Blueprint('main', __name__)
+bp = Blueprint('board', __name__, url_prefix='/board')
 
 
-@bp.route('/')
-def hello():
-    return 'Olá, Flask!'
+@bp.route('/index', methods=['GET', 'POST'])
+def login():
+    return index_controller()

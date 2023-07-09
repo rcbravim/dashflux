@@ -1,8 +1,27 @@
-from flask import request
+from flask import request, render_template, session, redirect, url_for, flash
+
+from app.auth.models import User
 
 
 def forgot_controller():
-    pass
+    if request.method == 'GET':
+        return render_template('auth/pages/forgot.html')
+
+    elif request.method == 'POST':
+        use_login = request.form.get('email')
+
+        user = User.query.filter_by(use_login=use_login).first()
+
+        if user:
+            session.clear()
+            session['user_id'] = user.id
+            return redirect(url_for('templates/home/pages/success.html'))
+
+        error = 'Usuário não encontrado!'
+
+        flash(error)
+        return render_template('auth/pages/forgot.html', error=error)
+
     # if request.method == 'POST':
     #     use_login = request.form['email']
     #     db = get_db()
@@ -22,4 +41,3 @@ def forgot_controller():
     #     flash(error)
     #
     # return render_template('auth/pages/forgot.html')
-

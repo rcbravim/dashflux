@@ -11,21 +11,18 @@ from app.library.validation import encode_jwt, decode_jwt
 
 def verify_controller(max_attempts):
     if request.method == 'GET':
-        if not request.args.get('send'):
-            return render_template(
-                'auth/pages/verify.html',
-                email=session['mail'],
-                attempts=max_attempts - session.get('counter', 0)
-            )
+        if session.get('mail') is None:
+            return redirect(url_for('auth.login'))
 
-        if session.get('counter') and session['counter'] > 0:
+        if not request.args.get('send') and session.get('attempt') and session['attempt'] > 0:
             return render_template(
                 'auth/pages/verify.html',
-                attempts=max_attempts - session.get('counter', 0)
+                email=session.get('mail'),
+                attempts=max_attempts - session.get('attempt', 0)
             )
 
         else:
-            session['counter'] = 0
+            session['attempt'] = session.get('attempt', 0)
             email = session.get('mail')
             code = ''.join(random.choices(string.digits, k=4))
             session['code'] = encode_jwt({'verification_code': code})
@@ -33,12 +30,12 @@ def verify_controller(max_attempts):
             send_email(
                 email,
                 'Código de Verificação',
-                f"Segue o seu Código de Verificação: {session.get('email_code')}"
+                f"Segue o seu Código de Verificação: {code}"
             )
 
             return render_template(
                 'auth/pages/verify.html',
-                attempts=max_attempts - session.get('counter'),
+                attempts=max_attempts - session.get('attempt'),
                 email=email
             )
 
@@ -57,10 +54,10 @@ def verify_controller(max_attempts):
 
             return redirect(url_for('auth.login'))
 
-        elif session.get('counter') <= (max_attempts - 2):
-            session['counter'] += 1
+        elif session.get('attempt') <= (max_attempts - 2):
+            session['attempt'] += 1
             return redirect(url_for('auth.verify'))
         else:
-            session['counter'] = 1
+            session.clear()
             return redirect(url_for('auth.failed'))
             # todo: criar endpoint failed, excluindo registro da pessoa do banco e informando para ela realizar novo cadastro

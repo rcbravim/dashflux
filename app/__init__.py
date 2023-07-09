@@ -1,8 +1,8 @@
 from flask import Flask
 from app.config import Config
 from app.auth.routes import bp as auth_bp
-from app.library.mail import mail
 from app.board.routes import bp as board_bp
+from app.library.mail import mail
 from app.auth import models
 from app.board import models
 from app.db.database import init_db, db

@@ -31,15 +31,17 @@
                                     <p>Infelizmente, você não conseguiu verificar seu e-mail de registro,
                                         mas não se preocupe, volte para a página de registro e tente novamente.</p>
                                     <div class='mt-4'>
-                                        <a href="{{ url_for('auth.register') }}" class='btn btn-primary'>De volta a
-                                            Registro</a>
+                                        <a href="{{ url_for('auth.register') }}" class='btn btn-primary'>Tentar
+                                            novamente</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                {% include 'auth/partials/bottom.html' %}
+                <div class='mt-4 text-center'>
+                    {% include 'auth/partials/bottom.html' %}
+                </div>
             </div>
         </div>
     </div>

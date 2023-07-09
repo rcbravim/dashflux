@@ -87,10 +87,7 @@
                     href="{{ url_for('auth.verify', send=True, _method='GET') }}"
                     class='fw-medium text-primary'>
                 Reenviar </a></p>
-            <p>©
-                <script>document.write(new Date().getFullYear())</script>
-                {% include 'auth/partials/bottom.html' %}
-            </p>
+            {% include 'auth/partials/bottom.html' %}
         </div>
     </div>
 </div>

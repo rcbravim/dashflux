@@ -54,6 +54,11 @@
                 </div>
                 <div class='mt-4 text-center'>
                     <p>Lembrou? <a href="{{ url_for('auth.login') }}" class='fw-medium text-primary'> Entre aqui</a></p>
+                    <div>
+                        <p>Não tem uma conta? <a href="{{ url_for('auth.register') }}"
+                                                 class='fw-medium text-primary'>
+                            Inscreva-se agora</a></p>
+                    </div>
                     {% include 'auth/partials/bottom.html' %}
                 </div>
             </div>

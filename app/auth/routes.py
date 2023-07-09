@@ -1,18 +1,8 @@
 from flask import Blueprint, redirect, url_for
 from .controllers import *
-from ..library.mail import send_email
+
 
 bp = Blueprint('auth', __name__, url_prefix='/')
-
-
-@bp.route('/send_email_test', methods=['GET'])  # todo: remove after deploy
-def send_email_test():
-    send_email(
-        'raphael.bravim@gmail.com',
-        'TESTE',
-        'Este é um e-mail teste!'
-    )
-    return "Mensagem Enviada!"
 
 
 @bp.route('/', methods=['GET'])
@@ -30,11 +20,17 @@ def register():
     return register_controller()
 
 
+@bp.route('/verify', methods=['GET', 'POST'])
+def verify(max_attempts=3):
+    return verify_controller(max_attempts)
+
+
 @bp.route('/forgot', methods=['GET', 'POST'])
 def forgot():
     return forgot_controller()
 
 
-@bp.route('/verify', methods=['GET', 'POST'])
-def verify(max_attempts=3):
-    return verify_controller(max_attempts)
+@bp.route('/failed', methods=['GET', 'POST'])
+def failed():
+    return failed_controller()
+
