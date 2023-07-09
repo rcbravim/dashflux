@@ -10,9 +10,9 @@ def register_controller():
         return render_template('auth/pages/register.html')
 
     elif request.method == 'POST':
-        use_login = request.form['username']
-        use_password = request.form['password']
-        confirm_password = request.form['confirm_password']
+        use_login = request.form.get('username')
+        use_password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
 
         error = None
         if not use_login:

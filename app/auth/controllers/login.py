@@ -5,13 +5,14 @@ from app.auth.models import User
 
 
 def login_controller():
+    success = session.pop('success', None)
     if request.method == 'GET':
-        return render_template('auth/pages/login.html')
+        return render_template('auth/pages/login.html', sucess=success)
 
     elif request.method == 'POST':
         error = None
-        use_login = request.form['username']
-        use_password = request.form['password']
+        use_login = request.form.get('username')
+        use_password = request.form.get('password')
 
         user = User.query.filter_by(use_login=use_login).first()
 
@@ -29,4 +30,5 @@ def login_controller():
             session.clear()
             session['user_id'] = user.id
             session['user_login'] = user.use_login
+            session['success'] = 'Você está logado!'
             return redirect(url_for('board.index'))

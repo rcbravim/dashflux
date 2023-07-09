@@ -15,6 +15,7 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
 
 def index_controller():
+    success = session.pop('success', None)
     if request.method == 'GET':
         pg = int(request.form.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
@@ -163,4 +164,4 @@ def index_controller():
             },
         }
 
-        return render_template('board/pages/index.html', context=context)
+        return render_template('board/pages/index.html', context=context, success=success)
