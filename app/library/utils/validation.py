@@ -28,7 +28,8 @@ class ValidationMixin:
         if message:
             return message
         elif password != password_confirmation:
-            return 'The password and its confirmation are not the same.'
+            # return 'The password and its confirmation are not the same.'
+            return 'A confirmação da senha não é idêntica a senha digita, favor conferir!'
 
     def match_country_phone(self, phone, digits):
         sizes = list(map(int, digits.split('-')))

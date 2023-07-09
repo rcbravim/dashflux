@@ -52,7 +52,7 @@ def verify_controller(max_attempts):
                 user.use_date_updated = datetime.utcnow()
                 db.session.commit()
 
-            return redirect(url_for('auth.login'))
+            return redirect(url_for('auth.login', success='Validação bem sucedida, favor efetuar login!'))
 
         elif session.get('attempt') <= (max_attempts - 2):
             session['attempt'] += 1
@@ -60,4 +60,3 @@ def verify_controller(max_attempts):
         else:
             session.clear()
             return redirect(url_for('auth.failed'))
-            # todo: criar endpoint failed, excluindo registro da pessoa do banco e informando para ela realizar novo cadastro

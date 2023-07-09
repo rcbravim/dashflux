@@ -10,17 +10,17 @@ function errorVerifier() {
         if ($('.valid_pass').hasClass('bypass')) { bypass = true; }
         var valid = validPassword(pass, bypass);
         if (valid.length > 0) {
-            if (valid.includes('special')) { $('.valid_pass').nextAll('div:first').text('Password cannot contain disallowed characters. e.g. ";"'); }
-            else if (valid.includes('number')) { $('.valid_pass').nextAll('div:first').text('Password must contain at least ONE number in its composition'); }
-            else if (valid.includes('upper')) { $('.valid_pass').nextAll('div:first').text('Password must contain at least ONE capital letter in its composition'); }
-            else if (valid.includes('lower')) { $('.valid_pass').nextAll('div:first').text('Password must contain at least ONE lowercase letter in its composition'); }
+            if (valid.includes('special')) { $('.valid_pass').nextAll('div:first').text('Senha não pode conter caracteres inválidos, ex. ";"'); }
+            else if (valid.includes('number')) { $('.valid_pass').nextAll('div:first').text('Senha deve conter pelo menos UM número'); }
+            else if (valid.includes('upper')) { $('.valid_pass').nextAll('div:first').text('Senha deve conter pelo menos UMA letra maiúscula'); }
+            else if (valid.includes('lower')) { $('.valid_pass').nextAll('div:first').text('Senha deve conter pelo menos UMA letra minúscula'); }
             $('.valid_pass').val('');
             $('.valid_pass_confirm').val('');
-        } else if (pass.length < 8) { $('.valid_pass').nextAll('div:first').text('Password must contain at least 8 characters'); $('.valid_pass').val(''); $('.valid_pass_confirm').val(''); }
+        } else if (pass.length < 8) { $('.valid_pass').nextAll('div:first').text('Senha deve ter no mínimo 8 caracteres'); $('.valid_pass').val(''); $('.valid_pass_confirm').val(''); }
     }
 
     var pass_confirm = $('.valid_pass_confirm').val();
-    if (pass_confirm) { if (pass_confirm != pass) { $('.valid_pass_confirm').nextAll('div:first').text('The password and its confirmation are not the same'); $('.valid_pass_confirm').val(''); }}
+    if (pass_confirm) { if (pass_confirm != pass) { $('.valid_pass_confirm').nextAll('div:first').text('A confirmação da senha não é idêntica a senha digitada, favor conferir!'); $('.valid_pass_confirm').val(''); }}
 
     var digits = $('.valid_digit1').val();
     if (digits) {digits = $('.valid_digit2').val();}
