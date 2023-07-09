@@ -5,12 +5,11 @@ from app.auth.models import User
 
 
 def login_controller():
-    error = None
-
     if request.method == 'GET':
-        return render_template('auth/pages/login.html', error=error)
+        return render_template('auth/pages/login.html')
 
     elif request.method == 'POST':
+        error = None
         use_login = request.form['username']
         use_password = request.form['password']
 
@@ -23,7 +22,7 @@ def login_controller():
         elif not check_password_hash(user.use_password, use_password):
             error = 'Senha incorreta!'
 
-        if error is not None:
+        if error:
             return render_template('auth/pages/login.html', error=error)
 
         if error is None:

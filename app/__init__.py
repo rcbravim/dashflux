@@ -28,9 +28,3 @@ def create_app():
     app.register_blueprint(board_bp)
 
     return app
-
-
-# todo: validar utilização
-# app.template_filter("md5")(md5_filter)
-# def md5_filter(value):
-#     return hashlib.md5(str(value).encode()).hexdigest()

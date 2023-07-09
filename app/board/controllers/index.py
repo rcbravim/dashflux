@@ -48,16 +48,16 @@ def index_controller():
         ).filter(
             board_release.rel_status is True,
             board_release.user_id == session_id,
-            func.return_month(board_release.rel_entry_date) == time_now.strftime('%m'),
-            func.return_year(board_release.rel_entry_date) == time_now.strftime('%Y')
+            func.strftime('%m', board_release.rel_entry_date) == time_now.strftime('%m'),
+            func.strftime('%Y', board_release.rel_entry_date) == time_now.strftime('%Y')
         ).order_by(
             board_release.rel_sqn.desc()
         ).all()
 
         json_analytic = db.session.query(board_analytic.ana_json).filter(
             board_analytic.user_id == session_id,
-            func.return_month_year(board_analytic.ana_cycle) == month_now,
-            board_analytic.ana_status == True
+            func.strftime('%m', board_analytic.ana_cycle) == time_now.strftime('%m'),
+            board_analytic.ana_status is True
         ).order_by(
             board_analytic.ana_date_updated.desc()
         ).first()
@@ -113,7 +113,7 @@ def index_controller():
         #     board_client.cli_name.asc()
         # ).all()
 
-        clients = None
+        clients = []
 
         accounts = db.session.query(
             board_financial.fin_slug,
@@ -125,7 +125,7 @@ def index_controller():
                 board_financial.user_id == session_id,
                 board_financial.user_id.is_(None)
             ),
-            board_financial.fin_status == True
+            board_financial.fin_status is True
         ).order_by(
             board_financial.user_id.asc(),
             board_financial.fin_bank_name.asc()

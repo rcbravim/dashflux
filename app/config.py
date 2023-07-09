@@ -1,3 +1,4 @@
+import hashlib
 import os
 
 
@@ -18,5 +19,17 @@ class Config:
         app.config['MAIL_USE_TLS'] = True
         app.config['MAIL_USE_SSL'] = False
 
+        # filters
+        app.template_filter('md5')(md5_filter)
+        app.template_filter('slice3')(lambda x: x[:3])
+
         # SESSION_FILE_DIR = os.path.join(app.root_path, 'logs')  # todo: resolver
         # SERVER_NAME = "invo-flask.dev:5000"  # todo: entender
+
+
+def md5_filter(value):
+    return hashlib.md5(str(value).encode()).hexdigest()
+
+
+# def slice3_filter(value):
+#     return value[:3]
