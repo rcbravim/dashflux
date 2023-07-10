@@ -19,24 +19,39 @@ def logout():
     return logout_controller()
 
 
-@bp.route('/labels_beneficiaries', methods=['GET', 'POST'])
-def labels_beneficiaries():
-    return labels_beneficiaries_controller()
+@bp.route('/establishments', methods=['GET', 'POST'])
+def establishments():
+    return establishments_controller()
 
 
-@bp.route('/labels_categories', methods=['GET', 'POST'])
-def labels_categories():
-    return labels_categories_controller()
+@bp.route('/establishment_form', methods=['GET', 'POST'])
+def establishment_form():
+    return establishment_form_controller()
+
+
+@bp.route('/establishment_edit', methods=['GET', 'POST'])
+def establishment_edit():
+    return establishment_edit_controller()
+
+
+@bp.route('/establishment_delete', methods=['GET', 'POST'])
+def establishment_delete():
+    return establishment_delete_controller()
+
+
+@bp.route('/categories', methods=['GET', 'POST'])
+def categories():
+    return categories_controller()
 
 
 @bp.route('/labels_clients', methods=['GET', 'POST'])
-def labels_clients():
-    return labels_clients_controller()
+def clients():
+    return clients_controller()
 
 
-@bp.route('/labels_financial', methods=['GET', 'POST'])
-def labels_financial():
-    return labels_financial_controller()
+@bp.route('/financial', methods=['GET', 'POST'])
+def financial():
+    return financial_controller()
 
 
 @bp.route('/index_new', methods=['GET', 'POST'])

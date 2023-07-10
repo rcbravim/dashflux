@@ -13,11 +13,11 @@
           <div class='row'>
             <div class='col-12'>
               <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
-                <h4 class='mb-sm-0 font-size-18'>Beneficiários</h4>
+                <h4 class='mb-sm-0 font-size-18'>Estabelecimentos</h4>
                 <div class='page-title-right'>
                   <ol class='breadcrumb m-0'>
                     <li class='breadcrumb-item'>Etiquetas</li>
-                    <li class='breadcrumb-item active'>Beneficiários</li>
+                    <li class='breadcrumb-item active'>Estabelecimentos</li>
                   </ol>
                 </div>
               </div>
@@ -31,14 +31,15 @@
                   <div class='row'>
                     <div class='col-sm-12'>
                       <div class='text-sm-end'>
-                        <a class='btn btn-primary waves-effect waves-light mb-3' href="{{ url_for('board.labels_beneficiaries_form') }}">
-                          <i class='mdi mdi-plus'></i> Adicionar Beneficiário
+                        <a class='btn btn-primary waves-effect waves-light mb-3'
+                           href="{{ url_for('board.establishment_form') }}">
+                          <i class='mdi mdi-plus'></i> Adicionar Estabelecimento
                         </a>
                       </div>
                     </div><!-- end col-->
                   </div>
                   <hr class='mt-0 mb-3'>
-                  <form class='form-horizontal' action="{{ url_for('board.labels_beneficiaries') }}" method='get'>
+                  <form class='form-horizontal' action="{{ url_for('board.establishments') }}" method='get'>
                     <div class='row mb-3 align-items-end'>
                       <div class='col-sm-4 mb-3'>
                         <label for='type'>Tipo</label>
@@ -56,9 +57,9 @@
                         </select>
                       </div>
                       <div class='col-sm-6 mb-3'>
-                        <label for='search'>Beneficiário</label>
+                        <label for='search'>Estabelecimento</label>
                         <input type='text' class='form-control match-select2' id='search' name='search' 
-                          placeholder='Pesquise pelo nome do beneficiário'
+                          placeholder='Pesquise pelo nome do estabelecimento'
                           value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
                       </div>
                       <div class='col-sm mb-3 align-self-end'>
@@ -89,7 +90,7 @@
                         <tbody>
                           {% for row in context.beneficiaries %}
                             <tr>
-                              <td>{{ row.ben_date_created|date}}</td>
+                              <td>{{ row.ben_date_created}}</td>
                               <td>{{ row.cat_description|upper }}</td>
                               <td>{{ row.ben_name|upper }}</td>
                               <td>{{ row.cat_description|upper|slice3 }}-{{ row.ben_name|upper }}</td>
@@ -112,7 +113,7 @@
                         </tbody>
                       </table>
                     </div>
-                    <form action="{{ url_for('board.labels_beneficiaries') }}" method='get'>
+                    <form action="{{ url_for('board.establishments') }}" method='get'>
                       <input type='hidden' name='type' value='{{ context.filter.type }}'/>
                       <input type='hidden' name='search' value='{{ context.filter.search }}'/>
                       <ul class='pagination pagination-rounded justify-content-end mb-2'>
@@ -136,7 +137,7 @@
                     <!-- end page footer -->
                   {% else %}
                     <div class='table-responsive'>
-                      <div class='card-body'>Nenhum beneficiário registrado.</div>
+                      <div class='card-body'>Nenhum estabelecimento registrado.</div>
                     </div>
                   {% endif %}
                 </div>
@@ -160,13 +161,13 @@
   <div class='modal-dialog modal-dialog-centered' role='document'>
     <div class='modal-content'>
       <div class='modal-header'>
-        <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes da etiqueta do beneficiário</h5>
+        <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes da etiqueta do estabelecimento</h5>
         <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
       </div>
       <div class='modal-body'>
         <p class='mb-2 modal_register_date'>Data de Registro: <span class='text-primary'></span></p>
         <p class='mb-2 modal_description'>Categoria Beneficiária: <span class='text-primary'></span></p>
-        <p class='mb-2 modal_name'>Nome do Beneficiário: <span class='text-primary'></span></p>
+        <p class='mb-2 modal_name'>Nome do Estabelecimento: <span class='text-primary'></span></p>
       </div>
     </div>
   </div>
@@ -178,10 +179,10 @@
   <div class='modal-dialog modal-dialog-centered' role='document'>
     <div class='modal-content'>
       <div class='modal-header'>
-        <h5 class='modal-title'>Editar etiqueta de beneficiário</h5>
+        <h5 class='modal-title'>Editar etiqueta de estabelecimento</h5>
         <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
       </div>
-      <form class='needs-validation' action="{{ url_for('board.labels_beneficiaries_edit') }}" novalidate method='post'>
+      <form class='needs-validation' action="{{ url_for('board.establishment_edit') }}" novalidate method='post'>
         {{ csrf_token }}
         <input type='hidden' id='edit_beneficiary' name='edit_beneficiary'/>
         <div class='modal-body'>
@@ -207,8 +208,8 @@
                 <div class='mb-3'>
                   <label for='name' class='form-label'>Name</label>
                   <input type='text' class='form-control valid_entry_nd' id='name' name='name' 
-                    placeholder='Digite o nome do beneficiário (por exemplo, você mesmo)' maxlength='128' required>
-                  <div class='invalid-feedback'>Insira o nome do beneficiário</div>
+                    placeholder='Digite o nome do estabelecimento (por exemplo, você mesmo)' maxlength='128' required>
+                  <div class='invalid-feedback'>Insira o nome do estabelecimento</div>
                 </div>
               </div>
             </div>
@@ -228,16 +229,16 @@
   <div class='modal-dialog modal-dialog-centered' role='document'>
     <div class='modal-content'>
       <div class='modal-header'>
-        <h5 class='modal-title'>Remover etiqueta de beneficiário</h5>
+        <h5 class='modal-title'>Remover etiqueta de estabelecimento</h5>
         <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
       </div>
-      <form class='needs-validation' action="{{ url_for('board.labels_beneficiaries_delete') }}" novalidate method='post'>
+      <form class='needs-validation' action="{{ url_for('board.establishment_delete') }}" novalidate method='post'>
         {{ csrf_token }}
         <input type='hidden' id='del_beneficiary' name='del_beneficiary'/>
         <div class='modal-body'>
-          <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção da etiqueta do beneficiário?</p>
+          <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção da etiqueta do estabelecimento?</p>
           <p class='mb-2 modal_description'>Categoria Beneficiária: <span class='text-primary'></span></p>
-          <p class='mb-2 modal_name'>nome do beneficiário: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_name'>nome do estabelecimento: <span class='text-primary'></span></p>
         </div>
         <div class='modal-footer'>
           <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar</button>
