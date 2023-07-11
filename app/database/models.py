@@ -81,7 +81,7 @@ class Financial(db.Model):
     fin_bank_branch = db.Column(db.String(20), default=None)
     fin_bank_account = db.Column(db.String(20), default=None)
     fin_type = db.Column(db.SmallInteger, nullable=False)
-    fin_status = db.Column(db.Boolean, nullable=False)
+    fin_status = db.Column(db.Boolean, nullable=False, default=True)
     fin_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     fin_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     fin_date_deleted = db.Column(db.DateTime, nullable=True, default=None)

@@ -79,6 +79,32 @@ def financial():
     return financial_controller()
 
 
+@bp.route('/financial_form', methods=['GET', 'POST'])
+def financial_form():
+    return financial_form_controller()
+
+
+@bp.route('/financial_form_new', methods=['GET', 'POST'])
+def financial_form_new():
+    return financial_form_new_controller()
+
+
+
+@bp.route('/financial_details', methods=['GET', 'POST'])
+def financial_details():
+    return financial_details_controller()
+
+
+@bp.route('/financial_edit', methods=['GET', 'POST'])
+def financial_edit():
+    return financial_edit_controller()
+
+
+@bp.route('/financial_delete', methods=['GET', 'POST'])
+def financial_delete():
+    return financial_delete_controller()
+
+
 @bp.route('/index_new', methods=['GET', 'POST'])
 def index_new():
     return index_new_controller()
