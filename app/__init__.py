@@ -3,9 +3,8 @@ from app.config import Config
 from app.auth.routes import bp as auth_bp
 from app.board.routes import bp as board_bp
 from app.library.mail import mail
-from app.auth import models
-from app.board import models
-from app.db.database import init_db, db
+from app.database import models
+from app.database.database import init_db, db
 
 
 def create_app():
@@ -14,7 +13,7 @@ def create_app():
     # apply configs
     app.config.from_object(Config(app))
 
-    # drop and create db (if init-db command)
+    # drop and create database (if init-db command)
     init_db(app)
 
     # init app with sqlalchemy instance

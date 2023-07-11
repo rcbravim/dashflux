@@ -1,0 +1,293 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+<div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+        <div class='page-content'>
+            <div class='container-fluid'>
+                <!-- start page title -->
+                <div class='row'>
+                    <div class='col-12'>
+                        <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                            <h4 class='mb-sm-0 font-size-18'>Estabelecimentos</h4>
+                            <div class='page-title-right'>
+                                <ol class='breadcrumb m-0'>
+                                    <li class='breadcrumb-item'>Etiquetas</li>
+                                    <li class='breadcrumb-item active'>Estabelecimentos</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+                <div class='row'>
+                    <div class='col-12'>
+                        <div class='card'>
+                            <div class='card-body'>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <div class='text-sm-end'>
+                                            <a class='btn btn-primary waves-effect waves-light mb-3'
+                                               data-bs-toggle='modal'
+                                               data-bs-target='.addEstablishmentModal'>
+                                                <i class='mdi mdi-plus'></i> Adicionar Estabelecimento
+                                            </a>
+                                        </div>
+                                    </div><!-- end col-->
+                                </div>
+                                <hr class='mt-0 mb-3'>
+                                <form class='form-horizontal' action="{{ url_for('board.establishments') }}"
+                                      method='get'>
+                                    <div class='row mb-3 align-items-end'>
+
+                                        <div class='col-md mb-3'>
+                                            <label for='search'>Estabelecimento</label>
+                                            <input type='text' class='form-control match-select2' id='search'
+                                                   name='search'
+                                                   placeholder='Pesquise pelo nome do estabelecimento'
+                                                   value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
+                                        </div>
+                                        <div class='col-md-3 mb-3 align-self-end'>
+                                            <div class='d-grid'>
+                                                <button type='submit' class='btn btn-primary w-xs'>Pesquisar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                {% if success %}
+                                <div class='alert alert-success mb-4' role='alert'>{{ success }}</div>
+                                {% elif error %}
+                                <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                                {% endif %}
+                                {% if context.establishments %}
+                                <div class='table-responsive'>
+                                    <table class='table align-middle table-nowrap table-check'>
+                                        <thead class='table-light'>
+                                        <tr>
+                                            <th class='align-middle'>Nome</th>
+                                            <th class='align-middle'>Data de registro</th>
+                                            <th class='align-middle'></th>
+                                            <th class='align-middle'></th>
+                                            <th class='align-middle'></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for row in context.establishments %}
+                                        <tr>
+                                            <td>{{ row.est_name|upper }}</td>
+                                            <td>{{ row.est_date_created}}</td>
+                                            <td>{{ row.cat_description|upper }}</td>
+                                            <td>
+                                                <button type='button'
+                                                        class='btn btn-primary btn-sm btn-rounded beneficiary_details'
+                                                        data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
+                                                        data-value='{{ row.est_slug|md5 }}'>
+                                                    Ver Detalhes
+                                                </button>
+                                            </td>
+                                            <td>
+                                                <div class='d-flex gap-3'>
+                                                    <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
+                                                       data-value='{{ row.est_slug|md5 }}'
+                                                       class='text-success beneficiary_edit' style='cursor:pointer;'><i
+                                                            class='mdi mdi-pencil font-size-18'></i></a>
+                                                    <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
+                                                       data-value='{{ row.est_slug|md5 }}'
+                                                       class='text-danger beneficiary_del' style='cursor:pointer;'><i
+                                                            class='mdi mdi-delete font-size-18'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <form action="{{ url_for('board.establishments') }}" method='get'>
+                                    <input type='hidden' name='type' value='{{ context.filter.type }}'/>
+                                    <input type='hidden' name='search' value='{{ context.filter.search }}'/>
+                                    <ul class='pagination pagination-rounded justify-content-end mb-2'>
+                                        <li class='page-item {% if context.pages.pg == 1 %}disabled{% endif %}'>
+                                            <button class='page-link' type='submit' name='pg' value='1'
+                                                    aria-label='First'>
+                                                <i class='mdi mdi-chevron-double-left'></i>
+                                            </button>
+                                        </li>
+                                        {% for item in context.pages.pg_range %}
+                                        <li class='page-item {% if context.pages.pg == item %}active{% endif %}'>
+                                            <button class='page-link' type='submit' name='pg' value='{{ item }}'>{{ item
+                                                }}
+                                            </button>
+                                        </li>
+                                        {% endfor %}
+                                        <li class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
+                                            <button class='page-link' type='submit' name='pg'
+                                                    value='{{ context.pages.total_pg }}' aria-label='Last'>
+                                                <i class='mdi mdi-chevron-double-right'></i>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </form>
+                                <!-- end page footer -->
+                                {% else %}
+                                <div class='table-responsive'>
+                                    <div class='card-body'>Nenhum estabelecimento cadastrado.</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+</div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- addEstablishmentModal Modal -->
+<div class='modal fade addEstablishmentModal' id='addEstablishmentModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Adicionar Estabelecimento</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.establishments') }}" novalidate
+                  method='post'>
+                {{ csrf_token }}
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='row'>
+                            <div class='col-lg-12'>
+                                <div class='mb-3'>
+                                    <label for='description' class='form-label'>Nome</label>
+                                    <input type='text' class='form-control valid_entry' id='name'
+                                           name='name'
+                                           placeholder='Digite o nome do estabelecimento (por exemplo, você mesmo)'
+                                           required>
+                                    <div class='invalid-feedback'>Escolha um tipo de estabelecimento</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end addEstablishmentModal -->
+
+<!-- labelDetailsModal -->
+<div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel'
+     aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes da etiqueta do estabelecimento</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body'>
+                <p class='mb-2 modal_register_date'>Data de Registro: <span class='text-primary'></span></p>
+                <p class='mb-2 modal_description'>Categoria Beneficiária: <span class='text-primary'></span></p>
+                <p class='mb-2 modal_name'>Nome do Estabelecimento: <span class='text-primary'></span></p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end labelDetailsModal -->
+
+<!-- labelEditModal Modal -->
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar etiqueta de estabelecimento</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.establishment_edit') }}" novalidate method='post'>
+                {{ csrf_token }}
+                <input type='hidden' id='edit_beneficiary' name='edit_beneficiary'/>
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='row'>
+                            <div class='col-lg-12'>
+                                <div class='mb-2'>
+                                    <label for='description' class='form-label'>Tipo</label>
+                                    <input type='text' class='form-control checkbox_edit' id='description'
+                                           placeholder='Insira o nome do tipo (por exemplo, Provedor)'
+                                           name='description' maxlength='128' disabled>
+                                    <div class='invalid-feedback'>Insira o nome do tipo</div>
+                                </div>
+                                <div class='mb-3'>
+                                    <div class='form-check'>
+                                        <input class='form-check-input' type='checkbox' id='checkbox_edit'>
+                                        <label class='form-check-label' for='checkbox_edit'>Clique aqui se você quiser
+                                            editar o nome do tipo</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-lg-12'>
+                                <div class='mb-3'>
+                                    <label for='name' class='form-label'>Name</label>
+                                    <input type='text' class='form-control valid_entry_nd' id='name' name='name'
+                                           placeholder='Digite o nome do estabelecimento (por exemplo, você mesmo)'
+                                           maxlength='128' required>
+                                    <div class='invalid-feedback'>Insira o nome do estabelecimento</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='submit' class='btn btn-primary'>Editar etiqueta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelEditModal -->
+
+<!-- labelRemoveModal Modal -->
+<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Remover etiqueta de estabelecimento</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.establishment_delete') }}" novalidate
+                  method='post'>
+                {{ csrf_token }}
+                <input type='hidden' id='del_beneficiary' name='del_beneficiary'/>
+                <div class='modal-body'>
+                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção da etiqueta do
+                        estabelecimento?</p>
+                    <p class='mb-2 modal_description'>Categoria Beneficiária: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_name'>nome do estabelecimento: <span class='text-primary'></span></p>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover etiqueta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelRemoveModal -->

@@ -1,10 +1,11 @@
+import os
 import random
 import string
 from datetime import datetime
 from flask import request, session, render_template, redirect, url_for
 
-from app.auth.models import User
-from app.db.database import db
+from app.database.models import User
+from app.database.database import db
 from app.library.mail import send_email
 from app.library.validation import encode_jwt, decode_jwt
 
@@ -27,16 +28,17 @@ def verify_controller(max_attempts):
             code = ''.join(random.choices(string.digits, k=4))
             session['code'] = encode_jwt({'verification_code': code})
 
-            send_email(
-                email,
-                'Código de Verificação',
-                f"Segue o seu Código de Verificação: {code}"
-            )
+            if not os.getenv('DEBUG'):
+                send_email(
+                    email,
+                    'Código de Verificação',
+                    f"Segue o seu Código de Verificação: {code}"
+                )
 
             return render_template(
                 'auth/pages/verify.html',
                 attempts=max_attempts - session.get('attempt'),
-                email=email
+                email=email, success=code if os.getenv('DEBUG') else None
             )
 
     elif request.method == 'POST':

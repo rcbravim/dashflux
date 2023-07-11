@@ -21,7 +21,15 @@ class Config:
 
         # filters
         app.template_filter('md5')(md5_filter)
-        app.template_filter('slice3')(lambda x: x[:3])
+        app.template_filter('slice3')(slice3_filter)
+        app.template_filter('date_MdY')(date_MdY)
+        app.template_filter('date_month')(date_month)
+        app.template_filter('date_year')(date_year)
+        app.template_filter('date_day')(date_day)
+
+        # set env to debug dev mode
+        if app.config['DEBUG']:
+            os.environ['DEBUG'] = 'true'
 
         # SESSION_FILE_DIR = os.path.join(app.root_path, 'logs')  # todo: resolver
         # SERVER_NAME = "invo-flask.dev:5000"  # todo: entender
@@ -31,5 +39,21 @@ def md5_filter(value):
     return hashlib.md5(str(value).encode()).hexdigest()
 
 
-# def slice3_filter(value):
-#     return value[:3]
+def slice3_filter(value):
+    return value[:3]
+
+
+def date_MdY(date):
+    return date.strftime("%b %d, %Y")
+
+
+def date_month(date):
+    return date.month
+
+
+def date_year(date):
+    return date.year
+
+
+def date_day(date):
+    return date.day

@@ -1,6 +1,6 @@
 from flask import request, render_template, session, redirect, url_for, flash
 
-from app.auth.models import User
+from app.database.models import User
 
 
 def forgot_controller():
@@ -24,9 +24,9 @@ def forgot_controller():
 
     # if request.method == 'POST':
     #     use_login = request.form['email']
-    #     db = get_db()
+    #     database = get_db()
     #     error = None
-    #     user = db.execute(
+    #     user = database.execute(
     #         'SELECT * FROM board WHERE use_login = ?', use_login
     #     ).fetchone()
     #

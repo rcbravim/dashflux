@@ -337,18 +337,18 @@
             <div class='row'>
               <div class='col-lg-6'>
                 <div class='mb-3'>
-                  <label for='beneficiary' class='form-label'>Beneficiario<span class='text-danger'>*</span></label>
-                  <select class='form-select' id='beneficiary' name='beneficiary' required>
-                    {% if context.beneficiaries %}
-                      <option value='' selected disabled>Escolha o Beneficiario</option>
-                      {% for row in context.beneficiaries %}
-                        <option value='{{ row.ben_slug|md5 }}'>{{ row.cat_description|upper|slice3 }}-{{ row.ben_name }}</option>
+                  <label for='establishment' class='form-label'>Estabelecimento<span class='text-danger'>*</span></label>
+                  <select class='form-select' id='establishment' name='establishment' required>
+                    {% if context.establishments %}
+                      <option value='' selected disabled>Escolha o Estabelecimento</option>
+                      {% for row in context.establishments %}
+                        <option value='{{ row.ben_slug|md5 }}'>{{ row.cat_description|upper|slice3 }}-{{ row.est_name }}</option>
                       {% endfor %}
                     {% else %}
-                      <option value='' selected disabled>Registre um beneficiário antes de continuar</option>
+                      <option value='' selected disabled>Registre um estabelecimento antes de continuar</option>
                     {% endif %}
                   </select>
-                  <div class='invalid-feedback'>Selecione um beneficiário, mesmo que seja você mesmo</div>
+                  <div class='invalid-feedback'>Selecione um estabelecimento, mesmo que seja você mesmo</div>
                 </div>
               </div>
               <div class='col-lg-6'>
@@ -452,10 +452,10 @@
           <span class='modal_category_type badge badge-pill font-size-12 mb-2'></span>
         </div>
         <p class='mb-4 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
-        <h6>Beneficiário da entrada</h6>
+        <h6>Estabelecimento da entrada</h6>
         <hr class='m-0 mb-3'>
-        <p class='mb-2 modal_beneficiary_category'>Categoria do Beneficiário: <span class='text-primary'></span></p>
-        <p class='mb-4 modal_beneficiary_name'>Nome do Beneficiário: <span class='text-primary'></span></p>
+        <p class='mb-2 modal_establishment_category'>Categoria do Estabelecimento: <span class='text-primary'></span></p>
+        <p class='mb-4 modal_establishment_name'>Nome do Estabelecimento: <span class='text-primary'></span></p>
         <h6>Informação Financeira</h6>
         <hr class='m-0 mb-3'>
         <div class='d-none bank_account_modal'>
@@ -558,18 +558,18 @@
             <div class='row'>
               <div class='col-lg-6'>
                 <div class='mb-3'>
-                  <label for='beneficiary_edit' class='form-label'>Beneficiario<span class='text-danger'>*</span></label>
-                  <select class='form-select beneficiary_modal' id='beneficiary_edit' name='beneficiary_edit' required>
-                    {% if context.beneficiaries %}
-                      <option value='' selected disabled>Selecione o beneficiario</option>
-                      {% for row in context.beneficiaries %}
+                  <label for='establishment_edit' class='form-label'>Estabelecimento<span class='text-danger'>*</span></label>
+                  <select class='form-select establishment_modal' id='establishment_edit' name='establishment_edit' required>
+                    {% if context.establishments %}
+                      <option value='' selected disabled>Selecione o Estabelecimento</option>
+                      {% for row in context.establishments %}
 
                       {% endfor %}
                     {% else %}
-                      <option value='' selected disabled>Please register one beneficiary before continue</option>
+                      <option value='' selected disabled>Please register one establishment before continue</option>
                     {% endif %}
                   </select>
-                  <div class='invalid-feedback'>Selecione um beneficiário, mesmo que seja você mesmo</div>
+                  <div class='invalid-feedback'>Selecione um estabelecimento, mesmo que seja você mesmo</div>
                 </div>
               </div>
               <div class='col-lg-6'>
@@ -677,10 +677,10 @@
             <span class='modal_category_type badge badge-pill font-size-12 mb-2'></span>
           </div>
           <p class='mb-4 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
-          <h6>Beneficiário da entrada</h6>
+          <h6>Estabelecimento da entrada</h6>
           <hr class='m-0 mb-3'>
-          <p class='mb-2 modal_beneficiary_category'>Categoria Beneficiária: <span class='text-primary'></span></p>
-          <p class='mb-4 modal_beneficiary_name'>Nome do Beneficiário: <span class='text-primary'></span></p>
+          <p class='mb-2 modal_establishment_category'>Categoria Beneficiária: <span class='text-primary'></span></p>
+          <p class='mb-4 modal_establishment_name'>Nome do Estabelecimento: <span class='text-primary'></span></p>
           <h6>Informação Financeira</h6>
           <hr class='m-0 mb-3'>
           <div class='d-none bank_account_modal'>

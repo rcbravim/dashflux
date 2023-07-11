@@ -3,8 +3,8 @@ from datetime import datetime
 from flask import request, render_template, session
 from werkzeug.security import check_password_hash, generate_password_hash
 
-from app.auth.models import UserLog, User
-from app.db.database import db
+from app.database.models import UserLog, User
+from app.database.database import db
 
 
 def profile_controller():

@@ -19,24 +19,90 @@ def logout():
     return logout_controller()
 
 
-@bp.route('/labels_beneficiaries', methods=['GET', 'POST'])
-def labels_beneficiaries():
-    return labels_beneficiaries_controller()
+@bp.route('/establishments', methods=['GET', 'POST'])
+def establishments():
+    return establishments_controller()
 
 
-@bp.route('/labels_categories', methods=['GET', 'POST'])
-def labels_categories():
-    return labels_categories_controller()
+@bp.route('/establishment_form', methods=['GET', 'POST'])
+def establishment_form():
+    return establishment_form_controller()
+
+
+@bp.route('/establishment_edit', methods=['GET', 'POST'])
+def establishment_edit():
+    return establishment_edit_controller()
+
+
+@bp.route('/establishment_delete', methods=['GET', 'POST'])
+def establishment_delete():
+    return establishment_delete_controller()
+
+
+@bp.route('/establishment_form_add', methods=['GET', 'POST'])
+def establishment_form_add():
+    return establishment_form_add_controller()
+
+
+@bp.route('/establishment_form_delete_type', methods=['GET', 'POST'])
+def establishment_form_delete_type():
+    return establishment_form_delete_type_controller()
+
+
+@bp.route('/categories', methods=['GET', 'POST'])
+def categories():
+    return categories_controller()
+
+
+@bp.route('/category_form', methods=['GET', 'POST'])
+def category_form():
+    return category_form_controller()
+
+
+@bp.route('/category_edit', methods=['GET', 'POST'])
+def category_edit():
+    return category_edit_controller()
+
+
+@bp.route('/category_delete', methods=['GET', 'POST'])
+def category_delete():
+    return category_delete_controller()
 
 
 @bp.route('/labels_clients', methods=['GET', 'POST'])
-def labels_clients():
-    return labels_clients_controller()
+def clients():
+    return clients_controller()
 
 
-@bp.route('/labels_financial', methods=['GET', 'POST'])
-def labels_financial():
-    return labels_financial_controller()
+@bp.route('/financial', methods=['GET', 'POST'])
+def financial():
+    return financial_controller()
+
+
+@bp.route('/financial_form', methods=['GET', 'POST'])
+def financial_form():
+    return financial_form_controller()
+
+
+@bp.route('/financial_form_new', methods=['GET', 'POST'])
+def financial_form_new():
+    return financial_form_new_controller()
+
+
+
+@bp.route('/financial_details', methods=['GET', 'POST'])
+def financial_details():
+    return financial_details_controller()
+
+
+@bp.route('/financial_edit', methods=['GET', 'POST'])
+def financial_edit():
+    return financial_edit_controller()
+
+
+@bp.route('/financial_delete', methods=['GET', 'POST'])
+def financial_delete():
+    return financial_delete_controller()
 
 
 @bp.route('/index_new', methods=['GET', 'POST'])
