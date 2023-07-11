@@ -6,9 +6,8 @@ import os
 from flask import request, render_template, session
 from sqlalchemy import func, and_, or_
 
-from app.board.models import BoardRelease, BoardCategory, BoardSubcategory, BoardAnalytic, BoardBeneficiary, \
-    BoardBeneficiaryCategory, BoardFinancial
-from app.db.database import db
+from app.database.models import Release, Category, Analytic, Establishment, Financial
+from app.database.database import db
 from app.library.helper import paginator
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
@@ -24,55 +23,50 @@ def index_controller():
         month_pg = time_now.strftime('%b-%Y')
         session_id = session.get('user_id')
 
-        board_release = BoardRelease
-        board_category = BoardCategory
-        board_subcategory = BoardSubcategory
-        board_analytic = BoardAnalytic
-        board_beneficiary = BoardBeneficiary
-        board_beneficiary_category = BoardBeneficiaryCategory
-        board_financial = BoardFinancial
+        release = Release
+        category = Category
+        analytic = Analytic
+        establishment = Establishment
+        financial = Financial
 
         entries_all = db.session.query(
-            board_release.rel_entry_date,
-            board_release.rel_slug,
-            board_category.cat_name,
-            board_category.cat_type,
-            board_subcategory.sub_name,
-            board_release.rel_gen_status,
-            board_release.rel_amount,
-            board_release.rel_monthly_balance,
-            board_release.rel_overall_balance
+            release.rel_entry_date,
+            release.rel_slug,
+            category.cat_name,
+            category.cat_type,
+            release.rel_gen_status,
+            release.rel_amount,
+            release.rel_monthly_balance,
+            release.rel_overall_balance
         ).join(
-            board_subcategory, board_release.subcategory_id == board_subcategory.id
-        ).join(
-            board_category, board_subcategory.category_id == board_category.id
+            category, release.category_id == category.id
         ).filter(
-            board_release.rel_status is True,
-            board_release.user_id == session_id,
-            func.strftime('%m', board_release.rel_entry_date) == time_now.strftime('%m'),
-            func.strftime('%Y', board_release.rel_entry_date) == time_now.strftime('%Y')
+            release.rel_status is True,
+            release.user_id == session_id,
+            func.strftime('%m', release.rel_entry_date) == time_now.strftime('%m'),
+            func.strftime('%Y', release.rel_entry_date) == time_now.strftime('%Y')
         ).order_by(
-            board_release.rel_sqn.desc()
+            release.rel_sqn.desc()
         ).all()
 
-        json_analytic = db.session.query(board_analytic.ana_json).filter(
-            board_analytic.user_id == session_id,
-            func.strftime('%m', board_analytic.ana_cycle) == time_now.strftime('%m'),
-            board_analytic.ana_status is True
+        json_analytic = db.session.query(analytic.ana_json).filter(
+            analytic.user_id == session_id,
+            func.strftime('%m', analytic.ana_cycle) == time_now.strftime('%m'),
+            analytic.ana_status is True
         ).order_by(
-            board_analytic.ana_date_updated.desc()
+            analytic.ana_date_updated.desc()
         ).first()
         past = False
 
         if not json_analytic:
-            json_analytic = db.session.query(board_analytic.ana_json).filter(
+            json_analytic = db.session.query(analytic.ana_json).filter(
                 and_(
-                    board_analytic.ana_cycle < month_now,
-                    board_analytic.ana_status is True,
-                    board_analytic.user_id == session_id
+                    analytic.ana_cycle < month_now,
+                    analytic.ana_status is True,
+                    analytic.user_id == session_id
                 )
             ).order_by(
-                board_analytic.ana_cycle.desc()
+                analytic.ana_cycle.desc()
             ).first()
             past = True
 
@@ -85,66 +79,48 @@ def index_controller():
         # Set page range
         pg_range = paginator(pg, total_pages)
 
-        categories = db.session.query(board_category.cat_slug, board_category.cat_name).filter(
-            board_category.cat_status is True,
-            board_category.user_id == session_id
+        categories = db.session.query(category.cat_slug, category.cat_name).filter(
+            category.cat_status is True,
+            category.user_id == session_id
         ).order_by(
-            board_category.cat_name.asc()
+            category.cat_name.asc()
         ).all()
 
-        beneficiaries = db.session.query(
-            board_beneficiary.ben_slug,
-            board_beneficiary.ben_name,
-            board_beneficiary_category.cat_description
-        ).join(
-            board_beneficiary_category,
-            board_beneficiary.beneficiary_category_id == board_beneficiary_category.id
+        establishments = db.session.query(
+            establishment.est_name
         ).filter(
-            board_beneficiary.ben_status is True,
-            board_beneficiary.user_id == session_id
+            establishment.est_status is True,
+            establishment.user_id == session_id
         ).order_by(
-            board_beneficiary_category.cat_description.asc(),
-            board_beneficiary.ben_name.asc()
+            establishment.est_name.asc()
         ).all()
 
-        # clients = db.session.query(board_client.cli_slug, board_client.cli_name).filter(
-        #     board_client.cli_status == True,
-        #     board_client.user_id == session_id
-        # ).order_by(
-        #     board_client.cli_name.asc()
-        # ).all()
-
-        clients = []
+        clients = []  # todo remover
 
         accounts = db.session.query(
-            board_financial.fin_slug,
-            board_financial.fin_bank_name,
-            board_financial.fin_bank_branch,
-            board_financial.fin_bank_account
+            financial.fin_slug,
+            financial.fin_bank_name,
+            financial.fin_bank_branch,
+            financial.fin_bank_account
         ).filter(
             or_(
-                board_financial.user_id == session_id,
-                board_financial.user_id.is_(None)
+                financial.user_id == session_id,
+                financial.user_id.is_(None)
             ),
-            board_financial.fin_status is True
+            financial.fin_status is True
         ).order_by(
-            board_financial.user_id.asc(),
-            board_financial.fin_bank_name.asc()
+            financial.user_id.asc(),
+            financial.fin_bank_name.asc()
         ).all()
 
-        # cost_centers = db.execute(
-        #     'SELECT fin_slug, fin_cost_center FROM board_financial WHERE (fin_bank_name IS "''" AND fin_status = True '
-        #     'AND user_id = ?) ORDER BY fin_cost_center ASC', (session_id,)
-        # ).fetchall()
-        cost_centers = None
-
+        cost_centers = None  # todo emover
         if not cost_centers:
             cost_centers = ""
 
         context = {
             'entries': entries,
             'categories': categories,
-            'beneficiaries': beneficiaries,
+            'establishments': establishments,
             'clients': clients,
             'cost_centers': cost_centers,
             'accounts': accounts,

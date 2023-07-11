@@ -340,9 +340,9 @@
                 <div class='mb-3'>
                   <label for='beneficiary' class='form-label'>Beneficiary<span class='text-danger'>*</span></label>
                   <select class='form-select' id='beneficiary' name='beneficiary' required>
-                    {% if beneficiaries %}
+                    {% if establishments %}
                       <option value='' selected disabled>Choose beneficiary</option>
-                      {% for row in beneficiaries %}
+                      {% for row in establishments %}
                         <option value='{{ row.ben_slug|md5 }}'>{{ row.beneficiary_category__cat_description|slice:':3'|upper }}-{{ row.ben_name }}</option>
                       {% endfor %}
                     {% else %}
@@ -561,9 +561,9 @@
                 <div class='mb-3'>
                   <label for='beneficiary_edit' class='form-label'>Beneficiary<span class='text-danger'>*</span></label>
                   <select class='form-select beneficiary_modal' id='beneficiary_edit' name='beneficiary_edit' required>
-                    {% if beneficiaries %}
+                    {% if establishments %}
                       <option value='' selected disabled>Choose beneficiary</option>
-                      {% for row in beneficiaries %}
+                      {% for row in establishments %}
                         <option value='{{ row.ben_slug|md5 }}'>{{ row.beneficiary_category__cat_description|slice:':3'|upper }}-{{ row.ben_name }}</option>
                       {% endfor %}
                     {% else %}

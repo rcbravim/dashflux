@@ -23,6 +23,10 @@ class Config:
         app.template_filter('md5')(md5_filter)
         app.template_filter('slice3')(lambda x: x[:3])
 
+        # set env to debug dev mode
+        if app.config['DEBUG']:
+            os.environ['DEBUG'] = 'true'
+
         # SESSION_FILE_DIR = os.path.join(app.root_path, 'logs')  # todo: resolver
         # SERVER_NAME = "invo-flask.dev:5000"  # todo: entender
 

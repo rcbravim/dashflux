@@ -1,7 +1,7 @@
 from flask import redirect, url_for, request, render_template, session
 from werkzeug.security import check_password_hash
 
-from app.auth.models import User
+from app.database.models import User
 
 
 def login_controller():

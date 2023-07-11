@@ -339,10 +339,10 @@
                 <div class='mb-3'>
                   <label for='establishment' class='form-label'>Estabelecimento<span class='text-danger'>*</span></label>
                   <select class='form-select' id='establishment' name='establishment' required>
-                    {% if context.beneficiaries %}
+                    {% if context.establishments %}
                       <option value='' selected disabled>Escolha o Estabelecimento</option>
-                      {% for row in context.beneficiaries %}
-                        <option value='{{ row.ben_slug|md5 }}'>{{ row.cat_description|upper|slice3 }}-{{ row.ben_name }}</option>
+                      {% for row in context.establishments %}
+                        <option value='{{ row.ben_slug|md5 }}'>{{ row.cat_description|upper|slice3 }}-{{ row.est_name }}</option>
                       {% endfor %}
                     {% else %}
                       <option value='' selected disabled>Registre um estabelecimento antes de continuar</option>
@@ -560,9 +560,9 @@
                 <div class='mb-3'>
                   <label for='establishment_edit' class='form-label'>Estabelecimento<span class='text-danger'>*</span></label>
                   <select class='form-select establishment_modal' id='establishment_edit' name='establishment_edit' required>
-                    {% if context.beneficiaries %}
+                    {% if context.establishments %}
                       <option value='' selected disabled>Selecione o Estabelecimento</option>
-                      {% for row in context.beneficiaries %}
+                      {% for row in context.establishments %}
 
                       {% endfor %}
                     {% else %}

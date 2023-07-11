@@ -39,6 +39,16 @@ def establishment_delete():
     return establishment_delete_controller()
 
 
+@bp.route('/establishment_form_add', methods=['GET', 'POST'])
+def establishment_form_add():
+    return establishment_form_add_controller()
+
+
+@bp.route('/establishment_form_delete_type', methods=['GET', 'POST'])
+def establishment_form_delete_type():
+    return establishment_form_delete_type_controller()
+
+
 @bp.route('/categories', methods=['GET', 'POST'])
 def categories():
     return categories_controller()

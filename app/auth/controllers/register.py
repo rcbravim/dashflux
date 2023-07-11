@@ -1,8 +1,8 @@
 from flask import request, render_template, session, redirect, url_for, flash
 from werkzeug.security import generate_password_hash
 
-from app.auth.models import User
-from app.db.database import db
+from app.database.models import User
+from app.database.database import db
 
 
 def register_controller():
