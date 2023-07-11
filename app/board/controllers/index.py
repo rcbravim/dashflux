@@ -79,7 +79,7 @@ def index_controller():
         # Set page range
         pg_range = paginator(pg, total_pages)
 
-        categories = db.session.query(category.cat_slug, category.cat_name).filter(
+        categories = db.session.query(category.cat_name).filter(
             category.cat_status is True,
             category.user_id == session_id
         ).order_by(

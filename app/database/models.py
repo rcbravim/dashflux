@@ -60,8 +60,8 @@ class Analytic(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
-    cat_slug = db.Column(db.String(250), unique=True, nullable=False)
-    cat_status = db.Column(db.Boolean, nullable=False)
+    # cat_slug = db.Column(db.String(250), unique=True, nullable=False)
+    cat_status = db.Column(db.Boolean, nullable=False, default=True)
     cat_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_deleted = db.Column(db.DateTime, nullable=True, default=None)

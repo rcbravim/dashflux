@@ -54,6 +54,21 @@ def categories():
     return categories_controller()
 
 
+@bp.route('/category_form', methods=['GET', 'POST'])
+def category_form():
+    return category_form_controller()
+
+
+@bp.route('/category_edit', methods=['GET', 'POST'])
+def category_edit():
+    return category_edit_controller()
+
+
+@bp.route('/category_delete', methods=['GET', 'POST'])
+def category_delete():
+    return category_delete_controller()
+
+
 @bp.route('/labels_clients', methods=['GET', 'POST'])
 def clients():
     return clients_controller()
