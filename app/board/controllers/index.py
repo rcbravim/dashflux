@@ -6,7 +6,7 @@ import os
 from flask import request, render_template, session
 from sqlalchemy import func, and_, or_
 
-from app.database.models import Release, Category, Analytic, Establishment, Financial
+from app.database.models import Release, Category, Establishment, Account, Transaction
 from app.database.database import db
 from app.library.helper import paginator
 
@@ -25,9 +25,9 @@ def index_controller():
 
         release = Release
         category = Category
-        analytic = Analytic
+        transaction = Transaction
         establishment = Establishment
-        financial = Financial
+        account = Account
 
         entries_all = db.session.query(
             release.rel_entry_date,
@@ -41,7 +41,7 @@ def index_controller():
         ).join(
             category, release.category_id == category.id
         ).filter(
-            release.rel_status is True,
+            release.rel_status == True,
             release.user_id == session_id,
             func.strftime('%m', release.rel_entry_date) == time_now.strftime('%m'),
             func.strftime('%Y', release.rel_entry_date) == time_now.strftime('%Y')
@@ -49,26 +49,8 @@ def index_controller():
             release.rel_sqn.desc()
         ).all()
 
-        json_analytic = db.session.query(analytic.ana_json).filter(
-            analytic.user_id == session_id,
-            func.strftime('%m', analytic.ana_cycle) == time_now.strftime('%m'),
-            analytic.ana_status is True
-        ).order_by(
-            analytic.ana_date_updated.desc()
-        ).first()
+        json_analytic = []
         past = False
-
-        if not json_analytic:
-            json_analytic = db.session.query(analytic.ana_json).filter(
-                and_(
-                    analytic.ana_cycle < month_now,
-                    analytic.ana_status is True,
-                    analytic.user_id == session_id
-                )
-            ).order_by(
-                analytic.ana_cycle.desc()
-            ).first()
-            past = True
 
         # Separate rows for exposure
         entries = entries_all[pg_offset:(pg_offset + PG_LIMIT)]
@@ -80,7 +62,7 @@ def index_controller():
         pg_range = paginator(pg, total_pages)
 
         categories = db.session.query(category.cat_name).filter(
-            category.cat_status is True,
+            category.cat_status == True,
             category.user_id == session_id
         ).order_by(
             category.cat_name.asc()
@@ -89,7 +71,7 @@ def index_controller():
         establishments = db.session.query(
             establishment.est_name
         ).filter(
-            establishment.est_status is True,
+            establishment.est_status == True,
             establishment.user_id == session_id
         ).order_by(
             establishment.est_name.asc()
@@ -97,20 +79,20 @@ def index_controller():
 
         clients = []  # todo remover
 
-        accounts = db.session.query(
-            financial.fin_slug,
-            financial.fin_bank_name,
-            financial.fin_bank_branch,
-            financial.fin_bank_account
+        account = db.session.query(
+            account.acc_slug,
+            account.acc_bank_name,
+            account.acc_bank_branch,
+            account.acc_bank_account
         ).filter(
             or_(
-                financial.user_id == session_id,
-                financial.user_id.is_(None)
+                account.user_id == session_id,
+                account.user_id.is_(None)
             ),
-            financial.fin_status is True
+            account.acc_status == True
         ).order_by(
-            financial.user_id.asc(),
-            financial.fin_bank_name.asc()
+            account.user_id.asc(),
+            account.acc_bank_name.asc()
         ).all()
 
         cost_centers = None  # todo emover
@@ -123,7 +105,7 @@ def index_controller():
             'establishments': establishments,
             'clients': clients,
             'cost_centers': cost_centers,
-            'accounts': accounts,
+            'account': account,
             'analytic': json.loads(json_analytic[0].replace("'", '"')) if json_analytic else None,
             'past': past,
             'mes_pag': month_pg,
@@ -141,3 +123,32 @@ def index_controller():
         }
 
         return render_template('board/pages/index.html', context=context, success=success)
+
+    elif request.method == 'POST':
+        user_id = session.get('user_id')
+        acc_type = request.form.get('type')
+
+        # bank account
+        bank = request.form.get('bank')
+        branch = request.form.get('branch')
+        account = request.form.get('account')
+
+        # cost center
+        cost_center = request.form.get('cost_center')
+        description = request.form.get('description')
+
+        slug = f'{acc_type}{bank}{branch}{account}' if acc_type == 'BA' else f'{acc_type}{cost_center}{description}'
+
+        new_account = Account(
+            acc_slug=slug,
+            acc_cost_center=cost_center,
+            acc_description=description,
+            acc_bank_name=bank,
+            acc_bank_branch=branch,
+            acc_bank_account=account,
+            acc_type=acc_type,
+            user_id=user_id
+        )
+        db.session.add(new_account)
+        db.session.commit()
+        return redirect(url_for('board.account'))

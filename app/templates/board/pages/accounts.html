@@ -13,11 +13,11 @@
                 <div class='row'>
                     <div class='col-12'>
                         <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
-                            <h4 class='mb-sm-0 font-size-18'>Financeiro</h4>
+                            <h4 class='mb-sm-0 font-size-18'>CONTAS</h4>
                             <div class='page-title-right'>
                                 <ol class='breadcrumb m-0'>
                                     <li class='breadcrumb-item'>Etiquetas</li>
-                                    <li class='breadcrumb-item active'>Financeiro</li>
+                                    <li class='breadcrumb-item active'>Contas</li>
                                 </ol>
                             </div>
                         </div>
@@ -34,14 +34,14 @@
                                         <div class='text-sm-end'>
                                             <a class='btn btn-primary waves-effect waves-light mb-3'
                                                data-bs-toggle='modal'
-                                               data-bs-target='.addFinancialModal'>
-                                                <i class='mdi mdi-plus'></i>Adicionar financeiro
+                                               data-bs-target='.addAccountModal'>
+                                                <i class='mdi mdi-plus'></i>Adicionar Conta
                                             </a>
                                         </div>
                                     </div><!-- end col-->
                                 </div>
                                 <hr class='mt-0 mb-3'>
-                                <form class='form-horizontal' action="{{ url_for('board.financial') }}" method='get'>
+                                <form class='form-horizontal' action="{{ url_for('board.accounts') }}" method='get'>
                                     <div class='row mb-3 align-items-end'>
                                         <div class='col-sm-4'>
                                             <div class='mb-3'>
@@ -52,7 +52,8 @@
                                                     <option value='2' {% if context.filter.type==
                                                     '2' %}selected{% endif %}>Conta bancária</option>
                                                     <option value='1' {% if context.filter.type==
-                                                    '1' %}selected{% endif %}>Centro de custo</option>
+                                                    '1' %}selected{% endif %}>Outros tipos (carteira, cofre,
+                                                    etc)</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -79,14 +80,15 @@
                                 {% elif error %}
                                 <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
                                 {% endif %}
-                                {% if context.financial %}
+                                {% if context.accounts %}
                                 <div class='table-responsive'>
 
-                                    <label for='type'>Bancos</label>
+                                    <!--                                    <label for='type'>Contas Bancárias</label>-->
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
                                             <th class='align-middle'>Data de registro</th>
+                                            <th class='align-middle'>Nome da conta</th>
                                             <th class='align-middle'>Instituição</th>
                                             <th class='align-middle'>Agencia / Conta</th>
                                             <th class='align-middle'>Tipo</th>
@@ -95,90 +97,76 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for row in context.financial.banks %}
+                                        {% for row in context.accounts.bank_accounts %}
                                         <tr>
-                                            <td>{{ row.fin_date_created }}</td>
-                                            <td>
-                                                {{ row.fin_bank_name|upper }}
+                                            <td>{{ row.acc_date_created }}</td>
+                                            <td>{{ row.acc_name|upper }}</td>
+                                            <td>{{ row.acc_bank_name|upper }}</td>
+                                            <td>{{ row.acc_bank_branch }} / {{ row.acc_bank_account }}</td>
+                                            <td><span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span>
                                             </td>
-                                            <td>
-                                                {{ row.fin_bank_branch }} / {{ row.fin_bank_account }}
-                                            </td>
-                                            <td>
-                                                <span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span>
                                             <td>
                                                 <!-- Button trigger modal -->
                                                 <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded financial_details'
+                                                        class='btn btn-primary btn-sm btn-rounded accounts_details'
                                                         data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
-                                                        data-value='{{ row.fin_slug|md5 }}'>
+                                                        data-value='{{ row.acc_slug|md5 }}'>
                                                     Ver detalhes
                                                 </button>
                                             </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
-                                                       data-value='{{ row.fin_slug|md5 }}'
-                                                       class='text-success financial_edit' style='cursor:pointer;'><i
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-success accounts_edit' style='cursor:pointer;'><i
                                                             class='mdi mdi-pencil font-size-18'></i></a>
                                                     <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
-                                                       data-value='{{ row.fin_slug|md5 }}'
-                                                       class='text-danger financial_del' style='cursor:pointer;'><i
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-danger accounts_del' style='cursor:pointer;'><i
                                                             class='mdi mdi-delete font-size-18'></i></a>
                                                 </div>
                                             </td>
                                         </tr>
                                         {% endfor %}
-                                        </tbody>
-                                    </table>
 
-                                    <label for='type'>Centros de Custos</label>
-                                    <table class='table align-middle table-nowrap table-check'>
-                                        <thead class='table-light'>
+                                        {% for row in context.accounts.not_bank_accounts %}
                                         <tr>
-                                            <th class='align-middle'>Data de registro</th>
-                                            <th class='align-middle'>Centro de Custo</th>
-                                            <th class='align-middle'>Descrição</th>
-                                            <th class='align-middle'>Tipo</th>
-                                            <th class='align-middle'></th>
-                                            <th class='align-middle'></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for row in context.financial.cost_centers %}
-                                        <tr>
-                                            <td>{{ row.fin_date_created }}</td>
-                                            <td>{{ row.fin_cost_center|upper }}</td>
-                                            <td>{{ row.fin_description|upper }}</td>
+                                            <td>{{ row.acc_date_created }}</td>
+                                            <td>{{ row.acc_name|upper }}</td>
+                                            <td>{{ row.acc_description|upper }}</td>
+                                            <td></td>
                                             <td>
-                                                <span class='badge badge-pill badge-soft-primary font-size-12'>Centro de custo</span>
+                                                <span class='badge badge-pill badge-soft-primary font-size-12'>Outro
+                                                    tipo
+                                                </span>
                                             <td>
                                                 <!-- Button trigger modal -->
                                                 <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded financial_details'
+                                                        class='btn btn-primary btn-sm btn-rounded accounts_details'
                                                         data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
-                                                        data-value='{{ row.fin_slug|md5 }}'>
+                                                        data-value='{{ row.acc_slug|md5 }}'>
                                                     Ver detalhes
                                                 </button>
                                             </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
-                                                       data-value='{{ row.fin_slug|md5 }}'
-                                                       class='text-success financial_edit' style='cursor:pointer;'><i
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-success accounts_edit' style='cursor:pointer;'><i
                                                             class='mdi mdi-pencil font-size-18'></i></a>
                                                     <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
-                                                       data-value='{{ row.fin_slug|md5 }}'
-                                                       class='text-danger financial_del' style='cursor:pointer;'><i
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-danger accounts_del' style='cursor:pointer;'><i
                                                             class='mdi mdi-delete font-size-18'></i></a>
                                                 </div>
                                             </td>
                                         </tr>
                                         {% endfor %}
+
                                         </tbody>
                                     </table>
                                 </div>
-                                <form action="{{ url_for('board.financial') }}" method='get'>
+                                <form action="{{ url_for('board.accounts') }}" method='get'>
                                     <input type='hidden' name='type' value='{{ context.filter.type }}'/>
                                     <input type='hidden' name='search' value='{{ context.filter.search }}'/>
                                     <ul class='pagination pagination-rounded justify-content-end mb-2'>
@@ -224,16 +212,14 @@
 
 {% include 'board/partials/footer.html' %}
 
-<!-- addFinancialModal Modal -->
-<div class='modal fade addFinancialModal' id='addFinancialModal' tabindex='-1' role='dialog' aria-hidden='true'>
+<!-- addAccountModal Modal -->
+<div class='modal fade addAccountModal' id='addAccountModal' tabindex='-1' role='dialog' aria-hidden='true'>
     <div class='modal-dialog modal-dialog-centered' role='document'>
         <div class='modal-content'>
             <div class='modal-header'>
                 <h5 class='modal-title'>Adicionar Financeiro</h5>
                 <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
-            <!--            <form class='needs-validation' action="{{ url_for('board.financial') }}" novalidate-->
-            <!--                  method='post'>-->
             <div class='modal-body'>
                 <div class='content mt-1'>
                     <div class='row'>
@@ -241,26 +227,25 @@
                             <div class='mb-3'>
                                 <label class='control-label'>Tipo de Financeiro</label>
                                 <select class='form-control select2-search-disable' id='financial_label_choise'>
-                                    <option selected disabled>Selecione o tipo de organização</option>
-                                    <option value='BA'>Conta bancária</option>
-                                    <option value='CC'>Centro de custo</option>
+                                    <option selected disabled>Selecione o tipo de conta</option>
+                                    <option value='BA'>Conta Bancária</option>
+                                    <option value='CC'>Outro Tipo de Conta</option>
                                 </select>
                             </div>
                             <div class='card d-none' id='cost_center_label'>
-                                <form class='needs-validation' action="{{ url_for('board.financial') }}" novalidate
+                                <form class='needs-validation' action="{{ url_for('board.accounts') }}" novalidate
                                       method='post'>
                                     {{ csrf_token }}
-                                    <input type='hidden' name='type' value='CC'>
+                                    <input type='hidden' name='is_bank' value='false'>
                                     <div class='row'>
                                         <div class='col-md-4'>
                                             <div class='mb-3'>
-                                                <label for='cost_center' class='form-label'>Nome<span
+                                                <label for='name' class='form-label'>Nome<span
                                                         class='text-danger'>*</span></label>
                                                 <input type='text' class='form-control valid_entry'
-                                                       id='cost_center' name='cost_center'
+                                                       id='name' name='name'
                                                        placeholder='Digite o nome do centro de custo' required>
-                                                <div class='invalid-feedback'>Forneça um nome de centro de
-                                                    custo
+                                                <div class='invalid-feedback'>Forneça um nome para a conta
                                                 </div>
                                             </div>
                                         </div>
@@ -269,7 +254,7 @@
                                                 <label for='description' class='form-label'>Descrição</label>
                                                 <input type='text' class='form-control valid_opt_entry'
                                                        id='description' name='description'
-                                                       placeholder='Insira a descrição do centro de custo, se aplicável'>
+                                                       placeholder='Insira a descrição da conta, se aplicável'>
                                                 <div class='invalid-feedback'></div>
                                             </div>
                                         </div>
@@ -285,52 +270,66 @@
                                 </form>
                             </div>
                             <div class='card d-none' id='account_label'>
-                                <form class='needs-validation' action="{{ url_for('board.financial') }}" novalidate
+                                <form class='needs-validation' action="{{ url_for('board.accounts') }}" novalidate
                                       method='post'>
                                     {{ csrf_token }}
-                                    <input type='hidden' name='type' value='BA'>
+                                    <input type='hidden' name='is_bank' value='true'>
                                     <div class='row'>
-                                        <div class='col-md'>
-                                            <div class='mb-3'>
-                                                <label for='bank' class='form-label'>Instituição<span
-                                                        class='text-danger'>*</span></label>
-                                                <input type='text' class='form-control valid_entry_nd' id='bank'
-                                                       name='bank'
-                                                       placeholder='Insira o nome do banco' required>
-                                                <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='name' class='form-label'>Nome (Apelido)<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control valid_entry_nd' id='name'
+                                                           name='name'
+                                                           placeholder='Insira o nome da conta ou apelido' required>
+                                                    <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class='col-md'>
-                                            <div class='mb-3'>
-                                                <label for='branch' class='form-label'>Agência<span
-                                                        class='text-danger'>*</span></label>
-                                                <input type='text' class='form-control mask_number' id='branch'
-                                                       name='branch'
-                                                       placeholder='Digite o número da agência bancária'
-                                                       required>
-                                                <div class='invalid-feedback'>Por favor, forneça o número da sua
-                                                    agência bancária
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='bank' class='form-label'>Instituição<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control valid_entry_nd' id='bank'
+                                                           name='bank'
+                                                           placeholder='Insira o nome do banco' required>
+                                                    <div class='invalid-feedback'>Forneça um nome de banco</div>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class='col-md'>
-                                            <div class='mb-3'>
-                                                <label for='account' class='form-label'>Conta<span
-                                                        class='text-danger'>*</span></label>
-                                                <input type='text' class='form-control mask_number' id='account'
-                                                       name='account'
-                                                       placeholder='Digite o número da conta' required>
-                                                <div class='invalid-feedback'>Forneça o número da sua conta
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='branch' class='form-label'>Agência<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control mask_number' id='branch'
+                                                           name='branch'
+                                                           placeholder='Digite o número da agência bancária'
+                                                           required>
+                                                    <div class='invalid-feedback'>Por favor, forneça o número da sua
+                                                        agência bancária
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class='modal-footer'>
-                                            <button type='button' class='btn btn-secondary waves-effect'
-                                                    data-bs-dismiss='modal'>Cancelar
-                                            </button>
-                                            <button type='submit' class='btn btn-primary waves-effect waves-light'>
-                                                Adicionar
-                                            </button>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='account' class='form-label'>Conta<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control mask_number' id='account'
+                                                           name='account'
+                                                           placeholder='Digite o número da conta' required>
+                                                    <div class='invalid-feedback'>Forneça o número da sua conta
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='modal-footer'>
+                                                <button type='button' class='btn btn-secondary waves-effect'
+                                                        data-bs-dismiss='modal'>Cancelar
+                                                </button>
+                                                <button type='submit' class='btn btn-primary waves-effect waves-light'>
+                                                    Adicionar
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 </form>
@@ -343,7 +342,7 @@
         </div>
     </div>
 </div>
-<!-- end addFinancialModal -->
+<!-- end addAccountModal -->
 
 <!-- labelDetailsModal -->
 <div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel'

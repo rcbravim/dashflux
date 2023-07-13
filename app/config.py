@@ -1,5 +1,6 @@
 import hashlib
 import os
+from datetime import datetime
 
 
 class Config:
@@ -27,6 +28,9 @@ class Config:
         app.template_filter('date_year')(date_year)
         app.template_filter('date_day')(date_day)
 
+        # jinja func
+        app.jinja_env.globals.update(date_now=date_now)
+
         # set env to debug dev mode
         if app.config['DEBUG']:
             os.environ['DEBUG'] = 'true'
@@ -35,6 +39,7 @@ class Config:
         # SERVER_NAME = "invo-flask.dev:5000"  # todo: entender
 
 
+# template filter functions
 def md5_filter(value):
     return hashlib.md5(str(value).encode()).hexdigest()
 
@@ -57,3 +62,8 @@ def date_year(date):
 
 def date_day(date):
     return date.day
+
+
+# jinja functions
+def date_now():
+    return datetime.utcnow().date()

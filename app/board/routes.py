@@ -74,14 +74,9 @@ def clients():
     return clients_controller()
 
 
-@bp.route('/financial', methods=['GET', 'POST'])
-def financial():
-    return financial_controller()
-
-
-@bp.route('/financial_form', methods=['GET', 'POST'])
-def financial_form():
-    return financial_form_controller()
+@bp.route('/accounts', methods=['GET', 'POST'])
+def accounts():
+    return accounts_controller()
 
 
 @bp.route('/financial_form_new', methods=['GET', 'POST'])

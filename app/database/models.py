@@ -41,26 +41,45 @@ class UserLog(db.Model):
         return f"UserLog(id={self.id}, log_ip_address={self.log_ip_address}, user_id={self.user_id})"
 
 
-class Analytic(db.Model):
+class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    ana_cycle = db.Column(db.Date, nullable=False)
-    ana_json = db.Column(db.Text, nullable=False)
-    ana_status = db.Column(db.Boolean, nullable=False)
-    ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    ana_date_deleted = db.Column(db.DateTime, nullable=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    tra_description = db.Column(db.String(250), default=None)
+    tra_status = db.Column(db.Boolean, nullable=False)
+    tra_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    tra_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    tra_date_deleted = db.Column(db.DateTime, nullable=True)
 
-    user = db.relationship('User', backref=db.backref('analytics'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('transaction'))
 
     def __repr__(self):
-        return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
+        return f"Transactions(id={self.id}, tra_description={self.ana_cycle}, user_id={self.user_id})"
+
+
+# class Analytic(db.Model):
+#     id = db.Column(db.Integer, primary_key=True)
+#     ana_cycle = db.Column(db.Date, nullable=False)
+#     ana_json = db.Column(db.Text, nullable=False)
+#     ana_status = db.Column(db.Boolean, nullable=False)
+#     ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+#     ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+#     ana_date_deleted = db.Column(db.DateTime, nullable=True)
+#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+#
+#     user = db.relationship('User', backref=db.backref('analytics'))
+#
+#     def __repr__(self):
+#         return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
 
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
-    # cat_slug = db.Column(db.String(250), unique=True, nullable=False)
+    cat_description = db.Column(db.String(250), default=None)
     cat_status = db.Column(db.Boolean, nullable=False, default=True)
     cat_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -72,23 +91,23 @@ class Category(db.Model):
         return '<Category %r>' % self.cat_name
 
 
-class Financial(db.Model):
+class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    fin_slug = db.Column(db.String(250), unique=True, nullable=False)
-    fin_cost_center = db.Column(db.String(250), default=None)
-    fin_description = db.Column(db.String(250), default=None)
-    fin_bank_name = db.Column(db.String(250), default=None)
-    fin_bank_branch = db.Column(db.String(20), default=None)
-    fin_bank_account = db.Column(db.String(20), default=None)
-    fin_type = db.Column(db.SmallInteger, nullable=False)
-    fin_status = db.Column(db.Boolean, nullable=False, default=True)
-    fin_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    fin_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    fin_date_deleted = db.Column(db.DateTime, nullable=True, default=None)
+    acc_slug = db.Column(db.String(250), unique=True, nullable=False)
+    acc_name = db.Column(db.String(250), default=None)
+    acc_description = db.Column(db.String(250), default=None)
+    acc_is_bank = db.Column(db.Boolean, default=False)
+    acc_bank_name = db.Column(db.String(250), default=None)
+    acc_bank_branch = db.Column(db.String(20), default=None)
+    acc_bank_account = db.Column(db.String(20), default=None)
+    acc_status = db.Column(db.Boolean, nullable=False, default=True)
+    acc_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    acc_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    acc_date_deleted = db.Column(db.DateTime, nullable=True, default=None)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Financial %r>' % self.fin_slug
+        return '<Financial %r>' % self.acc_slug
 
 
 class Release(db.Model):
@@ -105,9 +124,9 @@ class Release(db.Model):
     rel_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     rel_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     rel_date_deleted = db.Column(db.DateTime, nullable=True, default=None)
+
     establishment_id = db.Column(db.BigInteger, db.ForeignKey('establishment.id'), default=None)
-    financial_account_id = db.Column(db.BigInteger, db.ForeignKey('financial.id'), default=None)
-    financial_cost_center_id = db.Column(db.BigInteger, db.ForeignKey('financial.id'), default=None)
+    account_id = db.Column(db.BigInteger, db.ForeignKey('account.id'), default=None)
     category_id = db.Column(db.BigInteger, db.ForeignKey('category.id'), default=None)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
