@@ -43,8 +43,12 @@ class UserLog(db.Model):
 
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    tra_description = db.Column(db.String(250), default=None)
-    tra_status = db.Column(db.Boolean, nullable=False)
+    tra_description = db.Column(db.String(250), nullable=True)
+    tra_situation = db.Column(db.Integer, nullable=False)
+    tra_amount = db.Column(db.Numeric(15, 3), nullable=False)
+    tra_entry_date = db.Column(db.Date, nullable=False)
+
+    tra_status = db.Column(db.Boolean, default=True, nullable=False)
     tra_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     tra_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     tra_date_deleted = db.Column(db.DateTime, nullable=True)
@@ -60,20 +64,20 @@ class Transaction(db.Model):
         return f"Transactions(id={self.id}, tra_description={self.ana_cycle}, user_id={self.user_id})"
 
 
-# class Analytic(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     ana_cycle = db.Column(db.Date, nullable=False)
-#     ana_json = db.Column(db.Text, nullable=False)
-#     ana_status = db.Column(db.Boolean, nullable=False)
-#     ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-#     ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-#     ana_date_deleted = db.Column(db.DateTime, nullable=True)
-#     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-#
-#     user = db.relationship('User', backref=db.backref('analytics'))
-#
-#     def __repr__(self):
-#         return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
+class Analytic(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ana_cycle = db.Column(db.Date, nullable=False)
+    ana_json = db.Column(db.Text, nullable=False)
+    ana_status = db.Column(db.Boolean, nullable=False)
+    ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ana_date_deleted = db.Column(db.DateTime, nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('analytics'))
+
+    def __repr__(self):
+        return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
 
 
 class Category(db.Model):

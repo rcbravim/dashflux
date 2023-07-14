@@ -180,13 +180,12 @@
                                     <table class='table align-middle table-nowrap mb-0'>
                                         <thead class='table-light'>
                                         <tr>
-                                            <th class='align-middle'>Data da Entrada</th>
+                                            <th class='align-middle'>Data</th>
+                                            <th class='align-middle'>Estabelecimento</th>
+                                            <th class='align-middle'>Descrição</th>
                                             <th class='align-middle'>Categoria</th>
-                                            <th class='align-middle'>Subcategoria</th>
-                                            <th class='align-middle'>Estado</th>
-                                            <th class='align-middle'>Quantia</th>
-                                            <th class='align-middle'>Balanço Mensal</th>
-                                            <th class='align-middle'>Saldo Atual</th>
+                                            <th class='align-middle'>Valor</th>
+                                            <th class='align-middle'>Saldo no Dia</th>
                                             <th class='align-middle'></th>
                                             <th class='align-middle'></th>
                                         </tr>
@@ -194,9 +193,12 @@
                                         <tbody>
                                         {% for row in context.entries %}
                                         <tr>
-
-                                            <td>{{ row.subcategory__category__cat_name|upper }}</td>
-                                            <td>{{ row.subcategory__sub_name|upper }}</td>
+                                            <td>{{ row.tra_entry_date }}</td>
+                                            <td>{{ row.est_name|upper }}</td>
+                                            <td>{{ row.tra_description|upper }}</td>
+                                            <td>{{ row.cat_name|upper }}</td>
+                                            <td>{{ row.tra_amount }}</td>
+                                            <td>CALCULO</td>
                                             <td>
                                                 {% if row.rel_gen_status == 1 %}
                                                 <span class='badge badge-pill badge-soft-primary font-size-12'>Pago</span>
@@ -209,36 +211,18 @@
                                                 {% elif row.rel_gen_status == 5 %}
                                                 <span class='badge badge-pill badge-soft-warning font-size-12'>Agendado</span>
                                                 {% endif %}
-                                            </td>
-                                            <td>
-                                <span class=''>
-                                  row.subcategory__category__cat_type|danger_type_class $ {{ row.rel_amount }}
-                                </span>
-                                            </td>
-                                            <span class=''>
-                                 template_tags danger value class $ {{ row.rel_monthly_balance }}
-                                </span>
-                                            <td>
-                                <span class=''>
-                                  template_tags danger value class $ {{ row.rel_overall_balance }}
-                                </span>
-                                            </td>
-                                            <td>
-                                                <!-- Button trigger modal -->
-                                                <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded index_details'
-
-                                                        Ver Detalhes
-                                                </button>
-                                            </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
+                                                    <button type='button'
+                                                            class='btn btn-primary btn-sm btn-rounded index_details'>
+                                                        Ver Detalhes
+                                                    </button>
 
-                                                    class='text-success index_edit' style='cursor:pointer;'><i
-                                                        class='mdi mdi-pencil font-size-18'></i></a>
+                                                    <a class='text-success index_edit' style='cursor:pointer;'><i
+                                                            class='mdi mdi-pencil font-size-18'></i></a>
 
-                                                    class='text-danger index_del' style='cursor:pointer;'><i
-                                                        class='mdi mdi-delete font-size-18'></i></a>
+                                                    <a class='text-danger index_del' style='cursor:pointer;'><i
+                                                            class='mdi mdi-delete font-size-18'></i></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -248,25 +232,26 @@
                                 </div>
                                 <!-- end table-responsive -->
                                 <form action="{{ url_for('board.index') }}" method='get'>
-                                    <input type='hidden' name='m' value='{{ filter.month }}'/>
-                                    <input type='hidden' name='y' value='{{ filter.year }}'/>
+                                    <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                                    <input type='hidden' name='y' value='{{ context.filter.year }}'/>
                                     <ul class='pagination pagination-rounded justify-content-end mb-2'>
-                                        <li class='page-item {% if pages.pg == 1 %}disabled{% endif %}'>
+                                        <li class='page-item {% if context.pages.pg == 1 %}disabled{% endif %}'>
                                             <button class='page-link' type='submit' name='pg' value='1'
                                                     aria-label='First'>
                                                 <i class='mdi mdi-chevron-double-left'></i>
                                             </button>
                                         </li>
-                                        {% for item in pages.pg_range %}
-                                        <li class='page-item {% if pages.pg == item %}active{% endif %}'>
+                                        {% for item in context.pages.pg_range %}
+                                        <li class='page-item {% if context.pages.pg == item %}active{% endif %}'>
                                             <button class='page-link' type='submit' name='pg' value='{{ item }}'>{{ item
                                                 }}
                                             </button>
                                         </li>
                                         {% endfor %}
-                                        <li class='page-item {% if pages.pg == pages.total_pg %}disabled{% endif %}'>
+                                        <li
+                                                class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
                                             <button class='page-link' type='submit' name='pg'
-                                                    value='{{ pages.total_pg }}' aria-label='Last'>
+                                                    value='{{ context.pages.total_pg }}' aria-label='Last'>
                                                 <i class='mdi mdi-chevron-double-right'></i>
                                             </button>
                                         </li>
@@ -319,11 +304,11 @@
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
                                     <label for='category' class='form-label'>Categoria<span class='text-danger'>*</span></label>
-                                    <select class='form-select category_modal' id='category' required>
+                                    <select class='form-select category_modal' id='category' name='category' required>
                                         {% if context.categories %}
                                         <option value='' selected disabled>Escolha a Categoria</option>
                                         {% for row in context.categories %}
-                                        <option value='{{ row.cat_slug|md5 }}'>{{ row.cat_name }}</option>
+                                        <option value='{{ row.id }}'>{{ row.cat_name }}</option>
                                         {% endfor %}
                                         {% else %}
                                         <option value='' selected disabled>Registre uma categoria antes de continuar
@@ -355,7 +340,7 @@
                                         {% if context.establishments %}
                                         <option value='' selected disabled>Escolha o Estabelecimento</option>
                                         {% for row in context.establishments %}
-                                        <option value='{{ row.est_name }}'>{{ row.est_name }}</option>
+                                        <option value='{{ row.id }}'>{{ row.est_name }}</option>
                                         {% endfor %}
                                         {% else %}
                                         <option value='' selected disabled>Registre um estabelecimento antes de
@@ -370,9 +355,9 @@
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='condition' class='form-label'>Estado<span
+                                    <label for='situation' class='form-label'>Estado<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select' id='condition' name='condition'>
+                                    <select class='form-select' id='situation' name='situation'>
                                         <option value='1' selected>Pago</option>
                                         <option value='2'>Aberto</option>
                                         <option value='3'>Em Negociação</option>
@@ -391,11 +376,12 @@
                                         {% if context.accounts %}
                                         <option value='' selected disabled>Escolha a conta usada</option>
                                         {% for row in context.accounts %}
-                                        <option value='{{ row.fin_slug|md5 }}'>{{ row.fin_bank_name }}:
-                                            {% if row.fin_bank_branch %}
-                                            {{ row.fin_bank_branch }} / {{ row.fin_bank_account }}
+                                        <option value='{{ row.id }}'>
+                                            {% if row.acc_is_bank %}
+                                            {{ row.acc_bank_name|upper }} | {{ row.acc_bank_branch }} |
+                                            {{ row.acc_bank_account }} | ({{ row.acc_name|upper }})
                                             {% else %}
-                                            Transação utilizando dinheiro
+                                            {{ row.acc_name|upper }} | {{ row.acc_description|upper }}
                                             {% endif %}
                                         </option>
                                         {% endfor %}

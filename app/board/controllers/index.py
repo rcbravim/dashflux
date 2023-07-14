@@ -3,10 +3,10 @@ import math
 from datetime import datetime
 import os
 
-from flask import request, render_template, session
+from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, and_, or_
 
-from app.database.models import Release, Category, Establishment, Account, Transaction
+from app.database.models import Release, Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
 from app.library.helper import paginator
 
@@ -23,30 +23,34 @@ def index_controller():
         month_pg = time_now.strftime('%b-%Y')
         session_id = session.get('user_id')
 
-        release = Release
-        category = Category
         transaction = Transaction
+        analytic = Analytic
+        category = Category
         establishment = Establishment
         account = Account
 
+        from sqlalchemy import func
+
         entries_all = db.session.query(
-            release.rel_entry_date,
-            release.rel_slug,
+            transaction.tra_entry_date,
             category.cat_name,
             category.cat_type,
-            release.rel_gen_status,
-            release.rel_amount,
-            release.rel_monthly_balance,
-            release.rel_overall_balance
+            establishment.est_name,
+            transaction.tra_situation,
+            transaction.tra_amount,
+            transaction.tra_entry_date,
+            transaction.tra_description
         ).join(
-            category, release.category_id == category.id
+            category, transaction.category_id == category.id
+        ).join(
+            establishment, transaction.establishment_id == establishment.id
         ).filter(
-            release.rel_status == True,
-            release.user_id == session_id,
-            func.strftime('%m', release.rel_entry_date) == time_now.strftime('%m'),
-            func.strftime('%Y', release.rel_entry_date) == time_now.strftime('%Y')
+            transaction.tra_status == True,
+            transaction.user_id == session_id,
+            func.strftime('%m', transaction.tra_entry_date) == time_now.strftime('%m'),
+            func.strftime('%Y', transaction.tra_entry_date) == time_now.strftime('%Y')
         ).order_by(
-            release.rel_sqn.desc()
+            transaction.tra_entry_date.desc()
         ).all()
 
         json_analytic = []
@@ -61,7 +65,10 @@ def index_controller():
         # Set page range
         pg_range = paginator(pg, total_pages)
 
-        categories = db.session.query(category.cat_name).filter(
+        categories = db.session.query(
+            category.id,
+            category.cat_name
+        ).filter(
             category.cat_status == True,
             category.user_id == session_id
         ).order_by(
@@ -69,6 +76,7 @@ def index_controller():
         ).all()
 
         establishments = db.session.query(
+            establishment.id,
             establishment.est_name
         ).filter(
             establishment.est_status == True,
@@ -77,43 +85,35 @@ def index_controller():
             establishment.est_name.asc()
         ).all()
 
-        clients = []  # todo remover
-
-        account = db.session.query(
+        accounts = db.session.query(
+            account.id,
+            account.acc_name,
             account.acc_slug,
+            account.acc_is_bank,
             account.acc_bank_name,
             account.acc_bank_branch,
-            account.acc_bank_account
+            account.acc_bank_account,
+            account.acc_description
         ).filter(
-            or_(
-                account.user_id == session_id,
-                account.user_id.is_(None)
-            ),
+            account.user_id == session_id,
             account.acc_status == True
         ).order_by(
-            account.user_id.asc(),
             account.acc_bank_name.asc()
         ).all()
-
-        cost_centers = None  # todo emover
-        if not cost_centers:
-            cost_centers = ""
 
         context = {
             'entries': entries,
             'categories': categories,
             'establishments': establishments,
-            'clients': clients,
-            'cost_centers': cost_centers,
-            'account': account,
+            'accounts': accounts,
             'analytic': json.loads(json_analytic[0].replace("'", '"')) if json_analytic else None,
             'past': past,
             'mes_pag': month_pg,
             'filter': {
                 'displayed_str': time_now.strftime('%B.%Y'),
                 'displayed_int': time_now.strftime('%M.%Y'),
-                'month': request.form.get('m'),
-                'year': request.form.get('y')
+                'month': request.form.get('m', time_now.strftime('%m')),
+                'year': request.form.get('y', time_now.strftime('%y'))
             },
             'pages': {
                 'pg': pg,
@@ -126,29 +126,26 @@ def index_controller():
 
     elif request.method == 'POST':
         user_id = session.get('user_id')
-        acc_type = request.form.get('type')
 
-        # bank account
-        bank = request.form.get('bank')
-        branch = request.form.get('branch')
-        account = request.form.get('account')
-
-        # cost center
-        cost_center = request.form.get('cost_center')
+        entry_date = request.form.get('entry_date')
+        category = request.form.get('category')
         description = request.form.get('description')
+        establishment = request.form.get('establishment')
+        situation = request.form.get('situation')
+        account = request.form.get('account')
+        amount = request.form.get('amount')
 
-        slug = f'{acc_type}{bank}{branch}{account}' if acc_type == 'BA' else f'{acc_type}{cost_center}{description}'
-
-        new_account = Account(
-            acc_slug=slug,
-            acc_cost_center=cost_center,
-            acc_description=description,
-            acc_bank_name=bank,
-            acc_bank_branch=branch,
-            acc_bank_account=account,
-            acc_type=acc_type,
-            user_id=user_id
+        new_transaction = Transaction(
+            user_id=user_id,
+            tra_description=description,
+            tra_situation=situation,
+            tra_amount=float(amount.replace(',', '')),
+            tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
+            establishment_id=establishment,
+            category_id=category,
+            account_id=account
         )
-        db.session.add(new_account)
+        db.session.add(new_transaction)
         db.session.commit()
-        return redirect(url_for('board.account'))
+        session['success'] = 'Lançamento cadastrado!'
+        return redirect(url_for('board.index'))
