@@ -133,46 +133,53 @@
                                 <h4 class='card-title mb-4'>Relatório Financeiro Mensal</h4>
                                 <div id='right'>
                                     <div id='menu' class='mb-3'>
-                      <span id='menu-navi'
-                            class='d-sm-flex flex-wrap text-center text-sm-start justify-content-sm-between'>
-                        <div class='d-sm-flex flex-wrap gap-1'>
-                          <div class='btn-group mb-2' role='group' aria-label='Basic example'>
-                            <button type='button' class='btn btn-primary move-day' data-value='move-prev'>
-                              <i class='calendar-icon ic-arrow-line-left mdi mdi-chevron-left'
-                                 data-action='move-prev'></i>
-                            </button>
-                            <button type='button' class='btn btn-primary move-day' data-value='move-next'>
-                              <i class='calendar-icon ic-arrow-line-right mdi mdi-chevron-right'
-                                 data-action='move-next'></i>
-                            </button>
-                          </div>
-                          <div class='dropdown mb-2'>
-                            <button class='btn btn-primary dropdown-toggle' type='button'
-                                    data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>Ir Para
-                            </button>
-                            <div class='dropdown-menu dropdown-menu-md dropdown-menu-start'>
-                              <div class='form-group m-0 p-3'>
-                                <div class='input-group'>
-                                  <input type='text' class='form-control mask_date_short' id='goto'
-                                         placeholder='MM/YYYY'>
-                                  <button class='btn btn-primary move-day' type='button' data-value='goto'><i
-                                          class='mdi mdi-magnify'></i></button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <button type='button' class='btn btn-primary move-today mb-2'
-                                  data-action='move-today'>Atual</button>
-                        </div>
-                          <h4 class='render-range fw-bold pt-1 mx-3'>{{ context.filter.displayed_str }}</h4>
-                            <input type='hidden' id='renderRange' value='{{ context.filter.displayed_int }}'/>
-                        <div class='dropdown align-self-start mt-3 mt-sm-0 mb-2'>
-                          <button class='btn btn-primary dropdown-toggle' type='button' data-bs-toggle='modal'
-                                  data-bs-target='.newEntryModal'>
-                            <i class='mdi mdi-plus'></i> Adicionar Entrada
-                          </button>
-                        </div>
-                      </span>
+                                        <span id='menu-navi'
+                                              class='d-sm-flex flex-wrap text-center text-sm-start justify-content-sm-between'>
+                                            <div class='d-sm-flex flex-wrap gap-1'>
+                                                <div class='btn-group mb-2' role='group' aria-label='Basic example'>
+                                                    <button type='button' class='btn btn-primary move-day'
+                                                            data-value='move-prev'>
+                                                        <i class='calendar-icon ic-arrow-line-left mdi mdi-chevron-left'
+                                                           data-action='move-prev'></i>
+                                                    </button>
+                                                    <button type='button' class='btn btn-primary move-day'
+                                                            data-value='move-next'>
+                                                        <i class='calendar-icon ic-arrow-line-right mdi mdi-chevron-right'
+                                                           data-action='move-next'></i>
+                                                    </button>
+                                                </div>
+                                                <div class='dropdown mb-2'>
+                                                    <button class='btn btn-primary dropdown-toggle' type='button'
+                                                            data-bs-toggle='dropdown' aria-haspopup='true'
+                                                            aria-expanded='false'>Ir Para
+                                                    </button>
+                                                    <div class='dropdown-menu dropdown-menu-md dropdown-menu-start'>
+                                                        <div class='form-group m-0 p-3'>
+                                                            <div class='input-group'>
+                                                                <input type='text' class='form-control mask_date_short'
+                                                                       id='goto'
+                                                                       placeholder='MM/YYYY'>
+                                                                <button class='btn btn-primary move-day' type='button'
+                                                                        data-value='goto'><i
+                                                                        class='mdi mdi-magnify'></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type='button' class='btn btn-primary move-today mb-2'
+                                                        data-action='move-today'>Atual</button>
+                                            </div>
+                                            <h4 class='render-range fw-bold pt-1 mx-3'>{{ context.filter.displayed_str }}</h4>
+                                            <input type='hidden' id='renderRange'
+                                                   value='{{ context.filter.displayed_int }}'/>
+                                            <div class='dropdown align-self-start mt-3 mt-sm-0 mb-2'>
+                                                <button class='btn btn-primary dropdown-toggle' type='button'
+                                                        data-bs-toggle='modal'
+                                                        data-bs-target='.newEntryModal'>
+                                                    <i class='mdi mdi-plus'></i> Adicionar Entrada
+                                                </button>
+                                            </div>
+                                        </span>
                                     </div>
                                 </div>
                                 {% if context.entries %}
@@ -211,6 +218,7 @@
                                                 {% elif row.rel_gen_status == 5 %}
                                                 <span class='badge badge-pill badge-soft-warning font-size-12'>Agendado</span>
                                                 {% endif %}
+                                            </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     <button type='button'
@@ -248,8 +256,7 @@
                                             </button>
                                         </li>
                                         {% endfor %}
-                                        <li
-                                                class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
+                                        <li class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
                                             <button class='page-link' type='submit' name='pg'
                                                     value='{{ context.pages.total_pg }}' aria-label='Last'>
                                                 <i class='mdi mdi-chevron-double-right'></i>
@@ -269,6 +276,7 @@
                         </div>
                     </div>
                 </div>
+
                 <!-- end row -->
             </div> <!-- container-fluid -->
         </div>
