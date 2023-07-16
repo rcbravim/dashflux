@@ -35,7 +35,7 @@
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Receita Mensal</p>
                                             <h4 class='mb-0'>
-                                                R$ {% if context.analytic %}{{ context.analytic.monthly.revenue }}{%
+                                                R$ {% if context.analytic %}{{ context.analytic.incomes }}{%
                                                 else %}0,00{% endif %}
                                             </h4>
                                         </div>
@@ -57,7 +57,7 @@
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Gasto Mensal</p>
                                             <h4 class='mb-0 text-danger'>
-                                                R$ {% if context.analytic %}{{ context.analytic.monthly.expenses }}{%
+                                                R$ {% if context.analytic %}{{ context.analytic.expenses }}{%
                                                 else %}0,00{% endif %}
                                             </h4>
                                         </div>
@@ -78,10 +78,22 @@
                                     <div class='d-flex'>
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Balanço Mensal</p>
-                                            <h4 class='mb-0'>
-                                                R$ {% if context.analytic %}{{ context.analytic.monthly.balance }}{%
-                                                else %}0,00{% endif %}
+
+                                            {% if context.analytic %}
+                                            {% if context.analytic.balance < 0 %}
+                                            <h4 class='mb-0 text-danger'>
+                                                R$ {{ context.analytic.balance }}
                                             </h4>
+                                            {% else %}
+                                            <h4 class='mb-0'>
+                                                R$ {{ context.analytic.balance }}
+                                            </h4>
+                                            {% endif %}
+                                            {% else %}
+                                            <h4 class='mb-0'>
+                                                R$ 0,00
+                                            </h4>
+                                            {% endif %}
                                         </div>
                                         <div class='flex-shrink-0 align-self-center'>
                                             <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
@@ -100,10 +112,21 @@
                                     <div class='d-flex'>
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Saldo Atual</p>
-                                            <h4 class='mb-0'>
-                                                R$ {% if context.analytic %}{{ context.analytic.overall }}{% else
-                                                %}0,00{% endif %}
+                                            {% if context.analytic %}
+                                            {% if context.analytic.overall < 0 %}
+                                            <h4 class='mb-0 text-danger'>
+                                                R$ -{{ context.analytic.overall }}
                                             </h4>
+                                            {% else %}
+                                            <h4 class='mb-0'>
+                                                R$ {{ context.analytic.overall }}
+                                            </h4>
+                                            {% endif %}
+                                            {% else %}
+                                            <h4 class='mb-0'>
+                                                R$ 0,00
+                                            </h4>
+                                            {% endif %}
                                         </div>
                                         <div class='flex-shrink-0 align-self-center'>
                                             <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
@@ -363,21 +386,6 @@
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='situation' class='form-label'>Estado<span
-                                            class='text-danger'>*</span></label>
-                                    <select class='form-select' id='situation' name='situation'>
-                                        <option value='1' selected>Pago</option>
-                                        <option value='2'>Aberto</option>
-                                        <option value='3'>Em Negociação</option>
-                                        <option value='4'>Recebido</option>
-                                        <option value='5'>Agendado</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-6'>
-                                <div class='mb-3'>
                                     <label for='account' class='form-label'>Conta<span
                                             class='text-danger'>*</span></label>
                                     <select class='form-select' id='account' name='account' required>
@@ -401,7 +409,32 @@
                                     <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
                                 </div>
                             </div>
-                            <div class='col-lg-6'>
+                        </div>
+                        <div class='row'>
+                            <div class='col-lg'>
+                                <div class='mb-3'>
+                                    <label for='type_transaction' class='form-label'>Tipo<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select' id='type_transaction' name='type_transaction'>
+                                        <option value='1' selected>Saída</option>
+                                        <option value='2'>Entrada</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-lg'>
+                                <div class='mb-3'>
+                                    <label for='situation' class='form-label'>Estado<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select' id='situation' name='situation'>
+                                        <option value='1' selected>Pago</option>
+                                        <option value='2'>Aberto</option>
+                                        <option value='3'>Em Negociação</option>
+                                        <option value='4'>Recebido</option>
+                                        <option value='5'>Agendado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-lg'>
                                 <div class='mb-3'>
                                     <label for='amount' class='form-label'>Quantia<span
                                             class='text-danger'>*</span></label>

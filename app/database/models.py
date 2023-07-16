@@ -65,16 +65,21 @@ class Transaction(db.Model):
 
 
 class Analytic(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    ana_cycle = db.Column(db.Date, nullable=False)
-    ana_json = db.Column(db.Text, nullable=False)
-    ana_status = db.Column(db.Boolean, nullable=False)
+    ana_month = db.Column(db.Integer, db.CheckConstraint('ana_month BETWEEN 1 AND 12'), nullable=False)
+    ana_year = db.Column(db.Integer, nullable=False)
+    ana_incomes = db.Column(db.Numeric(15, 3), nullable=False)
+    ana_expenses = db.Column(db.Numeric(15, 3), nullable=False)
+    ana_status = db.Column(db.Boolean, nullable=False, default=True)
     ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    ana_date_deleted = db.Column(db.DateTime, nullable=True)
+    ana_date_deleted = db.Column(db.DateTime, default=None)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('analytics'))
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('ana_month', 'ana_year', 'user_id'),
+    )
 
     def __repr__(self):
         return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
@@ -112,30 +117,6 @@ class Account(db.Model):
 
     def __repr__(self):
         return '<Financial %r>' % self.acc_slug
-
-
-class Release(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    rel_slug = db.Column(db.String(250), unique=True, nullable=False)
-    rel_gen_status = db.Column(db.SmallInteger, nullable=False)
-    rel_entry_date = db.Column(db.Date, nullable=False)
-    rel_amount = db.Column(db.Numeric(15, 3), nullable=False)
-    rel_monthly_balance = db.Column(db.Numeric(15, 3), nullable=False)
-    rel_overall_balance = db.Column(db.Numeric(15, 3), nullable=False)
-    rel_description = db.Column(db.String(250), default=None)
-    rel_sqn = db.Column(db.Integer, nullable=False)
-    rel_status = db.Column(db.Boolean, nullable=False)
-    rel_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    rel_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
-    rel_date_deleted = db.Column(db.DateTime, nullable=True, default=None)
-
-    establishment_id = db.Column(db.BigInteger, db.ForeignKey('establishment.id'), default=None)
-    account_id = db.Column(db.BigInteger, db.ForeignKey('account.id'), default=None)
-    category_id = db.Column(db.BigInteger, db.ForeignKey('category.id'), default=None)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    def __repr__(self):
-        return '<Release %r>' % self.rel_slug
 
 
 class Establishment(db.Model):
