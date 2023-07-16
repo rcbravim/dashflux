@@ -3,10 +3,10 @@ import math
 from datetime import datetime
 import os
 
-from flask import request, render_template, session
-from sqlalchemy import func, and_, or_
+from flask import request, render_template, session, redirect, url_for
+from sqlalchemy import func, extract
 
-from app.database.models import Release, Category, Analytic, Establishment, Financial
+from app.database.models import Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
 from app.library.helper import paginator
 
@@ -18,120 +18,122 @@ def index_controller():
     if request.method == 'GET':
         pg = int(request.form.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
-        time_now = datetime.utcnow()
-        month_now = time_now.strftime('%m-%Y')
-        month_pg = time_now.strftime('%b-%Y')
-        session_id = session.get('user_id')
 
-        release = Release
-        category = Category
+        now = datetime.utcnow()
+        month_pg = now.strftime('%b-%Y')
+        user_id = session.get('user_id')
+
+        transaction = Transaction
         analytic = Analytic
+        category = Category
         establishment = Establishment
-        financial = Financial
+        account = Account
 
         entries_all = db.session.query(
-            release.rel_entry_date,
-            release.rel_slug,
+            transaction.tra_entry_date,
             category.cat_name,
             category.cat_type,
-            release.rel_gen_status,
-            release.rel_amount,
-            release.rel_monthly_balance,
-            release.rel_overall_balance
+            establishment.est_name,
+            transaction.tra_situation,
+            transaction.tra_amount,
+            transaction.tra_entry_date,
+            transaction.tra_description
         ).join(
-            category, release.category_id == category.id
+            category, transaction.category_id == category.id
+        ).join(
+            establishment, transaction.establishment_id == establishment.id
         ).filter(
-            release.rel_status is True,
-            release.user_id == session_id,
-            func.strftime('%m', release.rel_entry_date) == time_now.strftime('%m'),
-            func.strftime('%Y', release.rel_entry_date) == time_now.strftime('%Y')
+            transaction.tra_status == True,
+            transaction.user_id == user_id,
+            func.strftime('%m', transaction.tra_entry_date) == now.strftime('%m'),
+            func.strftime('%Y', transaction.tra_entry_date) == now.strftime('%Y')
         ).order_by(
-            release.rel_sqn.desc()
+            transaction.tra_entry_date.desc()
         ).all()
 
-        json_analytic = db.session.query(analytic.ana_json).filter(
-            analytic.user_id == session_id,
-            func.strftime('%m', analytic.ana_cycle) == time_now.strftime('%m'),
-            analytic.ana_status is True
-        ).order_by(
-            analytic.ana_date_updated.desc()
-        ).first()
-        past = False
-
-        if not json_analytic:
-            json_analytic = db.session.query(analytic.ana_json).filter(
-                and_(
-                    analytic.ana_cycle < month_now,
-                    analytic.ana_status is True,
-                    analytic.user_id == session_id
-                )
-            ).order_by(
-                analytic.ana_cycle.desc()
-            ).first()
-            past = True
-
-        # Separate rows for exposure
         entries = entries_all[pg_offset:(pg_offset + PG_LIMIT)]
 
-        # Counting total pages
         total_pages = math.ceil(len(entries_all) / PG_LIMIT)
 
-        # Set page range
         pg_range = paginator(pg, total_pages)
 
-        categories = db.session.query(category.cat_name).filter(
-            category.cat_status is True,
-            category.user_id == session_id
+        categories = db.session.query(
+            category.id,
+            category.cat_name
+        ).filter(
+            category.cat_status == True,
+            category.user_id == user_id
         ).order_by(
             category.cat_name.asc()
         ).all()
 
         establishments = db.session.query(
+            establishment.id,
             establishment.est_name
         ).filter(
-            establishment.est_status is True,
-            establishment.user_id == session_id
+            establishment.est_status == True,
+            establishment.user_id == user_id
         ).order_by(
             establishment.est_name.asc()
         ).all()
 
-        clients = []  # todo remover
-
         accounts = db.session.query(
-            financial.fin_slug,
-            financial.fin_bank_name,
-            financial.fin_bank_branch,
-            financial.fin_bank_account
+            account.id,
+            account.acc_name,
+            account.acc_slug,
+            account.acc_is_bank,
+            account.acc_bank_name,
+            account.acc_bank_branch,
+            account.acc_bank_account,
+            account.acc_description
         ).filter(
-            or_(
-                financial.user_id == session_id,
-                financial.user_id.is_(None)
-            ),
-            financial.fin_status is True
+            account.user_id == user_id,
+            account.acc_status == True
         ).order_by(
-            financial.user_id.asc(),
-            financial.fin_bank_name.asc()
+            account.acc_bank_name.asc()
         ).all()
 
-        cost_centers = None  # todo emover
-        if not cost_centers:
-            cost_centers = ""
+        past = False
+
+        analytics = db.session.query(
+            analytic.ana_incomes,
+            analytic.ana_expenses
+        ).filter(
+            analytic.ana_month == now.month,
+            analytic.ana_year == now.year,
+            analytic.user_id == user_id,
+            analytic.ana_status == True
+        ).first()
+
+        overall = db.session.query(
+            func.sum(analytic.ana_incomes - analytic.ana_expenses)
+        ).filter(
+            analytic.user_id == user_id,
+            analytic.ana_status == True
+        ).first()[0]
+
+        incomes = analytics.ana_incomes
+        expenses = analytics.ana_expenses
+        balance = incomes - expenses
 
         context = {
             'entries': entries,
             'categories': categories,
             'establishments': establishments,
-            'clients': clients,
-            'cost_centers': cost_centers,
             'accounts': accounts,
-            'analytic': json.loads(json_analytic[0].replace("'", '"')) if json_analytic else None,
+            'analytic': {
+                'incomes': float(incomes),
+                'expenses': float(expenses),
+                'balance': float(balance),
+                'overall': float(overall)
+            },
             'past': past,
             'mes_pag': month_pg,
             'filter': {
-                'displayed_str': time_now.strftime('%B.%Y'),
-                'displayed_int': time_now.strftime('%M.%Y'),
-                'month': request.form.get('m'),
-                'year': request.form.get('y')
+                'displayed_str': now.strftime('%B.%Y'),
+                'displayed_int': now.strftime('%M.%Y'),
+                'month': request.form.get('m', now.strftime('%m')),
+                'year': request.form.get('y', now.strftime('%y'))
             },
             'pages': {
                 'pg': pg,
@@ -141,3 +143,64 @@ def index_controller():
         }
 
         return render_template('board/pages/index.html', context=context, success=success)
+
+    elif request.method == 'POST':
+        user_id = session.get('user_id')
+
+        now = datetime.utcnow()
+
+        entry_date = request.form.get('entry_date')
+        category = request.form.get('category')
+        description = request.form.get('description')
+        establishment = request.form.get('establishment')
+        situation = request.form.get('situation')
+        account = request.form.get('account')
+        amount = request.form.get('amount')
+        multiply = 1 if request.form.get('type_transaction') == 1 else -1
+
+        new_transaction = Transaction(
+            user_id=user_id,
+            tra_description=description,
+            tra_situation=situation,
+            tra_amount=float(amount.replace(',', '')) * multiply,
+            tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
+            establishment_id=establishment,
+            category_id=category,
+            account_id=account
+        )
+        db.session.add(new_transaction)
+        db.session.commit()
+
+        incomes = db.session.query(
+            func.coalesce(func.sum(Transaction.tra_amount), 0)
+        ).filter(
+            Transaction.tra_amount < 0,
+            Transaction.user_id == user_id,
+            extract('month', Transaction.tra_entry_date) == now.month
+        ).scalar()
+
+        expenses = db.session.query(
+            func.coalesce(func.sum(Transaction.tra_amount), 0)
+        ).filter(
+            Transaction.tra_amount > 0,
+            Transaction.user_id == user_id,
+            extract('month', Transaction.tra_entry_date) == now.month
+        ).scalar()
+
+        balance = incomes - expenses
+
+        user_id = user_id
+
+        new_analytic = Analytic(
+            ana_month=now.month,
+            ana_year=now.year,
+            ana_incomes=incomes,
+            ana_expenses=expenses,
+            ana_balance=balance,
+            user_id=user_id
+        )
+        db.session.add(new_analytic)
+
+        db.session.merge()
+        session['success'] = 'Lançamento cadastrado!'
+        return redirect(url_for('board.index'))

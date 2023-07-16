@@ -1,5 +1,7 @@
-import hashlib
 import os
+from datetime import datetime
+
+from app.library.filters import *
 
 
 class Config:
@@ -9,6 +11,7 @@ class Config:
         app.config['SESSION_TYPE'] = 'filesystem'
         app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance_path, 'database.db')
         app.config['TEMPLATE_FOLDER'] = 'app/templates'
+        app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'logs')
 
         # mail config
         app.config['MAIL_SERVER'] = 'smtp.zoho.com'
@@ -27,33 +30,9 @@ class Config:
         app.template_filter('date_year')(date_year)
         app.template_filter('date_day')(date_day)
 
+        # jinja func
+        app.jinja_env.globals.update(date_now=datetime.utcnow().date)
+
         # set env to debug dev mode
         if app.config['DEBUG']:
             os.environ['DEBUG'] = 'true'
-
-        # SESSION_FILE_DIR = os.path.join(app.root_path, 'logs')  # todo: resolver
-        # SERVER_NAME = "invo-flask.dev:5000"  # todo: entender
-
-
-def md5_filter(value):
-    return hashlib.md5(str(value).encode()).hexdigest()
-
-
-def slice3_filter(value):
-    return value[:3]
-
-
-def date_MdY(date):
-    return date.strftime("%b %d, %Y")
-
-
-def date_month(date):
-    return date.month
-
-
-def date_year(date):
-    return date.year
-
-
-def date_day(date):
-    return date.day
