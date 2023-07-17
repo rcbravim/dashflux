@@ -19,7 +19,8 @@ def index_controller():
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
 
         now = datetime.utcnow()
-        month_pg = now.strftime('%b-%Y')
+        month = int(request.args.get('m', now.month))
+        year = int(request.args.get('y', now.year))
         user_id = session.get('user_id')
 
         transaction = Transaction
@@ -43,8 +44,8 @@ def index_controller():
         ).filter(
             transaction.tra_status == True,
             transaction.user_id == user_id,
-            func.strftime('%m', transaction.tra_entry_date) == now.strftime('%m'),
-            func.strftime('%Y', transaction.tra_entry_date) == now.strftime('%Y')
+            extract('month', transaction.tra_entry_date) == month,
+            extract('year', transaction.tra_entry_date) == year
         ).order_by(
             transaction.tra_entry_date.asc()
         ).all()
@@ -54,13 +55,13 @@ def index_controller():
         ).filter(
             transaction.tra_status == True,
             transaction.user_id == user_id,
-            extract('month', transaction.tra_entry_date) == now.month - 1,
-            extract('year', transaction.tra_entry_date) == now.year
+            extract('month', transaction.tra_entry_date) == month - 1,
+            extract('year', transaction.tra_entry_date) == year
         ).order_by(
             transaction.tra_entry_date.desc()
-        ).first()[0]
+        ).first()
 
-        cumulative_balance = float(last_mount_amount) if last_mount_amount else 0
+        cumulative_balance = float(last_mount_amount[0]) if last_mount_amount else 0
 
         entries_with_flow = []
         for row in entries_all:
@@ -119,14 +120,12 @@ def index_controller():
             account.acc_bank_name.asc()
         ).all()
 
-        past = False
-
         analytics = db.session.query(
             analytic.ana_incomes,
             analytic.ana_expenses
         ).filter(
-            analytic.ana_month == now.month,
-            analytic.ana_year == now.year,
+            analytic.ana_month == month,
+            analytic.ana_year == year,
             analytic.user_id == user_id,
             analytic.ana_status == True
         ).first()
@@ -138,9 +137,10 @@ def index_controller():
             Transaction.tra_entry_date <= now.date()
         ).scalar()
 
-        incomes = analytics.ana_incomes
-        expenses = analytics.ana_expenses
+        incomes = analytics.ana_incomes if analytics else 0
+        expenses = analytics.ana_expenses if analytics else 0
         balance = incomes - expenses
+        overall = overall if overall else 0
 
         context = {
             'entries': entries,
@@ -153,13 +153,11 @@ def index_controller():
                 'balance': float(balance),
                 'overall': float(overall)
             },
-            'past': past,
-            'mes_pag': month_pg,
             'filter': {
-                'displayed_str': now.strftime('%B.%Y'),
-                'displayed_int': now.strftime('%M.%Y'),
-                'month': request.form.get('m', now.strftime('%m')),
-                'year': request.form.get('y', now.strftime('%y'))
+                'displayed_str': datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y').strftime('%B/%Y'),
+                'displayed_int': datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y').strftime('%m.%Y'),
+                'month': request.args.get('m', now.strftime('%m')),
+                'year': request.args.get('y', now.strftime('%y'))
             },
             'pages': {
                 'pg': pg,

@@ -1,3 +1,4 @@
+import locale
 from flask import Flask
 from app.config import Config
 from app.auth.routes import bp as auth_bp
@@ -25,5 +26,8 @@ def create_app():
     # register blueprint instances
     app.register_blueprint(auth_bp)
     app.register_blueprint(board_bp)
+
+    # translate dates
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
     return app

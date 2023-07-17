@@ -153,19 +153,18 @@
                     <div class='col-lg-12'>
                         <div class='card'>
                             <div class='card-body'>
-                                <h4 class='card-title mb-4'>Relatório Financeiro Mensal</h4>
                                 <div id='right'>
                                     <div id='menu' class='mb-3'>
                                         <span id='menu-navi'
                                               class='d-sm-flex flex-wrap text-center text-sm-start justify-content-sm-between'>
                                             <div class='d-sm-flex flex-wrap gap-1'>
                                                 <div class='btn-group mb-2' role='group' aria-label='Basic example'>
-                                                    <button type='button' class='btn btn-primary move-day'
+                                                    <button type='button' class='btn btn-primary move-month'
                                                             data-value='move-prev'>
                                                         <i class='calendar-icon ic-arrow-line-left mdi mdi-chevron-left'
                                                            data-action='move-prev'></i>
                                                     </button>
-                                                    <button type='button' class='btn btn-primary move-day'
+                                                    <button type='button' class='btn btn-primary move-month'
                                                             data-value='move-next'>
                                                         <i class='calendar-icon ic-arrow-line-right mdi mdi-chevron-right'
                                                            data-action='move-next'></i>
@@ -182,7 +181,7 @@
                                                                 <input type='text' class='form-control mask_date_short'
                                                                        id='goto'
                                                                        placeholder='MM/YYYY'>
-                                                                <button class='btn btn-primary move-day' type='button'
+                                                                <button class='btn btn-primary move-month' type='button'
                                                                         data-value='goto'><i
                                                                         class='mdi mdi-magnify'></i></button>
                                                             </div>
@@ -192,7 +191,8 @@
                                                 <button type='button' class='btn btn-primary move-today mb-2'
                                                         data-action='move-today'>Atual</button>
                                             </div>
-                                            <h4 class='render-range fw-bold pt-1 mx-3'>{{ context.filter.displayed_str }}</h4>
+                                            <h4 class='render-range fw-bold pt-1 mx-3'>{{
+                                                context.filter.displayed_str|upper }}</h4>
                                             <input type='hidden' id='renderRange'
                                                    value='{{ context.filter.displayed_int }}'/>
                                             <div class='dropdown align-self-start mt-3 mt-sm-0 mb-2'>
