@@ -1,4 +1,5 @@
 import hashlib
+import locale
 
 
 # template filter functions
@@ -24,3 +25,12 @@ def date_year(date):
 
 def date_day(date):
     return date.day
+
+
+def format_currency(value):
+    locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+    return locale.currency(value, grouping=True, symbol=False)
+
+
+def format_date(date):
+    return date.strftime("%d/%m")

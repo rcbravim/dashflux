@@ -6,7 +6,7 @@ from app.library.filters import *
 
 class Config:
     def __init__(self, app):
-        app.config['SECRET_KEY'] = 'sua_chave_secreta'
+        app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
         app.config['SESSION_PERMANENT'] = False
         app.config['SESSION_TYPE'] = 'filesystem'
         app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance_path, 'database.db')
@@ -14,8 +14,8 @@ class Config:
         app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'logs')
 
         # mail config
-        app.config['MAIL_SERVER'] = 'smtp.zoho.com'
-        app.config['MAIL_PORT'] = 587
+        app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
+        app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
         app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
         app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
         app.config['MAIL_DEFAULT_SENDER'] = os.getenv('MAIL_DEFAULT_SENDER')
@@ -29,6 +29,8 @@ class Config:
         app.template_filter('date_month')(date_month)
         app.template_filter('date_year')(date_year)
         app.template_filter('date_day')(date_day)
+        app.template_filter('format_currency')(format_currency)
+        app.template_filter('format_date')(format_date)
 
         # jinja func
         app.jinja_env.globals.update(date_now=datetime.utcnow().date)

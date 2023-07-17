@@ -1,5 +1,7 @@
 import os
 import random
+from datetime import timedelta
+
 from flask import Flask
 from werkzeug.security import generate_password_hash
 
@@ -32,12 +34,16 @@ with app.app_context():
         db.session.add(log)
 
     # Criar algumas transações fictícias
-    for i in range(100):
+    start_date = datetime(2023, 1, 1).date()
+    end_date = datetime(2023, 12, 31).date()
+    for i in range(1000):
+        random_date = start_date + timedelta(days=random.randint(0, (end_date - start_date).days))
+
         transaction = Transaction(
             tra_description=f"Transaction {i}",
             tra_situation=random.randint(1, 3),
-            tra_amount=random.randint(0, 1000),
-            tra_entry_date=datetime.utcnow().date(),
+            tra_amount=random.randint(-1000, 1000),
+            tra_entry_date=random_date,
             user_id=1,
             establishment_id=random.randint(1, 10),
             category_id=random.randint(1, 10),

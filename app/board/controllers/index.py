@@ -1,7 +1,6 @@
-import json
+import os
 import math
 from datetime import datetime
-import os
 
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract
@@ -16,7 +15,7 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 def index_controller():
     success = session.pop('success', None)
     if request.method == 'GET':
-        pg = int(request.form.get('pg', 1))
+        pg = int(request.args.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
 
         now = datetime.utcnow()
@@ -30,7 +29,6 @@ def index_controller():
         account = Account
 
         entries_all = db.session.query(
-            transaction.tra_entry_date,
             category.cat_name,
             category.cat_type,
             establishment.est_name,
@@ -48,10 +46,38 @@ def index_controller():
             func.strftime('%m', transaction.tra_entry_date) == now.strftime('%m'),
             func.strftime('%Y', transaction.tra_entry_date) == now.strftime('%Y')
         ).order_by(
-            transaction.tra_entry_date.desc()
+            transaction.tra_entry_date.asc()
         ).all()
 
-        entries = entries_all[pg_offset:(pg_offset + PG_LIMIT)]
+        last_mount_amount = db.session.query(
+            transaction.tra_amount
+        ).filter(
+            transaction.tra_status == True,
+            transaction.user_id == user_id,
+            extract('month', transaction.tra_entry_date) == now.month - 1,
+            extract('year', transaction.tra_entry_date) == now.year
+        ).order_by(
+            transaction.tra_entry_date.desc()
+        ).first()[0]
+
+        cumulative_balance = float(last_mount_amount) if last_mount_amount else 0
+
+        entries_with_flow = []
+        for row in entries_all:
+            cumulative_balance -= float(row.tra_amount)
+            entry = {
+                'tra_entry_date': row.tra_entry_date,
+                'cat_name': row.cat_name,
+                'cat_type': row.cat_type,
+                'est_name': row.est_name,
+                'tra_situation': row.tra_situation,
+                'tra_amount': row.tra_amount,
+                'tra_description': row.tra_description,
+                'cumulative_balance': cumulative_balance
+            }
+            entries_with_flow.append(entry)
+
+        entries = entries_with_flow[pg_offset:(pg_offset + PG_LIMIT)]
 
         total_pages = math.ceil(len(entries_all) / PG_LIMIT)
 
@@ -106,11 +132,11 @@ def index_controller():
         ).first()
 
         overall = db.session.query(
-            func.sum(analytic.ana_incomes - analytic.ana_expenses)
+            func.coalesce(func.sum(Transaction.tra_amount), 0)
         ).filter(
-            analytic.user_id == user_id,
-            analytic.ana_status == True
-        ).first()[0]
+            Transaction.user_id == user_id,
+            Transaction.tra_entry_date <= now.date()
+        ).scalar()
 
         incomes = analytics.ana_incomes
         expenses = analytics.ana_expenses
@@ -174,7 +200,7 @@ def index_controller():
         incomes = db.session.query(
             func.coalesce(func.sum(Transaction.tra_amount), 0)
         ).filter(
-            Transaction.tra_amount < 0,
+            Transaction.tra_amount > 0,
             Transaction.user_id == user_id,
             extract('month', Transaction.tra_entry_date) == now.month
         ).scalar()
@@ -182,25 +208,19 @@ def index_controller():
         expenses = db.session.query(
             func.coalesce(func.sum(Transaction.tra_amount), 0)
         ).filter(
-            Transaction.tra_amount > 0,
+            Transaction.tra_amount < 0,
             Transaction.user_id == user_id,
             extract('month', Transaction.tra_entry_date) == now.month
         ).scalar()
-
-        balance = incomes - expenses
-
-        user_id = user_id
 
         new_analytic = Analytic(
             ana_month=now.month,
             ana_year=now.year,
             ana_incomes=incomes,
             ana_expenses=expenses,
-            ana_balance=balance,
             user_id=user_id
         )
-        db.session.add(new_analytic)
-
-        db.session.merge()
+        db.session.merge(new_analytic)
+        db.session.commit()
         session['success'] = 'Lançamento cadastrado!'
         return redirect(url_for('board.index'))
