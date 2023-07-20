@@ -4,7 +4,7 @@ import string
 from datetime import datetime
 from flask import request, session, render_template, redirect, url_for
 
-from app.database.models import User
+from app.database.models import User, Category, Account, Establishment
 from app.database.database import db
 from app.library.mail import send_email
 from app.library.validation import encode_jwt, decode_jwt
@@ -54,6 +54,8 @@ def verify_controller(max_attempts):
                 user.use_date_updated = datetime.utcnow()
                 db.session.commit()
 
+                insert_default_records(user.id)
+
             return redirect(url_for('auth.login', success='Validação bem sucedida, favor efetuar login!'))
 
         elif session.get('attempt') <= (max_attempts - 2):
@@ -62,3 +64,43 @@ def verify_controller(max_attempts):
         else:
             session.clear()
             return redirect(url_for('auth.failed'))
+
+
+def insert_default_records(user_id):
+    default_category_1 = Category(
+        cat_name='Organizar (Saídas)',
+        cat_type=2,
+        user_id=user_id
+    )
+    default_category_2 = Category(
+        cat_name='Organizar (Entradas)',
+        cat_type=1,
+        user_id=user_id
+    )
+    db.session.add(default_category_1)
+    db.session.add(default_category_2)
+
+    default_account_1 = Account(
+        acc_name='Conta Bancária',
+        acc_description='Conta Bancária Padrão',
+        acc_is_bank=True,
+        acc_bank_name='Banco Dashflux',
+        acc_bank_branch='0001',
+        acc_bank_account='00001',
+        user_id=user_id
+    )
+    default_account_2 = Account(
+        acc_name='Conta Carteira',
+        acc_description='Conta Carteira Padrão',
+        acc_is_bank=False,
+        user_id=user_id
+    )
+    db.session.add(default_account_1)
+    db.session.add(default_account_2)
+
+    default_establishment = Establishment(
+        est_name='Não Informado',
+        user_id=user_id
+    )
+    db.session.add(default_establishment)
+    db.session.commit()

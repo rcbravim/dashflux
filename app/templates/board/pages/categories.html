@@ -52,9 +52,9 @@
                                                             %}>Todos os Tipos
                                                     </option>
                                                     <option value='1' {% if context.filter.type==
-                                                    '1' %}selected{% endif %}>Renda</option>
+                                                    '1' %}selected{% endif %}>Entrada</option>
                                                     <option value='2' {% if context.filter.type==
-                                                    '2' %}selected{% endif %}>Gasto</option>
+                                                    '2' %}selected{% endif %}>Saída</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -62,11 +62,11 @@
                                             <div class='mb-3'>
                                                 <label for='label'>Categoria</label>
                                                 <select class='form-select select2' id='label' name='label'>
-                                                    {% if context.labels %}
+                                                    {% if context.categories %}
                                                     <option value='' {% if not context.filter.label %}selected{% endif
                                                             %}>Todas as Categorias
                                                     </option>
-                                                    {% for row in context.labels %}
+                                                    {% for row in context.categories %}
                                                     <option {% if context.filter.label== row.cat_slug|md5 %}selected{%
                                                             endif %} value='{{ row.cat_slug|md5 }}'>
                                                         {{ row.cat_name }}
@@ -103,7 +103,6 @@
                                             <th class='align-middle'>Categoria</th>
                                             <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'></th>
-                                            <th class='align-middle'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -113,18 +112,13 @@
                                             <td>{{ row.cat_name|upper }}</td>
                                             <td>
                                                 {% if row.cat_type == 1 %}
-                                                <span class='badge badge-pill badge-soft-success font-size-12'>Renda</span>
+                                                <span class='badge badge-pill badge-soft-success font-size-12'>
+                                                    Entrada
+                                                </span>
                                                 {% else %}
-                                                <span class='badge badge-pill badge-soft-danger font-size-12'>Gasto</span>
+                                                <span class='badge badge-pill badge-soft-danger font-size-12'>
+                                                    Saída</span>
                                                 {% endif %}
-                                            </td>
-                                            <td>
-                                                <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded categories_details'
-                                                        data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
-                                                        data-value='{{ row.sub_slug|md5 }}'>
-                                                    Ver Detalhes
-                                                </button>
                                             </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
@@ -206,7 +200,7 @@
                         <div class='row'>
                             <div class='col-lg-12'>
                                 <div class='mb-3'>
-                                    <label for='description' class='form-label'>Nome</label>
+                                    <label for='add_name' class='form-label'>Nome</label>
                                     <input type='text' class='form-control valid_entry' id='add_name'
                                            name='add_name'
                                            placeholder='Digite o nome da categoria'

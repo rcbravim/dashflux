@@ -22,7 +22,7 @@ def accounts_controller():
         account = Account
 
         bank_accounts_all = db.session.query(
-            account.acc_slug,
+            # account.acc_slug,
             account.acc_is_bank,
             account.acc_date_created,
             account.acc_name,
@@ -38,7 +38,7 @@ def accounts_controller():
         ).all()
 
         not_bank_accounts_all = db.session.query(
-            account.acc_slug,
+            # account.acc_slug,
             account.acc_is_bank,
             account.acc_date_created,
             account.acc_name,
@@ -120,10 +120,10 @@ def accounts_controller():
         # other kind related
         description = request.form.get('description')
 
-        slug = f'{is_bank}|{account_name}|{bank}|{branch}|{account}' if is_bank else f'{is_bank}|{account_name}|{description}'
+        # todo: delete asap
+        # slug = f'{is_bank}|{account_name}|{bank}|{branch}|{account}' if is_bank else f'{is_bank}|{account_name}|{description}'
 
         new_account = Account(
-            acc_slug=slug,
             acc_name=account_name,
             acc_description=description,
             acc_is_bank=is_bank,

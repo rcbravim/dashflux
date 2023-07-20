@@ -68,9 +68,8 @@
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-                                            <th class='align-middle'>Nome</th>
                                             <th class='align-middle'>Data de registro</th>
-                                            <th class='align-middle'></th>
+                                            <th class='align-middle'>Nome</th>
                                             <th class='align-middle'></th>
                                             <th class='align-middle'></th>
                                         </tr>
@@ -78,17 +77,9 @@
                                         <tbody>
                                         {% for row in context.establishments %}
                                         <tr>
-                                            <td>{{ row.est_name|upper }}</td>
                                             <td>{{ row.est_date_created}}</td>
+                                            <td>{{ row.est_name|upper }}</td>
                                             <td>{{ row.cat_description|upper }}</td>
-                                            <td>
-                                                <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded beneficiary_details'
-                                                        data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
-                                                        data-value='{{ row.est_slug|md5 }}'>
-                                                    Ver Detalhes
-                                                </button>
-                                            </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     <a data-bs-toggle='modal' data-bs-target='.labelEditModal'

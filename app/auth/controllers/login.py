@@ -1,4 +1,5 @@
 from flask import redirect, url_for, request, render_template, session
+from flask_login import login_user
 from werkzeug.security import check_password_hash
 
 from app.database.models import User
@@ -7,7 +8,7 @@ from app.database.models import User
 def login_controller():
     success = session.pop('success', None)
     if request.method == 'GET':
-        return render_template('auth/pages/login.html', sucess=success)
+        return render_template('auth/pages/login.html', success=success)
 
     elif request.method == 'POST':
         error = None
@@ -31,4 +32,5 @@ def login_controller():
             session['user_id'] = user.id
             session['user_login'] = user.use_login
             session['success'] = 'Você está logado!'
+            login_user(user)
             return redirect(url_for('board.index'))

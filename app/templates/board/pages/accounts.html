@@ -93,7 +93,6 @@
                                             <th class='align-middle'>Agencia / Conta</th>
                                             <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'></th>
-                                            <th class='align-middle'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
@@ -104,15 +103,6 @@
                                             <td>{{ row.acc_bank_name|upper }}</td>
                                             <td>{{ row.acc_bank_branch }} / {{ row.acc_bank_account }}</td>
                                             <td><span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span>
-                                            </td>
-                                            <td>
-                                                <!-- Button trigger modal -->
-                                                <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded accounts_details'
-                                                        data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
-                                                        data-value='{{ row.acc_slug|md5 }}'>
-                                                    Ver detalhes
-                                                </button>
                                             </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
@@ -139,15 +129,6 @@
                                                 <span class='badge badge-pill badge-soft-primary font-size-12'>Outro
                                                     tipo
                                                 </span>
-                                            <td>
-                                                <!-- Button trigger modal -->
-                                                <button type='button'
-                                                        class='btn btn-primary btn-sm btn-rounded accounts_details'
-                                                        data-bs-toggle='modal' data-bs-target='.labelDetailsModal'
-                                                        data-value='{{ row.acc_slug|md5 }}'>
-                                                    Ver detalhes
-                                                </button>
-                                            </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     <a data-bs-toggle='modal' data-bs-target='.labelEditModal'

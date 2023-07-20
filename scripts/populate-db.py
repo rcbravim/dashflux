@@ -1,5 +1,6 @@
 import os
 import random
+import sys
 from datetime import timedelta
 
 from flask import Flask
@@ -13,6 +14,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance
 # init app with sqlalchemy instance
 db.init_app(app)
 
+only_user = True
+
 with app.app_context():
     # Criar usuário
     user = User(
@@ -21,6 +24,11 @@ with app.app_context():
         use_is_valid=True
     )
     db.session.add(user)
+
+    if only_user:
+        db.session.commit()
+        print('user dev cadastrado')
+        sys.exit()
 
     # Criar alguns registros de log fictícios
     for i in range(50):

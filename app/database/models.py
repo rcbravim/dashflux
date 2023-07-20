@@ -1,8 +1,10 @@
+from flask_login import UserMixin
+
 from app.database.database import db
 from datetime import datetime
 
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     use_login = db.Column(db.String(250), nullable=False)
     use_password = db.Column(db.String(128), nullable=False)
@@ -102,7 +104,7 @@ class Category(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    acc_slug = db.Column(db.String(250), unique=True, nullable=False)
+    # acc_slug = db.Column(db.String(250), unique=True, nullable=False)
     acc_name = db.Column(db.String(250), default=None)
     acc_description = db.Column(db.String(250), default=None)
     acc_is_bank = db.Column(db.Boolean, default=False)
@@ -116,7 +118,7 @@ class Account(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
 
     def __repr__(self):
-        return '<Financial %r>' % self.acc_slug
+        return '<Account %r>' % self.acc_name
 
 
 class Establishment(db.Model):

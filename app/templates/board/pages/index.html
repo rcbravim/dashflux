@@ -34,8 +34,9 @@
                                     <div class='d-flex'>
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Entradas</p>
-                                            <h4 class='mb-0'>
-                                                R$ {% if context.analytic %}{{ context.analytic.incomes|format_currency }}{%
+                                            <h4 class='mb-0 text-success'>
+                                                R$ {% if context.analytic %}{{ context.analytic.incomes|format_currency
+                                                }}{%
                                                 else %}0,00{% endif %}
                                             </h4>
                                         </div>
@@ -57,7 +58,8 @@
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Saídas</p>
                                             <h4 class='mb-0 text-danger'>
-                                                R$ {% if context.analytic %}{{ context.analytic.expenses|format_currency }}{%
+                                                R$ {% if context.analytic %}{{ context.analytic.expenses|format_currency
+                                                }}{%
                                                 else %}0,00{% endif %}
                                             </h4>
                                         </div>
@@ -85,7 +87,7 @@
                                                 R$ {{ context.analytic.balance|format_currency }}
                                             </h4>
                                             {% else %}
-                                            <h4 class='mb-0'>
+                                            <h4 class='mb-0 text-success'>
                                                 R$ {{ context.analytic.balance|format_currency }}
                                             </h4>
                                             {% endif %}
@@ -118,7 +120,7 @@
                                                 R$ {{ context.analytic.overall|format_currency }}
                                             </h4>
                                             {% else %}
-                                            <h4 class='mb-0'>
+                                            <h4 class='mb-0 text-success'>
                                                 R$ {{ context.analytic.overall|format_currency }}
                                             </h4>
                                             {% endif %}
@@ -214,45 +216,47 @@
                                             <th class='align-middle'>Estabelecimento</th>
                                             <th class='align-middle'>Descrição</th>
                                             <th class='align-middle'>Categoria</th>
-                                            <th class='align-middle'>Valor</th>
-                                            <th class='align-middle'>Saldo no Dia</th>
+                                            <th style='text-align: right;'>Valor</th>
+                                            <th style='text-align: right;'>Saldo no Dia</th>
                                             <th class='align-middle'>Status</th>
                                             <th class='align-middle'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in context.entries %}
-                                        <tr {% if row.tra_amount < 0 %}class="text-danger"{% endif %}>
-                                            <td>{{ row.tra_entry_date|format_date }}</td>
-                                            <td>{{ row.est_name|upper }}</td>
-                                            <td>{{ row.tra_description|upper }}</td>
-                                            <td>{{ row.cat_name|upper }}</td>
-                                            <td style="text-align: right;">{{ row.tra_amount|format_currency }}</td>
-                                            <td style="text-align: right;">{{ row.cumulative_balance|format_currency
-                                                }}
-                                            </td>
-                                            <td>
-                                                {% if row.tra_situation == 1 %}
-                                                <span class='badge badge-pill badge-soft-primary font-size-12'>Pago</span>
-                                                {% elif row.tra_situation == 2 %}
-                                                <span class='badge badge-pill badge-soft-secondary font-size-12'>Aberto</span>
-                                                {% elif row.tra_situation == 3 %}
-                                                <span class='badge badge-pill badge-soft-danger font-size-12'>Em Negociação</span>
-                                                {% elif row.tra_situation == 4 %}
-                                                <span class='badge badge-pill badge-soft-success font-size-12'>Recebido</span>
-                                                {% elif row.tra_situation == 5 %}
-                                                <span class='badge badge-pill badge-soft-warning font-size-12'>Agendado</span>
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <div class='d-flex gap-3'>
-                                                    <a class='text-success index_edit' style='cursor:pointer;'><i
-                                                            class='mdi mdi-pencil font-size-18'></i></a>
+                                        <tr class={% if row.tra_amount
+                                        < 0 %}"text-danger"{% else %}"text-success"
+                                        {% endif %}>
+                                        <td>{{ row.tra_entry_date|format_date }}</td>
+                                        <td>{{ row.est_name|upper }}</td>
+                                        <td>{{ row.tra_description|upper }}</td>
+                                        <td>{{ row.cat_name|upper }}</td>
+                                        <td style='text-align: right;'>{{ row.tra_amount|format_currency }}</td>
+                                        <td style='text-align: right;'>{{ row.cumulative_balance|format_currency}}</td>
+                                        <td>
+                                            {% if row.tra_situation == 1 %}
+                                            <span class='badge badge-pill badge-soft-primary font-size-12'>Pago</span>
+                                            {% elif row.tra_situation == 2 %}
+                                            <span class='badge badge-pill badge-soft-secondary font-size-12'>Aberto</span>
+                                            {% elif row.tra_situation == 3 %}
+                                            <span class='badge badge-pill badge-soft-danger font-size-12'>Em Negociação</span>
+                                            {% elif row.tra_situation == 4 %}
+                                            <span class='badge badge-pill badge-soft-success font-size-12'>Recebido</span>
+                                            {% elif row.tra_situation == 5 %}
+                                            <span class='badge badge-pill badge-soft-warning font-size-12'>Agendado</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
+                                               class='text-success index_edit' style='cursor:pointer;'
+                                               data-value='{{ row.id }}'><i
+                                                    class='mdi mdi-pencil font-size-18'></i></a>
 
-                                                    <a class='text-danger index_del' style='cursor:pointer;'><i
-                                                            class='mdi mdi-delete font-size-18'></i></a>
-                                                </div>
-                                            </td>
+                                            <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
+                                               class='text-danger index_del' style='cursor:pointer;'
+                                               data-value='{{ row.id }}'><i
+                                                    class='mdi mdi-delete font-size-18'></i></a>
+                                        </td>
                                         </tr>
                                         {% endfor %}
                                         </tbody>
@@ -318,6 +322,8 @@
             </div>
             <form class='needs-validation' action="{{ url_for('board.index') }}" novalidate method='post'>
                 {{ csrf_token }}
+                <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                <input type='hidden' name='y' value='{{ context.filter.year }}'/>
                 <div class='modal-body'>
                     <div class='content mt-1'>
                         <div class='row'>
@@ -334,8 +340,10 @@
                                     <label for='category' class='form-label'>Categoria<span class='text-danger'>*</span></label>
                                     <select class='form-select category_modal' id='category' name='category' required>
                                         {% if context.categories %}
-                                        <option value='' selected disabled>Escolha a Categoria</option>
                                         {% for row in context.categories %}
+                                        {% if row.id == 0 %}
+                                        <option value='{{ row.id }}' selected>{{ row.cat_name }}</option>
+                                        {% endif %}
                                         <option value='{{ row.id }}'>{{ row.cat_name }}</option>
                                         {% endfor %}
                                         {% else %}
@@ -366,8 +374,12 @@
                                             class='text-danger'>*</span></label>
                                     <select class='form-select' id='establishment' name='establishment' required>
                                         {% if context.establishments %}
-                                        <option value='' selected disabled>Escolha o Estabelecimento</option>
                                         {% for row in context.establishments %}
+
+                                        {% if row.id == 0 %}
+                                        <option value='{{ row.id }}' selected>{{ row.est_name }}</option>
+                                        {% endif %}
+
                                         <option value='{{ row.id }}'>{{ row.est_name }}</option>
                                         {% endfor %}
                                         {% else %}
@@ -387,15 +399,14 @@
                                             class='text-danger'>*</span></label>
                                     <select class='form-select' id='account' name='account' required>
                                         {% if context.accounts %}
-                                        <option value='' selected disabled>Escolha a conta usada</option>
                                         {% for row in context.accounts %}
+
+                                        {% if row.id == 0 %}
+                                        <option value='{{ row.id }}' selected>{{ row.acc_name|upper }}</option>
+                                        {% endif %}
+
                                         <option value='{{ row.id }}'>
-                                            {% if row.acc_is_bank %}
-                                            {{ row.acc_bank_name|upper }} | {{ row.acc_bank_branch }} |
-                                            {{ row.acc_bank_account }} | ({{ row.acc_name|upper }})
-                                            {% else %}
-                                            {{ row.acc_name|upper }} | {{ row.acc_description|upper }}
-                                            {% endif %}
+                                            {{ row.acc_name|upper }}
                                         </option>
                                         {% endfor %}
                                         {% else %}
@@ -413,8 +424,8 @@
                                     <label for='type_transaction' class='form-label'>Tipo<span
                                             class='text-danger'>*</span></label>
                                     <select class='form-select' id='type_transaction' name='type_transaction'>
-                                        <option value='1' selected>Saída</option>
-                                        <option value='2'>Entrada</option>
+                                        <option value='1'>Entrada</option>
+                                        <option value='2' selected>Saída</option>
                                     </select>
                                 </div>
                             </div>
@@ -452,74 +463,6 @@
 </div>
 <!-- end newEntryModal -->
 
-<!-- labelDetailsModal -->
-<div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel'
-     aria-hidden='true'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes de entrada</h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div class='modal-body'>
-                <div class='form-row col-md d-flex justify-content-between'>
-                    <p class='mb-2 modal_entry_date'>Data de entrada: <span class='text-primary'></span></p>
-                    <span class='modal_entry_status badge badge-pill font-size-12 mb-2'></span>
-                </div>
-                <p class='mb-2 modal_entry_amount'>Quantia: <span class='text-primary'></span></p>
-                <p class='mb-4 modal_entry_description d-none'>Descrição: <span class='text-primary'></span></p>
-                <h6>Categoria de entrada</h6>
-                <hr class='m-0 mb-3'>
-                <div class='form-row col-md d-flex justify-content-between'>
-                    <p class='mb-2 modal_category'>Categoria: <span class='text-primary'></span></p>
-                    <span class='modal_category_type badge badge-pill font-size-12 mb-2'></span>
-                </div>
-                <p class='mb-4 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
-                <h6>Estabelecimento da entrada</h6>
-                <hr class='m-0 mb-3'>
-                <p class='mb-2 modal_establishment_category'>Categoria do Estabelecimento: <span
-                        class='text-primary'></span></p>
-                <p class='mb-4 modal_establishment_name'>Nome do Estabelecimento: <span class='text-primary'></span></p>
-                <h6>Informação Financeira</h6>
-                <hr class='m-0 mb-3'>
-                <div class='d-none bank_account_modal'>
-                    <p class='mb-2 modal_bank'>Nome do Banco: <span class='text-primary'></span></p>
-                    <p class='mb-2 modal_branch'>Número da agência: <span class='text-primary'></span></p>
-                    <p class='mb-4 modal_account'>Número da conta: <span class='text-primary'></span></p>
-                </div>
-                <div class='d-none cash_pay_modal'>
-                    <p class='mb-4 modal_cash'>Fonte: <span class='text-primary'></span></p>
-                </div>
-                <div class='d-none cost_center_modal'>
-                    <p class='mb-2 modal_cost_center'>Centro de Custo: <span class='text-primary'></span></p>
-                    <p class='mb-2 modal_description d-none'>Descrição: <span class='text-primary'></span></p>
-                </div>
-                <div class='d-none client_modal'>
-                    <h6>Informação do Cliente</h6>
-                    <hr class='m-0 mb-3'>
-                    <p class='mb-4 modal_client'>Nome do Cliente: <span class='text-primary'></span></p>
-                    <h6>Localização do Cliente</h6>
-                    <hr class='m-0 mb-3'>
-                    <div class='form-row col-md d-flex justify-content-between'>
-                        <p class='mb-2 modal_region'>País: <span class='text-primary'></span></p>
-                        <img class='modal_flag' alt='' height='20'>
-                    </div>
-                    <p class='mb-2 modal_state'>Estado: <span class='text-primary'></span></p>
-                    <p class='mb-2 modal_city'>Cidade: <span class='text-primary'></span></p>
-                    <div class='d-none extra_client_modal'>
-                        <h6>Outras Informações</h6>
-                        <hr class='m-0 mb-3'>
-                        <p class='mb-2 modal_email d-none'>E-mail: <span class='text-primary'></span></p>
-                        <p class='mb-2 modal_phone d-none'>Telefone: <span class='text-primary'></span></p>
-                        <p class='mb-2 modal_responsible d-none'>Responsavel: <span class='text-primary'></span></p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- end labelDetailsModal -->
-
 <!-- labelEditModal Modal -->
 <div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
     <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
@@ -528,7 +471,8 @@
                 <h5 class='modal-title'>Editar Entrada</h5>
                 <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
-            <form class='needs-validation' method='post' action="{{ url_for('board.index_edit') }}" novalidate>
+            <form class='needs-validation' method='post' action="{{ url_for('board.index') }}" novalidate>
+                <input type='hidden' name='_method' value='PUT'/>
                 {{ csrf_token }}
                 <input type='hidden' id='edit_index' name='edit_index'/>
                 <div class='modal-body'>
@@ -536,26 +480,21 @@
                         <div class='row'>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='entry_date_edit' class='form-label'>Data de Entrada<span
+                                    <label for='modal_entry_date' class='form-label'>Data de Entrada<span
                                             class='text-danger'>*</span></label>
-                                    <input type='date' class='form-control valid_date_nd entry_val' id='entry_date_edit'
-                                           name='entry_date_edit' value='' required>
+                                    <input type='date' class='form-control valid_date_nd entry_val' id='modal_entry_date'
+                                           name='modal_entry_date' value='' required>
                                     <div class='invalid-feedback'>Insira a data de entrada</div>
                                 </div>
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
                                     <label for='category' class='form-label'>Categoria<span class='text-danger'>*</span></label>
-                                    <select class='form-select category_modal_edit' id='category_edit' required>
-                                        {% if context.categories %}
-                                        <option value='' selected disabled>Selecione a categoria</option>
+                                    <select class='form-select category_modal_edit' id='category_edit'
+                                            name='category_edit' required>
                                         {% for row in context.categories %}
-
+                                        <option value='{{ row.id }}'>{{ row.cat_name }}</option>
                                         {% endfor %}
-                                        {% else %}
-                                        <option value='' selected disabled>Registre uma categoria antes de continuar
-                                        </option>
-                                        {% endif %}
                                     </select>
                                     <div class='invalid-feedback'>Por favor, selecione uma categoria</div>
                                 </div>
@@ -564,20 +503,7 @@
                         <div class='row'>
                             <div class='col-lg-12'>
                                 <div class='mb-3'>
-                                    <label for='subcategory_edit' class='form-label'>Subcategoria<span
-                                            class='text-danger'>*</span></label>
-                                    <select class='form-select subcategory_modal' id='subcategory_edit'
-                                            name='subcategory_edit' required>
-                                        <option value='' selected disabled>Selecione uma Subcategoria</option>
-                                    </select>
-                                    <div class='invalid-feedback'>Selecione uma subcategoria</div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label for='description_edit' class='form-label'>Observações</label>
+                                    <label for='description_edit' class='form-label'>Descrição | Observações</label>
                                     <input type='text' class='form-control valid_opt_entry_nd note_modal'
                                            id='description_edit' name='description_edit'
                                            placeholder='Insira suas Observações' maxlength='128'>
@@ -590,55 +516,51 @@
                                 <div class='mb-3'>
                                     <label for='establishment_edit' class='form-label'>Estabelecimento<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select establishment_modal' id='establishment_edit'
+                                    <select class='form-select modal_establishment_name' id='establishment_edit'
                                             name='establishment_edit' required>
-                                        {% if context.establishments %}
-                                        <option value='' selected disabled>Selecione o Estabelecimento</option>
                                         {% for row in context.establishments %}
-
+                                        <option value='{{ row.id }}'>{{ row.est_name }}</option>
                                         {% endfor %}
-                                        {% else %}
-                                        <option value='' selected disabled>Please register one establishment before
-                                            continue
-                                        </option>
-                                        {% endif %}
                                     </select>
-                                    <div class='invalid-feedback'>Selecione um estabelecimento, mesmo que seja você
-                                        mesmo
-                                    </div>
                                 </div>
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='client_edit' class='form-label'>Cliente</label>
-                                    <select class='form-select client_edit_modal' id='client_edit' name='client_edit'>
-                                        <option value='' selected disabled>Escolha o cliente, se aplicável</option>
-                                        {% for row in context.clients %}
-
+                                    <label for='account' class='form-label'>Conta<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select' id='account' name='account' required>
+                                        {% for row in context.accounts %}
+                                        <option value='{{ row.id }}'>
+                                            {% if row.acc_is_bank %}
+                                            {{ row.acc_bank_name|upper }} | {{ row.acc_bank_branch }} |
+                                            {{ row.acc_bank_account }} | ({{ row.acc_name|upper }})
+                                            {% else %}
+                                            {{ row.acc_name|upper }} | {{ row.acc_description|upper }}
+                                            {% endif %}
+                                        </option>
                                         {% endfor %}
                                     </select>
+                                    <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
                                 </div>
                             </div>
                         </div>
                         <div class='row'>
-                            <div class='col-lg-6'>
+                            <div class='col-lg'>
                                 <div class='mb-3'>
-                                    <label for='cost_center_edit' class='form-label'>Centro de Custo</label>
-                                    <select class='form-select cost_center_edit_modal' id='cost_center_edit'
-                                            name='cost_center_edit'>
-                                        <option value='' selected disabled>Escolha o centro de custo, se aplicável
-                                        </option>
-                                        {% for row in context.cost_centers %}
-
-                                        {% endfor %}
+                                    <label for='type_transaction' class='form-label'>Tipo<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select type_transaction_modal' id='type_transaction'
+                                            name='type_transaction'>
+                                        <option value='1'>Entrada</option>
+                                        <option value='2'>Saída</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class='col-lg-6'>
+                            <div class='col-lg'>
                                 <div class='mb-3'>
-                                    <label for='condition_edit' class='form-label'>Estado<span
+                                    <label for='situation' class='form-label'>Estado<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select status_modal' id='condition_edit' name='condition_edit'>
+                                    <select class='form-select situation_modal' id='situation' name='situation'>
                                         <option value='1' selected>Pago</option>
                                         <option value='2'>Aberto</option>
                                         <option value='3'>Em Negociação</option>
@@ -647,33 +569,7 @@
                                     </select>
                                 </div>
                             </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-6'>
-                                <div class='mb-3'>
-                                    <label for='account_edit' class='form-label'>Conta<span class='text-danger'>*</span></label>
-                                    <select class='form-select account_modal' id='account_edit' name='account_edit'
-                                            required>
-                                        {% if context.accounts %}
-                                        <option value='' selected disabled>Escolha a conta usada</option>
-                                        {% for row in context.accounts %}
-
-                                        {% if row.fin_bank_branch %}
-                                        {{ row.fin_bank_branch }} / {{ row.fin_bank_account }}
-                                        {% else %}
-                                        Transaction using cash
-                                        {% endif %}
-                                        </option>
-                                        {% endfor %}
-                                        {% else %}
-                                        <option value='' selected disabled>Registre uma conta antes de continuar
-                                        </option>
-                                        {% endif %}
-                                    </select>
-                                    <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
-                                </div>
-                            </div>
-                            <div class='col-lg-6'>
+                            <div class='col-lg'>
                                 <div class='mb-3'>
                                     <label for='amount_edit' class='form-label'>Quantia<span
                                             class='text-danger'>*</span></label>
@@ -699,72 +595,31 @@
     <div class='modal-dialog modal-dialog-centered' role='document'>
         <div class='modal-content'>
             <div class='modal-header'>
-                <h5 class='modal-title'>Remover Entrada</h5>
+                <h5 class='modal-title'>Remover Registro</h5>
                 <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
-            <form class='needs-validation' action="{{ url_for('board.index_delete') }}" novalidate method='post'>
+            <form class='needs-validation' action="{{ url_for('board.index') }}" novalidate method='post'>
+                <input type='hidden' name='_method' value='DELETE'/>
                 {{ csrf_token }}
                 <input type='hidden' id='del_index' name='del_index'/>
                 <div class='modal-body'>
-                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção desta entrada?</p>
+                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção deste registro?</p>
                     <div class='form-row col-md d-flex justify-content-between'>
-                        <p class='mb-2 modal_entry_date'>Data da Entrada: <span class='text-primary'></span></p>
+                        <input type='hidden' id='modal_entry_date_delete' name='modal_entry_date_delete'/>
+                        <p class='mb-2 modal_entry_date'>Data: <span
+                                class='text-primary'></span></p>
                         <span class='modal_entry_status badge badge-pill font-size-12 mb-2'></span>
                     </div>
                     <p class='mb-2 modal_entry_amount'>Quantia: <span class='text-primary'></span></p>
-                    <p class='mb-4 modal_entry_description d-none'>Descrição: <span class='text-primary'></span></p>
-                    <h6>Categoria da Entrada</h6>
-                    <hr class='m-0 mb-3'>
-                    <div class='form-row col-md d-flex justify-content-between'>
-                        <p class='mb-2 modal_category'>Categoria: <span class='text-primary'></span></p>
-                        <span class='modal_category_type badge badge-pill font-size-12 mb-2'></span>
-                    </div>
-                    <p class='mb-4 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
-                    <h6>Estabelecimento da entrada</h6>
-                    <hr class='m-0 mb-3'>
-                    <p class='mb-2 modal_establishment_category'>Categoria Beneficiária: <span
-                            class='text-primary'></span></p>
-                    <p class='mb-4 modal_establishment_name'>Nome do Estabelecimento: <span class='text-primary'></span>
-                    </p>
-                    <h6>Informação Financeira</h6>
-                    <hr class='m-0 mb-3'>
-                    <div class='d-none bank_account_modal'>
-                        <p class='mb-2 modal_bank'>Nome do Banco: <span class='text-primary'></span></p>
-                        <p class='mb-2 modal_branch'>Número da Agência: <span class='text-primary'></span></p>
-                        <p class='mb-4 modal_account'>Número da Conta: <span class='text-primary'></span></p>
-                    </div>
-                    <div class='d-none cash_pay_modal'>
-                        <p class='mb-4 modal_cash'>Fonte: <span class='text-primary'></span></p>
-                    </div>
-                    <div class='d-none cost_center_modal'>
-                        <p class='mb-2 modal_cost_center'>Centro de Custo: <span class='text-primary'></span></p>
-                        <p class='mb-2 modal_description d-none'>Descrição: <span class='text-primary'></span></p>
-                    </div>
-                    <div class='d-none client_modal'>
-                        <h6>Informações do Cliente</h6>
-                        <hr class='m-0 mb-3'>
-                        <p class='mb-4 modal_client'>Nome do Cliente: <span class='text-primary'></span></p>
-                        <h6>Localização do Cliente</h6>
-                        <hr class='m-0 mb-3'>
-                        <div class='form-row col-md d-flex justify-content-between'>
-                            <p class='mb-2 modal_region'>País: <span class='text-primary'></span></p>
-                            <img class='modal_flag' alt='' height='20'>
-                        </div>
-                        <p class='mb-2 modal_state'>Estado: <span class='text-primary'></span></p>
-                        <p class='mb-2 modal_city'>Cidade: <span class='text-primary'></span></p>
-                        <div class='d-none extra_client_modal'>
-                            <h6>Outras Informações</h6>
-                            <hr class='m-0 mb-3'>
-                            <p class='mb-2 modal_email d-none'>E-mail: <span class='text-primary'></span></p>
-                            <p class='mb-2 modal_phone d-none'>Telefone: <span class='text-primary'></span></p>
-                            <p class='mb-2 modal_responsible d-none'>Responsavel: <span class='text-primary'></span></p>
-                        </div>
-                    </div>
+                    <p class='mb-2 modal_entry_type'>Tipo: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_entry_description'>Descrição: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_category_name'>Categoria: <span class='text-primary'></span></p>
+                    <p class='mb-4 modal_establishment_name'>Estabelecimento: <span class='text-primary'></span></p>
                 </div>
                 <div class='modal-footer'>
                     <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
                     </button>
-                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover Entrada</button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover Registro</button>
                 </div>
             </form>
         </div>

@@ -1,7 +1,15 @@
 from flask import Blueprint
+from flask_login import login_required
+
 from .controllers import *
 
 bp = Blueprint('board', __name__, url_prefix='/board')
+
+
+@bp.before_request
+@login_required
+def require_login():
+    pass
 
 
 @bp.route('/index', methods=['GET', 'POST'])
@@ -9,6 +17,7 @@ def index():
     return index_controller()
 
 
+@login_required
 @bp.route('/profile', methods=['GET', 'POST'])
 def profile():
     return profile_controller()
