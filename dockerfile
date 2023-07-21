@@ -1,4 +1,10 @@
 FROM python:3.10-slim-buster
+
+# create venv
+ENV VIRTUAL_ENV=/venv
+RUN python -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 WORKDIR /app
 COPY . .
 
@@ -7,11 +13,8 @@ RUN apt-get update -qq \
     && pip install --upgrade pip \
     && pip install -r requirements.txt
 
-# database
-RUN flask --app home init-db
-
-# countries and cities -> TODO: ajustar para ocorrer na primeira vez
-# RUN python3 scripts/etl-paises-db.py
+# init database
+RUN flask init-db
 
 EXPOSE 5000
 

@@ -1,0 +1,128 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+
+<!--<!doctype html>-->
+<!--<html lang="en">-->
+
+<!--    <head>-->
+<!--        -->
+<!--        <meta charset="utf-8" />-->
+<!--        <title>FAQs | Skote - Admin & Dashboard Template</title>-->
+<!--        <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--        <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />-->
+<!--        <meta content="Themesbrand" name="author" />-->
+<!--        &lt;!&ndash; App favicon &ndash;&gt;-->
+<!--        <link rel="shortcut icon" href="global/assets/images/favicon.ico">-->
+
+<!--        &lt;!&ndash; Bootstrap Css &ndash;&gt;-->
+<!--        <link href="global/assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css" />-->
+<!--        &lt;!&ndash; Icons Css &ndash;&gt;-->
+<!--        <link href="global/assets/css/icons.min.css" rel="stylesheet" type="text/css" />-->
+<!--        &lt;!&ndash; App Css&ndash;&gt;-->
+<!--        <link href="global/assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css" />-->
+
+<!--    </head>-->
+
+<body data-topbar="dark">
+
+<!-- <body data-layout="horizontal" data-topbar="dark"> -->
+
+<!-- Begin page -->
+<div id="layout-wrapper">
+
+
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class="main-content">
+
+        <div class="page-content">
+            <div class="container-fluid">
+
+                <!-- start page title -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="page-title-box d-flex align-items-center justify-content-between">
+                            <h4 class="mb-0 font-size-18">Suporte</h4>
+
+                            <div class="page-title-right">
+                                <ol class="breadcrumb m-0">
+                                    <li class="breadcrumb-item"><a href="javascript: void(0);">Info</a></li>
+                                    <li class="breadcrumb-item active">Suporte</li>
+                                </ol>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+
+                <div class="checkout-tabs">
+                    <div class="row">
+                        <div class="col-lg">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <div class="col-xl">
+                                            <h4 class="text-primary mb-3">Envie uma mensagem!</h4>
+                                            <form action="{{ url_for('board.support') }}" novalidate method='post'>
+                                                <div class="row mb-3">
+                                                    <div class="col-lg">
+                                                        <textarea class="form-control" id="projectdesc" rows="3"
+                                                                  placeholder="Enter Project Description..."></textarea>
+                                                    </div>
+                                                </div>
+                                                <div class="input-group bg-light rounded">
+                                                    <input type="email" class="form-control bg-transparent border-0"
+                                                           placeholder="Enter Email address"
+                                                           aria-label="Recipient's username"
+                                                           aria-describedby="button-addon2">
+
+                                                    <button class="btn btn-primary" type="submit" id="button-addon2">
+                                                        <i class="bx bxs-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-3">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row justify-content-center">
+                                        <div class="col-xl">
+                                            <h4 class="text-primary mb-3">Apoie este projeto</h4>
+
+<!--                                            <img class="text-center"-->
+<!--                                                 src="{{ url_for('static', filename='board/images/qr-code.jpg') }}"-->
+<!--                                                 height='100'>-->
+<!--                                                <h3>-->
+<!--                                                    00020126580014br.gov.bcb.pix0136382f7439-f4fe-4f64-bf54-d6e383b33ba85204000053039865802BR5920Raphael Costa Bravim6009Sao Paulo62070503***6304EB82-->
+<!--                                                </h3>-->
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+
+            </div> <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+
+    </div>
+    <!-- end main content-->
+
+</div>
+<!-- END layout-wrapper -->
+
+</body>
+
+{% include 'board/partials/footer.html' %}

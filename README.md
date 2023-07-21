@@ -28,13 +28,13 @@ $ pip install -r requirements.txt
 ### Initiate Database
 
 ```bash
-$ python flask --app home init-db
+$ python flask init-db
 ```
 
 ### Run Application
 
 ```bash
-$ python flask --app home run
+$ python flask run --debug
 ```
 
 ### PyCharm Community
@@ -42,8 +42,8 @@ $ python flask --app home run
 # Module name: 
     flask
 # Parameters:
-    --app home init-db (to init database)
-    --app home run (to run application)
+    init-db (to init database)
+    run --debug --reload (to run application, in debug mode)
 ```
 
 ## Deploy (AWS EC2)
@@ -59,9 +59,9 @@ $ python flask --app home run
 - generate an ssh key: ssh-keygen -t rsa
 - put the .pub file content on GitHub as a deployment key
 - clone the repository in some ec2 folder (e.g. /app) using ssh git clone
-- access the project folder (cd flask-invofinance)
-- docker build -t flask-invofinance . 
-- sudo docker run -d --name flask-invofinance -p 5000:5000 -v $(pwd)/instance:/app/instance --restart always flask-invofinance
+- access the project folder (cd dashflux)
+- docker build -t dashflux . 
+- sudo docker run -d --name dashflux -p 5000:5000 -v $(pwd)/instance:/app/instance --restart always dashflux
 - install and configure nginx
   - sudo yum install nginx
   - sudo service nginx start

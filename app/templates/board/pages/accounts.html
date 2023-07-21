@@ -1,0 +1,471 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+<div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+        <div class='page-content'>
+            <div class='container-fluid'>
+                <!-- start page title -->
+                <div class='row'>
+                    <div class='col-12'>
+                        <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                            <h4 class='mb-sm-0 font-size-18'>CONTAS</h4>
+                            <div class='page-title-right'>
+                                <ol class='breadcrumb m-0'>
+                                    <li class='breadcrumb-item'>Etiquetas</li>
+                                    <li class='breadcrumb-item active'>Contas</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                <div class='row'>
+                    <div class='col-12'>
+                        <div class='card'>
+                            <div class='card-body'>
+                                <div class='row'>
+                                    <div class='col-sm-12'>
+                                        <div class='text-sm-end'>
+                                            <a class='btn btn-primary waves-effect waves-light mb-3'
+                                               data-bs-toggle='modal'
+                                               data-bs-target='.addAccountModal'>
+                                                <i class='mdi mdi-plus'></i>Adicionar Conta
+                                            </a>
+                                        </div>
+                                    </div><!-- end col-->
+                                </div>
+                                <hr class='mt-0 mb-3'>
+                                <form class='form-horizontal' action="{{ url_for('board.accounts') }}" method='get'>
+                                    <div class='row mb-3 align-items-end'>
+                                        <div class='col-sm-4'>
+                                            <div class='mb-3'>
+                                                <label for='type'>Tipo</label>
+                                                <select class='form-select select2-search-disable' id='type'
+                                                        name='type'>
+                                                    <option value='' selected>Todos os tipos</option>
+                                                    <option value='2' {% if context.filter.type==
+                                                    '2' %}selected{% endif %}>Conta bancária</option>
+                                                    <option value='1' {% if context.filter.type==
+                                                    '1' %}selected{% endif %}>Outros tipos (carteira, cofre,
+                                                    etc)</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-6'>
+                                            <div class='mb-3'>
+                                                <label for='search'>Pesquisa de texto</label>
+                                                <input type='text' class='form-control' id='search' name='search'
+                                                       placeholder='Pesquise por centro de custo, nome do banco, conta ou descrição'
+                                                       value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
+                                            </div>
+                                        </div>
+                                        <div class='col-sm align-self-end'>
+                                            <div class='mb-3'>
+                                                <div class='text-sm-end d-grid'>
+                                                    <button type='submit' class='btn btn-primary w-xs'>Pesquisar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                                {% if success %}
+                                <div class='alert alert-success mb-4' role='alert'>{{ success }}</div>
+                                {% elif error %}
+                                <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                                {% endif %}
+                                {% if context.accounts %}
+                                <div class='table-responsive'>
+
+                                    <!--                                    <label for='type'>Contas Bancárias</label>-->
+                                    <table class='table align-middle table-nowrap table-check'>
+                                        <thead class='table-light'>
+                                        <tr>
+                                            <th class='align-middle'>Data de registro</th>
+                                            <th class='align-middle'>Nome da conta</th>
+                                            <th class='align-middle'>Instituição</th>
+                                            <th class='align-middle'>Agencia / Conta</th>
+                                            <th class='align-middle'>Tipo</th>
+                                            <th class='align-middle'></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for row in context.accounts.bank_accounts %}
+                                        <tr>
+                                            <td>{{ row.acc_date_created }}</td>
+                                            <td>{{ row.acc_name|upper }}</td>
+                                            <td>{{ row.acc_bank_name|upper }}</td>
+                                            <td>{{ row.acc_bank_branch }} / {{ row.acc_bank_account }}</td>
+                                            <td><span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span>
+                                            </td>
+                                            <td>
+                                                <div class='d-flex gap-3'>
+                                                    <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-success accounts_edit' style='cursor:pointer;'><i
+                                                            class='mdi mdi-pencil font-size-18'></i></a>
+                                                    <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-danger accounts_del' style='cursor:pointer;'><i
+                                                            class='mdi mdi-delete font-size-18'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                        {% for row in context.accounts.not_bank_accounts %}
+                                        <tr>
+                                            <td>{{ row.acc_date_created }}</td>
+                                            <td>{{ row.acc_name|upper }}</td>
+                                            <td>{{ row.acc_description|upper }}</td>
+                                            <td></td>
+                                            <td>
+                                                <span class='badge badge-pill badge-soft-primary font-size-12'>Outro
+                                                    tipo
+                                                </span>
+                                            <td>
+                                                <div class='d-flex gap-3'>
+                                                    <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-success accounts_edit' style='cursor:pointer;'><i
+                                                            class='mdi mdi-pencil font-size-18'></i></a>
+                                                    <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
+                                                       data-value='{{ row.acc_slug|md5 }}'
+                                                       class='text-danger accounts_del' style='cursor:pointer;'><i
+                                                            class='mdi mdi-delete font-size-18'></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <form action="{{ url_for('board.accounts') }}" method='get'>
+                                    <input type='hidden' name='type' value='{{ context.filter.type }}'/>
+                                    <input type='hidden' name='search' value='{{ context.filter.search }}'/>
+                                    <ul class='pagination pagination-rounded justify-content-end mb-2'>
+                                        <li class='page-item {% if context.pages.pg == 1 %}disabled{% endif %}'>
+                                            <button class='page-link' type='submit' name='pg' value='1'
+                                                    aria-label='First'>
+                                                <i class='mdi mdi-chevron-double-left'></i>
+                                            </button>
+                                        </li>
+                                        {% for item in context.pages.pg_range %}
+                                        <li class='page-item {% if context.pages.pg == item %}active{% endif %}'>
+                                            <button class='page-link' type='submit' name='pg' value='{{ item }}'>{{ item
+                                                }}
+                                            </button>
+                                        </li>
+                                        {% endfor %}
+                                        <li class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
+                                            <button class='page-link' type='submit' name='pg'
+                                                    value='{{ context.pages.total_pg }}' aria-label='Last'>
+                                                <i class='mdi mdi-chevron-double-right'></i>
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </form>
+                                {% else %}
+                                <div class='table-responsive'>
+                                    <div class='card-body'>Nenhum centro de custo registrado ou conta bancária.</div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end row -->
+            </div>
+            <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+</div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- addAccountModal Modal -->
+<div class='modal fade addAccountModal' id='addAccountModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Adicionar Financeiro</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body'>
+                <div class='content mt-1'>
+                    <div class='row'>
+                        <div class='col-lg-12'>
+                            <div class='mb-3'>
+                                <label class='control-label'>Tipo de Financeiro</label>
+                                <select class='form-control select2-search-disable' id='financial_label_choise'>
+                                    <option selected disabled>Selecione o tipo de conta</option>
+                                    <option value='BA'>Conta Bancária</option>
+                                    <option value='CC'>Outro Tipo de Conta</option>
+                                </select>
+                            </div>
+                            <div class='card d-none' id='cost_center_label'>
+                                <form class='needs-validation' action="{{ url_for('board.accounts') }}" novalidate
+                                      method='post'>
+                                    {{ csrf_token }}
+                                    <input type='hidden' name='is_bank' value='false'>
+                                    <div class='row'>
+                                        <div class='col-md-4'>
+                                            <div class='mb-3'>
+                                                <label for='name' class='form-label'>Nome<span
+                                                        class='text-danger'>*</span></label>
+                                                <input type='text' class='form-control valid_entry'
+                                                       id='name' name='name'
+                                                       placeholder='Digite o nome do centro de custo' required>
+                                                <div class='invalid-feedback'>Forneça um nome para a conta
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='col-md'>
+                                            <div class='mb-3'>
+                                                <label for='description' class='form-label'>Descrição</label>
+                                                <input type='text' class='form-control valid_opt_entry'
+                                                       id='description' name='description'
+                                                       placeholder='Insira a descrição da conta, se aplicável'>
+                                                <div class='invalid-feedback'></div>
+                                            </div>
+                                        </div>
+                                        <div class='modal-footer'>
+                                            <button type='button' class='btn btn-secondary waves-effect'
+                                                    data-bs-dismiss='modal'>Cancelar
+                                            </button>
+                                            <button type='submit' class='btn btn-primary waves-effect waves-light'>
+                                                Adicionar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class='card d-none' id='account_label'>
+                                <form class='needs-validation' action="{{ url_for('board.accounts') }}" novalidate
+                                      method='post'>
+                                    {{ csrf_token }}
+                                    <input type='hidden' name='is_bank' value='true'>
+                                    <div class='row'>
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='name' class='form-label'>Nome (Apelido)<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control valid_entry_nd' id='name'
+                                                           name='name'
+                                                           placeholder='Insira o nome da conta ou apelido' required>
+                                                    <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                                </div>
+                                            </div>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='bank' class='form-label'>Instituição<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control valid_entry_nd' id='bank'
+                                                           name='bank'
+                                                           placeholder='Insira o nome do banco' required>
+                                                    <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='branch' class='form-label'>Agência<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control mask_number' id='branch'
+                                                           name='branch'
+                                                           placeholder='Digite o número da agência bancária'
+                                                           required>
+                                                    <div class='invalid-feedback'>Por favor, forneça o número da sua
+                                                        agência bancária
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='account' class='form-label'>Conta<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control mask_number' id='account'
+                                                           name='account'
+                                                           placeholder='Digite o número da conta' required>
+                                                    <div class='invalid-feedback'>Forneça o número da sua conta
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='modal-footer'>
+                                                <button type='button' class='btn btn-secondary waves-effect'
+                                                        data-bs-dismiss='modal'>Cancelar
+                                                </button>
+                                                <button type='submit' class='btn btn-primary waves-effect waves-light'>
+                                                    Adicionar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--            </form>-->
+        </div>
+    </div>
+</div>
+<!-- end addAccountModal -->
+
+<!-- labelDetailsModal -->
+<div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel'
+     aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes da Etiqueta Financeira</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body'>
+                <div class='form-row col-md d-flex justify-content-between'>
+                    <p class='mb-2 modal_register_date'>Data de registro: <span class='text-primary'></span></p>
+                    <span class='modal_type badge badge-pill font-size-12 mb-2'></span>
+                </div>
+                <div class='d-none' id='cost_center_modal'>
+                    <p class='mb-2 modal_cost_center'>Centro de custo: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_description d-none'>Descrição: <span class='text-primary'></span></p>
+                </div>
+                <div class='d-none' id='bank_account_modal'>
+                    <p class='mb-2 modal_bank'>Nome do banco: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_branch'>Número da agência: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_account'>Número de conta: <span class='text-primary'></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end labelDetailsModal -->
+
+<!-- labelEditModal Modal -->
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar etiqueta do cliente</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' method='post' action="{{ url_for('board.financial_edit') }}" novalidate>
+                {{ csrf_token }}
+                <input type='hidden' id='edit_financial' name='edit_financial'/>
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='d-none cost_center_modal_edit'>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='cost_center' class='form-label'>Nome do Centro de Custo</label>
+                                        <input type='text' class='form-control valid_entry' id='cost_center'
+                                               name='cost_center'
+                                               placeholder='Digite o nome do centro de custo' required>
+                                        <div class='invalid-feedback'>Forneça um nome de centro de custo</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='description' class='form-label'>Descrição</label>
+                                        <input type='text' class='form-control valid_opt_entry' id='description'
+                                               name='description'
+                                               placeholder='Insira a descrição do centro de custo, se aplicável'>
+                                        <div class='invalid-feedback'></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='d-none bank_account_modal_edit'>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='bank' class='form-label'>Nome do banco</label>
+                                        <input type='text' class='form-control valid_entry_nd' id='bank' name='bank'
+                                               placeholder='Insira o nome do banco' required>
+                                        <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='branch' class='form-label'>Número da agência bancária</label>
+                                        <input type='text' class='form-control mask_number' id='branch' name='branch'
+                                               placeholder='Enter bank branch number' required>
+                                        <div class='invalid-feedback'>Por favor, forneça o número da sua agência
+                                            bancária
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='account' class='form-label'>Número de conta</label>
+                                        <input type='text' class='form-control mask_number' id='account' name='account'
+                                               placeholder='Digite o número da conta' required>
+                                        <div class='invalid-feedback'>Forneça o número da sua conta</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='submit' class='btn btn-primary'>Editar etiqueta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelEditModal -->
+
+<!-- labelRemoveModal Modal -->
+<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Remover etiqueta financeira</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.financial_delete') }}" novalidate method='post'>
+                {{ csrf_token }}
+                <input type='hidden' id='del_financial' name='del_financial'/>
+                <div class='modal-body'>
+                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção do rótulo financeiro?</p>
+                    <div class='d-none' id='cost_center_modal_remove'>
+                        <p class='mb-2 modal_cost_center'>Centro de custo: <span class='text-primary'></span></p>
+                        <p class='mb-2 modal_description d-none'>Descrição: <span class='text-primary'></span></p>
+                    </div>
+                    <div class='d-none' id='bank_account_modal_remove'>
+                        <p class='mb-2 modal_bank'>Nome do banco: <span class='text-primary'></span></p>
+                        <p class='mb-2 modal_branch'>Número da agência: <span class='text-primary'></span></p>
+                        <p class='mb-2 modal_account'>Número de conta: <span class='text-primary'></span></p>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover etiqueta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelRemoveModal -->
