@@ -10,9 +10,6 @@ RUN apt-get update -qq \
 # database
 RUN flask init-db
 
-# countries and cities -> TODO: ajustar para ocorrer na primeira vez
-# RUN python3 scripts/etl-paises-db.py
-
 EXPOSE 5000
 
 ENTRYPOINT ["gunicorn"]
