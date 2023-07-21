@@ -1,6 +1,7 @@
 name: Deploy to AWS EC2
 
 env:
+  # deploy envs
   EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}           # ${{ secrets.EC2_PRIVATE_KEY }}
   HOSTNAME: ${{ secrets.HOSTNAME }}                         # ${{ secrets.HOSTNAME }}
   USER_NAME: ${{ secrets.USER_NAME }}                       # ${{ secrets.USER_NAME }}
@@ -8,6 +9,15 @@ env:
   CONTAINER_NAME: dashflux                                  # ${{ secrets.CONTAINER_NAME }}
   BRANCH: main
   WORKDIR: app-dashflux
+
+  # app envs
+  MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+  MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+  MAIL_DEFAULT_SENDER: ${{ secrets.MAIL_DEFAULT_SENDER }}
+  MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+  MAIL_PORT: ${{ secrets.MAIL_PORT }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
 
 on:
   push:
