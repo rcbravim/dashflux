@@ -17,10 +17,14 @@ def index():
     return index_controller()
 
 
-@login_required
 @bp.route('/profile', methods=['GET', 'POST'])
 def profile():
     return profile_controller()
+
+
+@bp.route('/support', methods=['GET', 'POST'])
+def support():
+    return support_controller()
 
 
 @bp.route('/logout', methods=['GET', 'POST'])

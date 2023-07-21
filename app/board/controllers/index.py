@@ -9,7 +9,7 @@ from app.database.models import Category, Establishment, Account, Transaction, A
 from app.database.database import db
 from app.library.helper import paginator
 
-PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
+PG_LIMIT = int(os.getenv('PG_LIMIT', 50))
 
 
 def index_controller():
@@ -23,6 +23,10 @@ def index_controller():
 
         month = int(request.args.get('m', now.month))
         year = int(request.args.get('y', now.year))
+        if month == now.month and year == now.year:
+            datetime_ref = now
+        else:
+            datetime_ref = datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y')
 
         transaction = Transaction
         analytic = Analytic
@@ -51,17 +55,6 @@ def index_controller():
         ).order_by(
             transaction.tra_entry_date.asc()
         ).all()
-
-        # last_month_balance = db.session.query(
-        #     transaction.tra_amount
-        # ).filter(
-        #     transaction.tra_status == True,
-        #     transaction.user_id == user_id,
-        #     extract('month', transaction.tra_entry_date) == month - 1,
-        #     extract('year', transaction.tra_entry_date) == year
-        # ).order_by(
-        #     transaction.tra_entry_date.desc()
-        # ).first()
 
         last_month_balance = db.session.query(
             func.coalesce(func.sum(Transaction.tra_amount), 0)
@@ -163,16 +156,17 @@ def index_controller():
                 'overall': float(overall)
             },
             'filter': {
-                'displayed_str': datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y').strftime('%B/%Y'),
-                'displayed_int': datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y').strftime('%m.%Y'),
-                'month': request.args.get('m', now.strftime('%m')),
-                'year': request.args.get('y', now.strftime('%y'))
+                'new_entry_date': datetime_ref.date(),
+                'displayed_str': datetime_ref.strftime('%B/%Y'),
+                'displayed_int': datetime_ref.strftime('%m.%Y'),
+                'month': month,
+                'year': year
             },
             'pages': {
                 'pg': pg,
                 'total_pg': total_pages,
                 'pg_range': pg_range
-            },
+            }
         }
 
         return render_template('board/pages/index.html', context=context, success=success)
@@ -181,9 +175,9 @@ def index_controller():
 
         # edit transaction
         if request.form.get('_method') == 'PUT':
-            multiply = -1 if request.form.get('type_transaction') == '1' else 1
-            amount = float(request.form.get('amount_edit').replace('.', '').replace(',', '.')) * multiply
-            entry_date = request.form.get('entry_date_edit')
+            multiply = 1 if request.form.get('type_transaction') == '1' else -1
+            amount = float(request.form.get('amount_edit').replace('.', '').replace(',', '.'))
+            entry_date = request.form.get('modal_entry_date')
 
             transaction = Transaction(
                 id=request.form.get('edit_index'),
@@ -201,14 +195,15 @@ def index_controller():
             # edit analytic
             user_id = session.get('user_id')
             entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
-            ref_month = entry_date_datetime.month
-            ref_year = entry_date_datetime.year
+            month = entry_date_datetime.month
+            year = entry_date_datetime.year
             incomes = db.session.query(
                 func.coalesce(func.sum(Transaction.tra_amount), 0)
             ).filter(
                 Transaction.tra_amount > 0,
                 Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_month
+                extract('month', Transaction.tra_entry_date) == month,
+                extract('year', Transaction.tra_entry_date) == year
             ).scalar()
 
             expenses = db.session.query(
@@ -216,19 +211,20 @@ def index_controller():
             ).filter(
                 Transaction.tra_amount < 0,
                 Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_year
+                extract('month', Transaction.tra_entry_date) == month,
+                extract('year', Transaction.tra_entry_date) == year
             ).scalar()
 
             new_analytic = Analytic(
-                ana_month=now.month,
-                ana_year=now.year,
+                ana_month=month,
+                ana_year=year,
                 ana_incomes=incomes,
                 ana_expenses=expenses,
                 user_id=user_id
             )
             db.session.merge(new_analytic)
             db.session.commit()
-            session['success'] = 'Lançamento editado com sucesso!'
+            session['success'] = 'Lançamento Alterado!'
             return redirect(
                 url_for(
                     'board.index',
@@ -238,9 +234,7 @@ def index_controller():
             )
 
         # delete transaction
-        if request.form.get('_method') == 'DELETE':
-            # multiply = -1 if request.form.get('type_transaction') == '1' else 1
-            # amount = float(request.form.get('amount_edit').replace('.', '').replace(',', '.')) * multiply
+        elif request.form.get('_method') == 'DELETE':
             entry_date = request.form.get('modal_entry_date_delete')
 
             transaction = Transaction.query.filter_by(id=request.form.get('del_index')).first()
@@ -250,8 +244,72 @@ def index_controller():
             # edit analytic
             user_id = session.get('user_id')
             entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
+            month = entry_date_datetime.month
+            year = entry_date_datetime.year
+            incomes = db.session.query(
+                func.coalesce(func.sum(Transaction.tra_amount), 0)
+            ).filter(
+                Transaction.tra_amount > 0,
+                Transaction.user_id == user_id,
+                extract('month', Transaction.tra_entry_date) == month,
+                extract('year', Transaction.tra_entry_date) == year
+            ).scalar()
+
+            expenses = db.session.query(
+                func.coalesce(func.sum(Transaction.tra_amount), 0)
+            ).filter(
+                Transaction.tra_amount < 0,
+                Transaction.user_id == user_id,
+                extract('month', Transaction.tra_entry_date) == year,
+                extract('year', Transaction.tra_entry_date) == year
+            ).scalar()
+
+            new_analytic = Analytic(
+                ana_month=month,
+                ana_year=year,
+                ana_incomes=incomes,
+                ana_expenses=expenses,
+                user_id=user_id
+            )
+            db.session.merge(new_analytic)
+            db.session.commit()
+            session['success'] = 'Lançamento Removido'
+            return redirect(
+                url_for(
+                    'board.index',
+                    y=request.form.get('y'),
+                    m=request.form.get('m')
+                )
+            )
+
+        # new transaction
+        else:
+            entry_date = request.form.get('entry_date')
+            category = request.form.get('category')
+            description = request.form.get('description')
+            establishment = request.form.get('establishment')
+            situation = request.form.get('situation')
+            account = request.form.get('account')
+            multiply = 1 if request.form.get('type_transaction') == '1' else -1
+            amount = float(request.form.get('amount').replace('.', '').replace(',', '.'))
+
+            new_transaction = Transaction(
+                user_id=user_id,
+                tra_description=description,
+                tra_situation=situation,
+                tra_amount=amount * multiply,
+                tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
+                establishment_id=establishment,
+                category_id=category,
+                account_id=account
+            )
+            db.session.add(new_transaction)
+            db.session.commit()
+
+            entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
             ref_month = entry_date_datetime.month
             ref_year = entry_date_datetime.year
+
             incomes = db.session.query(
                 func.coalesce(func.sum(Transaction.tra_amount), 0)
             ).filter(
@@ -265,19 +323,19 @@ def index_controller():
             ).filter(
                 Transaction.tra_amount < 0,
                 Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_year
+                extract('month', Transaction.tra_entry_date) == ref_month
             ).scalar()
 
             new_analytic = Analytic(
-                ana_month=now.month,
-                ana_year=now.year,
+                ana_month=ref_month,
+                ana_year=ref_year,
                 ana_incomes=incomes,
                 ana_expenses=expenses,
                 user_id=user_id
             )
             db.session.merge(new_analytic)
             db.session.commit()
-            session['success'] = 'Lançamento removido com sucesso!'
+            session['success'] = 'Lançamento Cadastrado!'
             return redirect(
                 url_for(
                     'board.index',
@@ -285,63 +343,3 @@ def index_controller():
                     m=request.form.get('m')
                 )
             )
-
-        entry_date = request.form.get('entry_date')
-        category = request.form.get('category')
-        description = request.form.get('description')
-        establishment = request.form.get('establishment')
-        situation = request.form.get('situation')
-        account = request.form.get('account')
-        amount = request.form.get('amount')
-        multiply = 1 if request.form.get('type_transaction') == '1' else -1
-
-        new_transaction = Transaction(
-            user_id=user_id,
-            tra_description=description,
-            tra_situation=situation,
-            tra_amount=float(amount.replace(',', '')) * multiply,
-            tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
-            establishment_id=establishment,
-            category_id=category,
-            account_id=account
-        )
-        db.session.add(new_transaction)
-        db.session.commit()
-
-        entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
-        ref_month = entry_date_datetime.month
-        ref_year = entry_date_datetime.year
-
-        incomes = db.session.query(
-            func.coalesce(func.sum(Transaction.tra_amount), 0)
-        ).filter(
-            Transaction.tra_amount > 0,
-            Transaction.user_id == user_id,
-            extract('month', Transaction.tra_entry_date) == ref_month
-        ).scalar()
-
-        expenses = db.session.query(
-            func.coalesce(func.sum(Transaction.tra_amount), 0)
-        ).filter(
-            Transaction.tra_amount < 0,
-            Transaction.user_id == user_id,
-            extract('month', Transaction.tra_entry_date) == ref_month
-        ).scalar()
-
-        new_analytic = Analytic(
-            ana_month=ref_month,
-            ana_year=ref_year,
-            ana_incomes=incomes,
-            ana_expenses=expenses,
-            user_id=user_id
-        )
-        db.session.merge(new_analytic)
-        db.session.commit()
-        session['success'] = 'Lançamento cadastrado!'
-        return redirect(
-            url_for(
-                'board.index',
-                y=request.form.get('y'),
-                m=request.form.get('m')
-            )
-        )

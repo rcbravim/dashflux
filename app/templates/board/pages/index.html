@@ -331,7 +331,7 @@
                                 <div class='mb-3'>
                                     <label for='entry_date' class='form-label'>Data de Entrada<span class='text-danger'>*</span></label>
                                     <input type='date' class='form-control valid_date' id='entry_date' name='entry_date'
-                                           value='{{ date_now() }}' required>
+                                           value='{{ context.filter.new_entry_date }}' required>
                                     <div class='invalid-feedback'>Por favor ensira a data de entrada</div>
                                 </div>
                             </div>
@@ -434,11 +434,18 @@
                                     <label for='situation' class='form-label'>Estado<span
                                             class='text-danger'>*</span></label>
                                     <select class='form-select' id='situation' name='situation'>
+                                        {% if context.filter.new_entry_date <= date_now() %}
                                         <option value='1' selected>Pago</option>
                                         <option value='2'>Aberto</option>
                                         <option value='3'>Em Negociação</option>
                                         <option value='4'>Recebido</option>
                                         <option value='5'>Agendado</option>
+                                        {% else %}
+                                        <option value='2'>Aberto</option>
+                                        <option value='3'>Em Negociação</option>
+                                        <option value='4'>Recebido</option>
+                                        <option value='5' selected>Agendado</option>
+                                        {% endif %}
                                     </select>
                                 </div>
                             </div>
@@ -474,6 +481,8 @@
             <form class='needs-validation' method='post' action="{{ url_for('board.index') }}" novalidate>
                 <input type='hidden' name='_method' value='PUT'/>
                 {{ csrf_token }}
+                <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                <input type='hidden' name='y' value='{{ context.filter.year }}'/>
                 <input type='hidden' id='edit_index' name='edit_index'/>
                 <div class='modal-body'>
                     <div class='content mt-1'>
@@ -599,8 +608,10 @@
                 <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
             <form class='needs-validation' action="{{ url_for('board.index') }}" novalidate method='post'>
-                <input type='hidden' name='_method' value='DELETE'/>
                 {{ csrf_token }}
+                <input type='hidden' name='_method' value='DELETE'/>
+                <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                <input type='hidden' name='y' value='{{ context.filter.year }}'/>
                 <input type='hidden' id='del_index' name='del_index'/>
                 <div class='modal-body'>
                     <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção deste registro?</p>
