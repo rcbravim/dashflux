@@ -1,9 +1,8 @@
 import locale
-from flask import Flask, render_template
+from flask import Flask
 from flask_login import LoginManager
 
 from app.auth_config import auth_config
-# from app.auth_config import auth_config
 from app.config import Config
 from app.auth.routes import bp as auth_bp
 from app.board.routes import bp as board_bp
