@@ -60,12 +60,12 @@ jobs:
             
             echo Run the new container with the data volume mounted
             sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 -v $(pwd)/instance:/app/instance \
-              -e MAIL_USERNAME=${MAIL_USERNAME} \
-              -e MAIL_PASSWORD=${MAIL_PASSWORD} \
-              -e MAIL_DEFAULT_SENDER=${MAIL_DEFAULT_SENDER} \
-              -e MAIL_SERVER=${MAIL_SERVER} \
-              -e MAIL_PORT=${MAIL_PORT} \
-              -e JWT_SECRET_KEY=${JWT_SECRET_KEY} \
-              -e FLASK_SECRET_KEY=${FLASK_SECRET_KEY} \
+              -e MAIL_USERNAME=$MAIL_USERNAME \
+              -e MAIL_PASSWORD=$MAIL_PASSWORD \
+              -e MAIL_DEFAULT_SENDER=$MAIL_DEFAULT_SENDER \
+              -e MAIL_SERVER=$MAIL_SERVER \
+              -e MAIL_PORT=$MAIL_PORT \
+              -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+              -e FLASK_SECRET_KEY=$FLASK_SECRET_KEY \
               --restart always $CONTAINER_NAME
-          "
+            "

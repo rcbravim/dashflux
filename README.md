@@ -61,7 +61,8 @@ $ python flask run --debug
 - clone the repository in some ec2 folder (e.g. /app) using ssh git clone
 - access the project folder (cd dashflux)
 - docker build -t dashflux . 
-- sudo docker run -d --name dashflux -p 5000:5000 -v $(pwd)/instance:/app/instance --restart always dashflux
+- the next step its a first run, to ensure the database its being created
+- sudo docker run -d --name dashflux -p 5000:5000 --restart always dashflux
 - install and configure nginx
   - sudo yum install nginx
   - sudo service nginx start
