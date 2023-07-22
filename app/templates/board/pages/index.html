@@ -341,7 +341,7 @@
                                     <select class='form-select category_modal' id='category' name='category' required>
                                         {% if context.categories %}
                                         {% for row in context.categories %}
-                                        {% if row.id == 0 %}
+                                        {% if row.id == 1 %}
                                         <option value='{{ row.id }}' selected>{{ row.cat_name }}</option>
                                         {% endif %}
                                         <option value='{{ row.id }}'>{{ row.cat_name }}</option>
