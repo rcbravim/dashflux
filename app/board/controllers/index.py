@@ -2,6 +2,7 @@ import os
 import math
 from datetime import datetime
 
+from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract
 
@@ -60,7 +61,7 @@ def index_controller():
             func.coalesce(func.sum(Transaction.tra_amount), 0)
         ).filter(
             Transaction.user_id == user_id,
-            extract('month', Transaction.tra_entry_date) == month - 1
+            Transaction.tra_entry_date <= datetime(year, month, 1) - relativedelta(days=1)
         ).scalar()
 
         cumulative_balance = float(last_month_balance) if last_month_balance else 0
