@@ -261,7 +261,7 @@ def index_controller():
             ).filter(
                 Transaction.tra_amount < 0,
                 Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == year,
+                extract('month', Transaction.tra_entry_date) == month,
                 extract('year', Transaction.tra_entry_date) == year
             ).scalar()
 
