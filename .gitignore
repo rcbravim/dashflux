@@ -1,6 +1,7 @@
 /venv/
 venv
 db.sqlite
+database.db
 *.pyc
 ./sendgrid.env
 .env

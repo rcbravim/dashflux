@@ -85,7 +85,6 @@ with app.app_context():
     for i in range(10):
         is_bank = random.choice([True, False])
         account = Account(
-            acc_slug=f"account{i}",
             acc_name=f"Account {i}",
             acc_description=f"Description for Account {i} " if not is_bank else None,
             acc_is_bank=is_bank,

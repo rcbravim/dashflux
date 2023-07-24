@@ -104,7 +104,6 @@ class Category(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # acc_slug = db.Column(db.String(250), unique=True, nullable=False)
     acc_name = db.Column(db.String(250), default=None)
     acc_description = db.Column(db.String(250), default=None)
     acc_is_bank = db.Column(db.Boolean, default=False)
