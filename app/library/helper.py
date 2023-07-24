@@ -1,3 +1,4 @@
+from unicodedata import normalize
 from typing import List
 
 
@@ -21,3 +22,11 @@ def paginator(pg: int, pg_total: int) -> List[int]:
         pg_init = 1
         pg_end = pg_total
     return list(range(pg_init, (pg_end + 1)))
+
+
+def compare_values(value_1, value_2):
+    return normalize_for_match(value_1) == normalize_for_match(value_2)
+
+
+def normalize_for_match(value):
+    return normalize('NFKD', value).encode('ASCII', 'ignore').decode('ASCII').lower().strip()
