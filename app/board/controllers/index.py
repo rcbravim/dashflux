@@ -177,17 +177,17 @@ def index_controller():
         # edit transaction
         if request.form.get('_method') == 'PUT':
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
-            amount = float(request.form.get('amount_edit').replace('.', '').replace(',', '.'))
+            amount = float(request.form.get('modal_amount').replace('.', '').replace(',', '.'))
             entry_date = request.form.get('modal_entry_date')
 
             transaction = Transaction(
                 id=request.form.get('edit_index'),
                 tra_entry_date=datetime.strptime(entry_date, '%Y-%m-%d').date(),
-                tra_description=request.form.get('description_edit'),
+                tra_description=request.form.get('modal_description'),
                 tra_situation=request.form.get('situation'),
-                establishment_id=request.form.get('establishment_edit'),
-                account_id=request.form.get('account'),
-                category_id=request.form.get('category_edit'),
+                establishment_id=request.form.get('modal_establishment'),
+                account_id=request.form.get('modal_account'),
+                category_id=request.form.get('modal_category'),
                 tra_amount=amount * multiply,
             )
             db.session.merge(transaction)

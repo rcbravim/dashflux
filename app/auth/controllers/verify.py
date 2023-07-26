@@ -84,7 +84,7 @@ def insert_default_records(user_id):
         acc_name='Conta Bancária',
         acc_description='Conta Bancária Padrão',
         acc_is_bank=True,
-        acc_bank_name='Banco Dashflux',
+        acc_bank_name='Banco',
         acc_bank_branch='0001',
         acc_bank_account='00001',
         user_id=user_id
