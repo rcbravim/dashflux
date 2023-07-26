@@ -1,0 +1,126 @@
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar Entrada</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' method='post' action="{{ url_for('board.index') }}" novalidate>
+                <input type='hidden' name='_method' value='PUT'/>
+                {{ csrf_token }}
+                <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                <input type='hidden' name='y' value='{{ context.filter.year }}'/>
+                <input type='hidden' id='edit_index' name='edit_index'/>
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='row'>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='modal_entry_date' class='form-label'>Data de Entrada<span
+                                            class='text-danger'>*</span></label>
+                                    <input type='date' class='form-control valid_date_nd modal_entry_date' id='modal_entry_date'
+                                           name='modal_entry_date' value='' required>
+                                    <div class='invalid-feedback'>Insira a data de entrada</div>
+                                </div>
+                            </div>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='modal_category' class='form-label'>Categoria<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select modal_category' id='modal_category' name='modal_category' required>
+                                        {% for row in context.categories %}
+                                        <option value='{{ row.id }}'>{{ row.cat_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class='invalid-feedback'>Por favor, selecione uma categoria</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-lg-12'>
+                                <div class='mb-3'>
+                                    <label for='modal_description' class='form-label'>Descrição | Observações</label>
+                                    <input type='text' class='form-control valid_opt_entry_nd note_modal'
+                                           id='modal_description' name='modal_description'
+                                           placeholder='Insira suas Observações' maxlength='128'>
+                                    <div class='invalid-feedback'></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='modal_establishment' class='form-label'>Estabelecimento<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select modal_establishment' id='modal_establishment'
+                                            name='modal_establishment' required>
+                                        {% for row in context.establishments %}
+                                        <option value='{{ row.id }}'>{{ row.est_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='modal_account' class='form-label'>Conta<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select' id='modal_account' name='modal_account' required>
+                                        {% for row in context.accounts %}
+                                        <option value='{{ row.id }}'>
+                                            {% if row.acc_is_bank %}
+                                            {{ row.acc_bank_name|upper }} | {{ row.acc_bank_branch }} |
+                                            {{ row.acc_bank_account }} | ({{ row.acc_name|upper }})
+                                            {% else %}
+                                            {{ row.acc_name|upper }} | {{ row.acc_description|upper }}
+                                            {% endif %}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-lg'>
+                                <div class='mb-3'>
+                                    <label for='type_transaction' class='form-label'>Tipo<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select type_transaction_modal' id='type_transaction'
+                                            name='type_transaction'>
+                                        <option value='1'>Entrada</option>
+                                        <option value='2'>Saída</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-lg'>
+                                <div class='mb-3'>
+                                    <label for='situation' class='form-label'>Estado<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select situation_modal' id='situation' name='situation'>
+                                        <option value='1' selected>Pago</option>
+                                        <option value='2'>Aberto</option>
+                                        <option value='3'>Em Negociação</option>
+                                        <option value='4'>Recebido</option>
+                                        <option value='5'>Agendado</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-lg'>
+                                <div class='mb-3'>
+                                    <label for='modal_amount' class='form-label'>Quantia<span
+                                            class='text-danger'>*</span></label>
+                                    <input type='text' class='form-control mask_money modal_amount' id='modal_amount'
+                                           name='modal_amount' placeholder='Insira o valor da entrada' required>
+                                    <div class='invalid-feedback'>Insira o valor da entrada</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='submit' class='btn btn-primary'>Editar Entrada</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
