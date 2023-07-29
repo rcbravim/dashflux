@@ -42,9 +42,14 @@ def establishment_form():
     return establishment_form_controller()
 
 
-@bp.route('/establishment_edit', methods=['GET', 'POST'])
-def establishment_edit():
-    return establishment_edit_controller()
+@bp.route('/establishments_edit', methods=['GET', 'POST'])
+def establishments_edit():
+    return establishments_edit_controller()
+
+
+@bp.route('/establishment_return_id_by_name', methods=['GET', 'POST'])
+def establishment_return_id_by_name():
+    return establishment_return_id_by_name_controller()
 
 
 @bp.route('/establishment_delete', methods=['GET', 'POST'])

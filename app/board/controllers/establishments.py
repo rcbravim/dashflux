@@ -1,9 +1,9 @@
 import math
 import os
-
+from datetime import datetime
 from flask import request, render_template, session, redirect, url_for
 
-from app.database.models import Establishment
+from app.database.models import Establishment, Transaction
 from app.database.database import db
 from app.library.helper import paginator
 
@@ -20,6 +20,7 @@ def establishments_controller():
         session_id = session['user_id']
 
         query = db.session.query(
+            Establishment.id,
             Establishment.est_name,
             Establishment.est_date_created
         )
@@ -71,11 +72,55 @@ def establishments_controller():
         return render_template('board/pages/establishments.html', context=context, success=success)
 
     elif request.method == 'POST':
-        name = request.form.get('name')
+
+        # edit establishment
+        if request.form.get('_method') == 'PUT':
+            establishment_id = request.form.get('edit_establishment')
+            est_name = request.form.get('est_name_edit')
+            user_id = session.get('user_id')
+
+            establishment = Establishment(
+                id=establishment_id,
+                est_name=est_name,
+                est_date_updated=datetime.utcnow(),
+                user_id=user_id
+            )
+            db.session.merge(establishment)
+            db.session.commit()
+
+            return redirect(url_for('board.establishments'))
+
+        # delete establishment
+        if request.form.get('_method') == 'DELETE':
+            establishment_id = request.form.get('del_establishment')
+
+            # 1/2 delete record in establishment table
+            establishment = db.session.query(
+                Establishment
+            ).get(
+                establishment_id
+            )
+            db.session.delete(establishment)
+
+            # 2/2 adjust fks in transaction table
+            db.session.query(
+                Transaction
+            ).filter_by(
+                establishment_id=establishment_id
+            ).update(
+                {"establishment_id": 1}
+            )
+
+            db.session.commit()
+
+            return redirect(url_for('board.establishments'))
+
+        # add establishment
+        est_name = request.form.get('est_name_add')
         user_id = session.get('user_id')
 
         new_establishment = Establishment(
-            est_name=name,
+            est_name=est_name,
             user_id=user_id
         )
         db.session.add(new_establishment)

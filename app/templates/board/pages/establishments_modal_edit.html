@@ -1,0 +1,41 @@
+<!-- labelEditModal Modal -->
+<div class='modal fade editEstablishmentModal' id='editEstablishmentModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar Estabelecimento</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' id='edit_establishment_form'
+                  action="{{ url_for('board.establishments') }}"
+                  novalidate
+                  method='post'>
+                <input type='hidden' name='_method' value='PUT'/>
+                {{ csrf_token }}
+                <input type='hidden' id='edit_establishment' name='edit_establishment'/>
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='row'>
+                            <div class='col-lg-12'>
+                                <div class='mb-3'>
+                                    <label for='est_name_edit' class='form-label'>Nome</label>
+                                    <input type='text' class='form-control valid_entry_edit'
+                                           id='est_name_edit' name='est_name_edit'
+                                           placeholder='Digite o nome do estabelecimento'
+                                           maxlength='128' required>
+                                    <div class='invalid-feedback'>Insira o nome do estabelecimento</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary'>Editar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelEditModal -->
