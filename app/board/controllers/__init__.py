@@ -4,6 +4,8 @@ from .establishments import establishments_controller
 from .establishments_edit import establishments_edit_controller
 from .establishment_return_id_by_name import establishment_return_id_by_name_controller
 from .categories import categories_controller
+from .categories_edit import categories_edit_controller
+from .category_return_id_by_name import category_return_id_by_name_controller
 from .accounts import accounts_controller
 from .index_edit import index_edit_controller
 from .logout import logout_controller

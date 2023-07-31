@@ -17,7 +17,7 @@ def establishments_controller():
 
         pg = int(request.form.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
-        session_id = session['user_id']
+        session_id = session.get('user_id')
 
         query = db.session.query(
             Establishment.id,
@@ -54,12 +54,11 @@ def establishments_controller():
         # Set page range
         pg_range = paginator(pg, total_pages)
 
-        # set initial context
         context = {
-            'types': types,
+            # 'types': types,
             'establishments': establishments,
             'filter': {
-                'type': request.form.get('type', ''),
+                # 'type': request.form.get('type', ''),
                 'search': request.form.get('search', '')
             },
             'pages': {
@@ -88,6 +87,7 @@ def establishments_controller():
             db.session.merge(establishment)
             db.session.commit()
 
+            session['success'] = 'Estabelecimento Removido com Sucesso!'
             return redirect(url_for('board.establishments'))
 
         # delete establishment
@@ -112,7 +112,7 @@ def establishments_controller():
             )
 
             db.session.commit()
-
+            session['success'] = 'Estabelecimento Removido com Sucesso!'
             return redirect(url_for('board.establishments'))
 
         # add establishment
@@ -125,4 +125,5 @@ def establishments_controller():
         )
         db.session.add(new_establishment)
         db.session.commit()
+        session['success'] = 'Estabelecimento Cadatrado com Sucesso!'
         return redirect(url_for('board.establishments'))

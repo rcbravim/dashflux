@@ -60,23 +60,11 @@
                                         </div>
                                         <div class='col-sm'>
                                             <div class='mb-3'>
-                                                <label for='label'>Categoria</label>
-                                                <select class='form-select select2' id='label' name='label'>
-                                                    {% if context.categories %}
-                                                    <option value='' {% if not context.filter.label %}selected{% endif
-                                                            %}>Todas as Categorias
-                                                    </option>
-                                                    {% for row in context.categories %}
-                                                    <option {% if context.filter.label== row.cat_slug|md5 %}selected{%
-                                                            endif %} value='{{ row.cat_slug|md5 }}'>
-                                                        {{ row.cat_name }}
-                                                    </option>
-                                                    {% endfor %}
-                                                    {% else %}
-                                                    <option value='' selected disabled>Não há categoria disponível
-                                                    </option>
-                                                    {% endif %}
-                                                </select>
+                                                <label for='search'>Categoria</label>
+                                                <input type='text' class='form-control match-select2' id='search'
+                                                   name='search'
+                                                   placeholder='Pesquise pelo nome da categoria'
+                                                   value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
                                             </div>
                                         </div>
                                         <div class='col-sm align-self-end'>
@@ -84,6 +72,13 @@
                                                 <div class='text-sm-end d-grid'>
                                                     <button type='submit' class='btn btn-primary w-xs'>Pesquisar
                                                     </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='col-2 align-self-end'>
+                                            <div class='mb-3'>
+                                                <div class='text-sm-end d-grid'>
+                                                    <a href="{{ url_for('board.categories') }}" class='btn btn-info w-xs'>Limpar</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -122,12 +117,12 @@
                                             </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
-                                                    <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
-                                                       data-value='{{ row.sub_slug|md5 }}'
+                                                    <a data-bs-toggle='modal' data-bs-target='.editCategoryModal'
+                                                       data-value='{{ row.id }}'
                                                        class='text-success categories_edit' style='cursor:pointer;'><i
                                                             class='mdi mdi-pencil font-size-18'></i></a>
-                                                    <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
-                                                       data-value='{{ row.sub_slug|md5 }}'
+                                                    <a data-bs-toggle='modal' data-bs-target='.removeCategoryModal'
+                                                       data-value='{{ row.id }}'
                                                        class='text-danger categories_del' style='cursor:pointer;'><i
                                                             class='mdi mdi-delete font-size-18'></i></a>
                                                 </div>
@@ -185,171 +180,17 @@
 {% include 'board/partials/footer.html' %}
 
 <!-- addCategoryModal Modal -->
-<div class='modal fade addCategoryModal' id='addCategoryModal' tabindex='-1' role='dialog' aria-hidden='true'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <h5 class='modal-title'>Adicionar Categoria</h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <form class='needs-validation' action="{{ url_for('board.categories') }}" novalidate
-                  method='post'>
-                {{ csrf_token }}
-                <div class='modal-body'>
-                    <div class='content mt-1'>
-                        <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label for='add_name' class='form-label'>Nome</label>
-                                    <input type='text' class='form-control valid_entry' id='add_name'
-                                           name='add_name'
-                                           placeholder='Digite o nome da categoria'
-                                           required>
-                                </div>
-                                <div class='mb-3'>
-                                    <label for='type'>Tipo</label>
-                                    <select class='form-select select2-search-disable' id='add_type'
-                                            name='add_type'>
-                                        <option value='' {% if not context.filter.type %}selected{% endif
-                                                %}>Todos os Tipos
-                                        </option>
-                                        <option value='1' {% if context.filter.type==
-                                        '1' %}selected{% endif %}>Renda</option>
-                                        <option value='2' {% if context.filter.type==
-                                        '2' %}selected{% endif %}>Gasto</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class='modal-footer'>
-                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
-                    </button>
-                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Adicionar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{% include 'board/pages/categories_modal_add.html' %}
 <!-- end addCategoryModal -->
 
 <!-- labelDetailsModal -->
-<div class='modal fade labelDetailsModal' tabindex='-1' role='dialog' aria-labelledby='labelDetailsModalLabel'
-     aria-hidden='true'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <h5 class='modal-title' id='labelDetailsModalLabel'>Detalhes da categorias</h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <div class='modal-body'>
-                <div class='form-row col-md d-flex justify-content-between'>
-                    <p class='mb-2 modal_register_date'>Data de Registro: <span class='text-primary'></span></p>
-                    <span class='modal_type badge badge-pill font-size-12 mb-2'></span>
-                </div>
-                <p class='mb-2 modal_category'>Categoria: <span class='text-primary'></span></p>
-                <p class='mb-2 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
-            </div>
-        </div>
-    </div>
-</div>
+{% include 'board/pages/categories_modal_details.html' %}
 <!-- end labelDetailsModal -->
 
 <!-- labelEditModal Modal -->
-<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <h5 class='modal-title'>Editar Categoria</h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <form class='needs-validation' method='post' action="{{ url_for('board.category_edit') }}" novalidate>
-                {{ csrf_token }}
-                <input type='hidden' id='edit_category' name='edit_category'/>
-                <input type='hidden' id='inlineRadio' name='inlineRadio'/>
-                <div class='modal-body'>
-                    <div class='content mt-1'>
-                        <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label class='d-block mb-3'>Tipo de Categoria :</label>
-                                    <div class='form-check form-check-inline'>
-                                        <input class='form-check-input' type='radio' name='inlineRadioOptions'
-                                               id='inlineRadio1' value='1' disabled>
-                                        <label class='form-check-label' for='inlineRadio1'>Renda</label>
-                                    </div>
-                                    <div class='form-check form-check-inline'>
-                                        <input class='form-check-input' type='radio' name='inlineRadioOptions'
-                                               id='inlineRadio2' value='2' disabled>
-                                        <label class='form-check-label' for='inlineRadio2'>Gasto</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-2'>
-                                    <label for='name' class='form-label'>Nome da Categoria</label>
-                                    <input type='text' class='form-control checkbox_edit' id='name'
-                                           placeholder='Insira o nome do tipo (por exemplo, Provedor)'
-                                           name='name' maxlength='128' disabled>
-                                    <div class='invalid-feedback'>Insira o nome da Categoria</div>
-                                </div>
-                                <div class='mb-3'>
-                                    <div class='form-check'>
-                                        <input class='form-check-input' type='checkbox' id='checkbox_edit'>
-                                        <label class='form-check-label' for='checkbox_edit'>Clique aqui se quiser editar
-                                            o nome da categoria</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label for='subname' class='form-label'>Subcategoria</label>
-                                    <input type='text' class='form-control valid_entry_nd' id='subname' name='subname'
-                                           placeholder='Digite o nome da subcategoria (por exemplo, lucro com ações)'
-                                           required>
-                                    <div class='invalid-feedback'>Insira o nome da subcategoria</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class='modal-footer'>
-                    <button type='submit' class='btn btn-primary'>Salvar</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{% include 'board/pages/categories_modal_edit.html' %}
 <!-- end labelEditModal -->
 
 <!-- labelRemoveModal Modal -->
-<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
-    <div class='modal-dialog modal-dialog-centered' role='document'>
-        <div class='modal-content'>
-            <div class='modal-header'>
-                <h5 class='modal-title'>Remover Categoria</h5>
-                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
-            </div>
-            <form class='needs-validation' action="{{ url_for('board.category_delete') }}" novalidate method='post'>
-                {{ csrf_token }}
-                <input type='hidden' id='del_subcategory' name='del_subcategory'/>
-                <div class='modal-body'>
-                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção da da subcategoria?</p>
-                    <p class='mb-2 modal_category'>Categoria: <span class='text-primary'></span></p>
-                    <p class='mb-2 modal_subcategory'>Subcategoria: <span class='text-primary'></span></p>
-                </div>
-                <div class='modal-footer'>
-                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
-                    </button>
-                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+{% include 'board/pages/categories_modal_del.html' %}
 <!-- end labelRemoveModal -->

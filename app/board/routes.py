@@ -72,6 +72,17 @@ def categories():
     return categories_controller()
 
 
+@bp.route('/categories_edit', methods=['GET', 'POST'])
+def categories_edit():
+    return categories_edit_controller()
+
+
+@bp.route('/category_return_id_by_name', methods=['GET', 'POST'])
+def category_return_id_by_name():
+    return category_return_id_by_name_controller()
+
+
+
 @bp.route('/category_form', methods=['GET', 'POST'])
 def category_form():
     return category_form_controller()
