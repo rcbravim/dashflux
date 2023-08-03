@@ -34,3 +34,7 @@ def format_currency(value):
 
 def format_date(date):
     return date.strftime("%d/%m")
+
+
+def format_date_dmY(date):
+    return date.strftime("%d/%m/%Y")

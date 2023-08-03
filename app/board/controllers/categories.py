@@ -1,9 +1,11 @@
 import math
 import os
+from datetime import datetime
 
 from flask import request, render_template, session, redirect, url_for
+from sqlalchemy import or_
 
-from app.database.models import Category
+from app.database.models import Category, Transaction
 from app.database.database import db
 from app.library.helper import paginator
 
@@ -12,6 +14,7 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
 def categories_controller():
     success = session.pop('success', None)
+    error = session.pop('error', None)
 
     if request.method == 'GET':
 
@@ -19,44 +22,32 @@ def categories_controller():
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
         session_id = session.get('user_id')
 
-        category = Category
-
-        # categories_all = db.execute(
-        #     'SELECT board_category.cat_name, board_category.cat_slug, board_category.cat_type, '
-        #     'board_category.cat_date_created, board_subcategory.sub_name, board_subcategory.sub_slug, '
-        #     'board_subcategory.sub_date_created '
-        #     'FROM "board_category" '
-        #     'INNER JOIN "board_subcategory" ON board_category.id = board_subcategory.category_id'
-        #     'WHERE cat_status = TRUE'
-        #     'AND board_subcategory.sub_name '
-        #     'LIKE "%%"'
-        #     'AND board_subcategory.sub_status = True AND board_category.user_id = ? ORDER BY '
-        #     'board_category.cat_name ASC, board_subcategory.sub_name ASC LIMIT 25',
-        #     (session_id,)
-        # ).fetchall()
-
-        categories_all = db.session.query(
-            category.cat_name,
-            # category.cat_slug,
-            category.cat_type,
-            category.cat_date_created
+        query = db.session.query(
+            Category.id,
+            Category.cat_type,
+            Category.cat_name,
+            Category.cat_date_created
         ).filter(
-            category.cat_status == True,
-            category.user_id == session_id
+            Category.cat_status == True,
+            or_(
+                Category.user_id == session_id,
+                Category.user_id == 1
+            )
         ).order_by(
-            category.cat_name.desc()
-        ).all()
+            Category.cat_name.asc()
+        )
 
-        if request.form.get('type'):
-            categories_all = categories_all.filter(
-                cat_type=request.form.get('type')
+        if request.args.get('type'):
+            query = query.filter(
+                Category.cat_type == request.args.get('type'),
             )
 
-        if request.form.get('label'):
-            categories_all = categories_all.extra(
-                where=['MD5(cat_slug)=%s'],
-                params=[request.form.get('label')]
+        if request.args.get('search'):
+            query = query.filter(
+                Category.cat_name.ilike('%{}%'.format(request.args.get('search')))
             )
+
+        categories_all = query.all()
 
         # Separate rows for exposure
         categories = categories_all[pg_offset:(pg_offset + PG_LIMIT)]
@@ -64,24 +55,14 @@ def categories_controller():
         # Counting total pages
         total_pages = math.ceil(len(categories_all) / PG_LIMIT)
 
-        # select filter types
-        # labels = db.execute(
-        #     'SELECT cat_slug, cat_name FROM board_category WHERE cat_status = True AND user_id = ? ORDER BY cat_name '
-        #     'ASC',
-        #     (session_id,)
-        # ).fetchall()
-        labels = []
-
         # Set page range
         pg_range = paginator(pg, total_pages)
 
         context = {
-            'labels': labels,
             'categories': categories,
             'filter': {
-                'type': request.form.get('type', ''),
-                'search': request.form.get('search', ''),
-                'label': request.form.get('label', '')
+                'type': request.args.get('type', ''),
+                'search': request.args.get('search', '')
             },
             'pages': {
                 'pg': pg,
@@ -90,18 +71,73 @@ def categories_controller():
             }
         }
 
-        return render_template('board/pages/categories.html', context=context)
+        return render_template('board/pages/categories.html', context=context, success=success, error=error)
 
     elif request.method == 'POST':
-        name = request.form.get('add_name')
-        type = request.form.get('add_type')
+
+        # edit category
+        if request.form.get('_method') == 'PUT':
+            category_id = request.form.get('edit_category')
+            cat_name = request.form.get('cat_name_edit')
+            cat_type = request.form.get('inlineRadioOptions')
+            user_id = session.get('user_id')
+
+            category = Category(
+                id=category_id,
+                cat_name=cat_name,
+                cat_type=cat_type,
+                cat_date_updated=datetime.utcnow(),
+                user_id=user_id
+            )
+            db.session.merge(category)
+            db.session.commit()
+
+            session['success'] = 'Categoria Editada com Sucesso!'
+            return redirect(url_for('board.categories', success=success))
+
+        # delete category
+        if request.form.get('_method') == 'DELETE':
+            category_id = request.form.get('del_category')
+
+            if category_id == '1' or category_id == '2':
+                session['error'] = 'Não é possível excluir registros padrões do sistema!'
+                return redirect(url_for('board.categories'))
+
+            # 1/2 delete record in category table
+            category = db.session.query(
+                Category
+            ).get(
+                category_id
+            )
+            db.session.delete(category)
+
+            # 2/2 adjust fks in transaction table
+            db.session.query(
+                Transaction
+            ).filter_by(
+                category_id=category_id
+            ).update(
+                # categoria 1 -> entradas não informadas
+                # categoria 2 -> saídas não informadas
+                {"category_id": 1 if category.cat_type == 1 else 2}
+            )
+
+            db.session.commit()
+
+            session['success'] = 'Categoria Removida com Sucesso!'
+            return redirect(url_for('board.categories'))
+
+        # add category
+        cat_name = request.form.get('cat_name_add')
+        cat_type = request.form.get('inlineRadioOptions')
         user_id = session.get('user_id')
 
         new_category = Category(
-            cat_name=name,
-            cat_type=type,
+            cat_name=cat_name,
+            cat_type=cat_type,
             user_id=user_id
         )
         db.session.add(new_category)
         db.session.commit()
+        session['success'] = 'Categoria Cadastrada com Sucesso!'
         return redirect(url_for('board.categories'))

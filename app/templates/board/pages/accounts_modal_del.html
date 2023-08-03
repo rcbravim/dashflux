@@ -1,0 +1,37 @@
+<!-- labelRemoveModal Modal -->
+<div class='modal fade removeAccountModal' id='removeAccountModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Remover Conta</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.accounts') }}"
+                  id='del_account_bank_form' novalidate method='post'>
+                <input type='hidden' name='_method' value='DELETE'/>
+                {{ csrf_token }}
+                <input type='hidden' id='del_account' name='del_account'/>
+                <div class='modal-body'>
+                    <p class='mb-4'>Tem certeza de que deseja remover a conta?</p>
+                    <div class='d-none' id='not_bank_account_modal_remove'>
+                        <p class='mb-2 acc_name_is_bank_del'>Nome da conta: <span class='text-primary'></span></p>
+                        <p class='mb-2 acc_bank_name_del'>Nome do banco: <span class='text-primary'></span></p>
+                        <p class='mb-2 acc_bank_branch_del'>Número da agência: <span class='text-primary'></span></p>
+                        <p class='mb-2 acc_bank_account_del'>Número de conta: <span class='text-primary'></span></p>
+                    </div>
+                    <div class='d-none' id='bank_account_modal_remove'>
+                        <p class='mb-2 acc_name_is_not_bank_del'>Nome da Conta: <span class='text-primary'></span></p>
+                        <p class='mb-2 acc_description_is_not_bank_del'>Descrição:
+                            <span class='text-primary'></span></p>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover Conta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelRemoveModal -->
