@@ -24,6 +24,7 @@ def establishments_controller():
         query = db.session.query(
             Establishment.id,
             Establishment.est_name,
+            Establishment.est_description,
             Establishment.est_date_created
         ).filter(
             Establishment.est_status == True,
@@ -36,7 +37,10 @@ def establishments_controller():
 
         if request.args.get('search'):
             query = query.filter(
-                Establishment.est_name.ilike('%{}%'.format(request.args.get('search')))
+                or_(
+                    Establishment.est_name.ilike('%{}%'.format(request.args.get('search'))),
+                    Establishment.est_description.ilike('%{}%'.format(request.args.get('search')))
+                )
             )
 
         establishments_all = query.all()
@@ -70,11 +74,13 @@ def establishments_controller():
         if request.form.get('_method') == 'PUT':
             establishment_id = request.form.get('edit_establishment')
             est_name = request.form.get('est_name_edit')
+            est_description = request.form.get('est_description_edit')
             user_id = session.get('user_id')
 
             establishment = Establishment(
                 id=establishment_id,
                 est_name=est_name,
+                est_description=est_description,
                 est_date_updated=datetime.utcnow(),
                 user_id=user_id
             )
@@ -115,10 +121,12 @@ def establishments_controller():
 
         # add establishment
         est_name = request.form.get('est_name_add')
+        est_description = request.form.get('est_description_add')
         user_id = session.get('user_id')
 
         new_establishment = Establishment(
             est_name=est_name,
+            est_description=est_description,
             user_id=user_id
         )
         db.session.add(new_establishment)

@@ -35,8 +35,7 @@ def index_edit_controller():
     ).filter(
         Transaction.id == transaction_id,
         Transaction.tra_status == True,
-        Establishment.user_id == user_id,
-        Category.user_id == user_id
+        Transaction.user_id == user_id
     ).first()
 
     data = {

@@ -95,23 +95,22 @@
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-                                            <th class='align-middle'>Data de registro</th>
+<!--                                            <th class='align-middle'>Data de registro</th>-->
+                                            <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'>Nome da conta</th>
                                             <th class='align-middle'>Instituição</th>
                                             <th class='align-middle'>Agencia / Conta</th>
-                                            <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in context.accounts.bank_accounts %}
                                         <tr>
-                                            <td>{{ row.acc_date_created }}</td>
+<!--                                            <td>{{ row.acc_date_created|format_date_dmY }}</td>-->
+                                            <td><span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span></td>
                                             <td>{{ row.acc_name|upper }}</td>
                                             <td>{{ row.acc_bank_name|upper }}</td>
                                             <td>{{ row.acc_bank_branch }} / {{ row.acc_bank_account }}</td>
-                                            <td><span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span>
-                                            </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     {% if row.id == 1 %}
@@ -138,14 +137,12 @@
 
                                         {% for row in context.accounts.not_bank_accounts %}
                                         <tr>
-                                            <td>{{ row.acc_date_created }}</td>
+<!--                                            <td>{{ row.acc_date_created|format_date_dmY }}</td>-->
+                                            <td><span class='badge badge-pill badge-soft-primary font-size-12'>Outro
+                                                tipo</span>
                                             <td>{{ row.acc_name|upper }}</td>
                                             <td>{{ row.acc_description|upper }}</td>
                                             <td></td>
-                                            <td>
-                                                <span class='badge badge-pill badge-soft-primary font-size-12'>Outro
-                                                    tipo
-                                                </span>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     {% if row.id == 1 %}

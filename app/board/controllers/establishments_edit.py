@@ -12,6 +12,7 @@ def establishments_edit_controller():
     data_query = db.session.query(
         Establishment.id,
         Establishment.est_name,
+        Establishment.est_description
     ).filter(
         Establishment.id == establishment_id,
         Establishment.est_status == True,
@@ -22,7 +23,8 @@ def establishments_edit_controller():
         'establishment':
             {
                 'id': data_query.id,
-                'name': data_query.est_name
+                'name': data_query.est_name,
+                'description': data_query.est_description
             }
     }
 

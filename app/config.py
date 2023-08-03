@@ -33,6 +33,7 @@ class Config:
         app.template_filter('date_day')(date_day)
         app.template_filter('format_currency')(format_currency)
         app.template_filter('format_date')(format_date)
+        app.template_filter('format_date_dmY')(format_date_dmY)
 
         # jinja func
         app.jinja_env.globals.update(date_now=datetime.utcnow().date)

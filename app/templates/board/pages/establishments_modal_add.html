@@ -16,12 +16,18 @@
                         <div class='row'>
                             <div class='col-lg-12'>
                                 <div class='mb-3'>
-                                    <label for='est_name_add' class='form-label'>Nome</label>
+                                    <label for='est_name_add' class='form-label'>Nome<span class='text-danger'>*</span></label>
                                     <input type='text' class='form-control valid_entry_add' id='est_name_add'
                                            name='est_name_add'
                                            placeholder='Digite o nome do estabelecimento'
                                            required>
                                     <div class='invalid-feedback'>Digite o nome do estabelecimento</div>
+                                </div>
+                                <div class='mb-3'>
+                                    <label for='est_description_add' class='form-label'>Descrição | Observações</label>
+                                    <input type='text' class='form-control' id='est_description_add'
+                                           name='est_description_add'
+                                           placeholder='Se preferir, digite alguma observação do estabelecimento'>
                                 </div>
                             </div>
                         </div>

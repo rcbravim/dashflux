@@ -95,17 +95,16 @@
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-                                            <th class='align-middle'>Data de Registro</th>
-                                            <th class='align-middle'>Categoria</th>
+<!--                                            <th class='align-middle'>Data de Registro</th>-->
                                             <th class='align-middle'>Tipo</th>
+                                            <th class='align-middle'>Categoria</th>
                                             <th class='align-middle'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in context.categories %}
                                         <tr>
-                                            <td>{{ row.cat_date_created }}</td>
-                                            <td>{{ row.cat_name|upper }}</td>
+<!--                                            <td>{{ row.cat_date_created|format_date_dmY }}</td>-->
                                             <td>
                                                 {% if row.cat_type == 1 %}
                                                 <span class='badge badge-pill badge-soft-success font-size-12'>
@@ -116,6 +115,7 @@
                                                     Saída</span>
                                                 {% endif %}
                                             </td>
+                                            <td>{{ row.cat_name|upper }}</td>
                                             <td>
                                                 <div class='d-flex gap-3'>
                                                     {% if row.id == 1 or row.id == 2 %}

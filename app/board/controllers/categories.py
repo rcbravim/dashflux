@@ -129,7 +129,7 @@ def categories_controller():
 
         # add category
         cat_name = request.form.get('cat_name_add')
-        cat_type = request.form.get('inlineRadioAdd1') if request.form.get('inlineRadioAdd1') else request.form.get('inlineRadioAdd2')
+        cat_type = request.form.get('inlineRadioOptions')
         user_id = session.get('user_id')
 
         new_category = Category(

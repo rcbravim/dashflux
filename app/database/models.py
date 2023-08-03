@@ -123,6 +123,7 @@ class Account(db.Model):
 class Establishment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     est_name = db.Column(db.String(250), nullable=False)
+    est_description = db.Column(db.String(250), default=True)
     est_status = db.Column(db.Boolean, nullable=False, default=True)
     est_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     est_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

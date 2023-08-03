@@ -33,6 +33,7 @@ def insert_default_records(app):
         # insert establishment
         default_establishment = Establishment(
             est_name='Não Informado',
+            est_description='Registros sem informação do estabelecimento',
             user_id=1
         )
         db.session.add(default_establishment)
