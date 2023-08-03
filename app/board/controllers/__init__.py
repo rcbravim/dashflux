@@ -7,6 +7,8 @@ from .categories import categories_controller
 from .categories_edit import categories_edit_controller
 from .category_return_id_by_name import category_return_id_by_name_controller
 from .accounts import accounts_controller
+from .accounts_edit import accounts_edit_controller
+from .account_return_id_by_name import account_return_id_by_name_controller
 from .index_edit import index_edit_controller
 from .logout import logout_controller
 from .support import support_controller

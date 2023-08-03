@@ -1,0 +1,135 @@
+<!-- addAccountModal Modal -->
+<div class='modal fade addAccountModal' id='addAccountModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Adicionar Conta</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body'>
+                <div class='content mt-1'>
+                    <div class='row'>
+                        <div class='col'>
+                            <div class='mb-3'>
+                                <label class='control-label'>Tipo de Conta</label>
+                                <select class='form-control select2-search-disable' id='account_choice'>
+                                    <option selected disabled>Selecione o tipo de conta</option>
+                                    <option value='BA'>Conta Bancária</option>
+                                    <option value='CC'>Outro Tipo de Conta</option>
+                                </select>
+                            </div>
+                            <div class='card d-none' id='bank_account'>
+                                <form class='needs-validation' action="{{ url_for('board.accounts') }}"
+                                      id='add_account_bank_form' novalidate
+                                      method='post'>
+                                    {{ csrf_token }}
+                                    <input type='hidden' name='is_bank' value='true'>
+                                    <input type='hidden' name='is_add' value='true'>
+                                    <div class='row'>
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='is_bank_acc_name' class='form-label'>Nome da Conta<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control'
+                                                           id='is_bank_acc_name'
+                                                           name='is_bank_acc_name'
+                                                           placeholder='Insira o nome da conta ou apelido' required>
+                                                    <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                                </div>
+                                            </div>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='acc_bank_name' class='form-label'>Instituição<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control valid_entry_nd'
+                                                           id='acc_bank_name'
+                                                           name='acc_bank_name'
+                                                           placeholder='Insira o nome do banco' required>
+                                                    <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='acc_bank_branch' class='form-label'>Agência<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control mask_number' id='acc_bank_branch'
+                                                           name='acc_bank_branch'
+                                                           placeholder='Digite o número da agência bancária'
+                                                           required>
+                                                    <div class='invalid-feedback'>Por favor, forneça o número da sua
+                                                        agência bancária
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='col-md'>
+                                                <div class='mb-3'>
+                                                    <label for='acc_bank_account' class='form-label'>Conta<span
+                                                            class='text-danger'>*</span></label>
+                                                    <input type='text' class='form-control mask_number' id='acc_bank_account'
+                                                           name='acc_bank_account'
+                                                           placeholder='Digite o número da conta' required>
+                                                    <div class='invalid-feedback'>Forneça o número da sua conta
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class='modal-footer'>
+                                                <button type='button' class='btn btn-secondary waves-effect'
+                                                        data-bs-dismiss='modal'>Cancelar
+                                                </button>
+                                                <button type='submit' class='btn btn-primary waves-effect waves-light'>
+                                                    Adicionar
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class='card d-none' id='not_bank_account'>
+                                <form class='needs-validation' action="{{ url_for('board.accounts') }}"
+                                      id='add_account_not_bank_form' novalidate
+                                      method='post'>
+                                    {{ csrf_token }}
+                                    <input type='hidden' name='is_bank' value='false'>
+                                    <div class='row'>
+                                        <div class='col-md-4'>
+                                            <div class='mb-3'>
+                                                <label for='is_not_bank_acc_name' class='form-label'>Nome<span
+                                                        class='text-danger'>*</span></label>
+                                                <input type='text' class='form-control valid_entry'
+                                                       id='is_not_bank_acc_name' name='is_not_bank_acc_name'
+                                                       placeholder='Digite o nome da conta' required>
+                                                <div class='invalid-feedback'>Forneça um nome para a conta
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='col-md'>
+                                            <div class='mb-3'>
+                                                <label for='acc_description' class='form-label'>Descrição</label>
+                                                <input type='text' class='form-control valid_opt_entry'
+                                                       id='acc_description' name='acc_description'
+                                                       placeholder='Insira a descrição da conta, se aplicável'>
+                                                <div class='invalid-feedback'></div>
+                                            </div>
+                                        </div>
+                                        <div class='modal-footer'>
+                                            <button type='button' class='btn btn-secondary waves-effect'
+                                                    data-bs-dismiss='modal'>Cancelar
+                                            </button>
+                                            <button type='submit' class='btn btn-primary waves-effect waves-light'>
+                                                Adicionar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- end addAccountModal -->

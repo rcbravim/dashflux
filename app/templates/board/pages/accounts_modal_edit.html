@@ -1,0 +1,98 @@
+<!-- labelEditModal Modal -->
+<div class='modal fade editAccountModal' id='editAccountModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar Conta</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' method='post' action="{{ url_for('board.accounts') }}"
+                  id='edit_account_form' novalidate>
+                <input type='hidden' name='_method' value='PUT'/>
+                {{ csrf_token }}
+                <input type='hidden' id='edit_account' name='edit_account'/>
+                <input type='hidden' id='is_edit' value='false'>
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='d-none bank_account_modal_edit'>
+                            <div class='row'>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='acc_name_is_bank' class='form-label'>Nome da Conta</label>
+                                        <input type='text' class='form-control valid_entry_nd' id='acc_name_is_bank'
+                                               name='acc_name_is_bank'
+                                               placeholder='Insira o nome da conta' required>
+                                        <div class='invalid-feedback'>Forneça um nome para a conta</div>
+                                    </div>
+                                </div>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='acc_bank_name_edit' class='form-label'>Nome do banco</label>
+                                        <input type='text' class='form-control valid_entry_nd'
+                                               id='acc_bank_name_edit' name='acc_bank_name_edit'
+                                               placeholder='Insira o nome do banco' required>
+                                        <div class='invalid-feedback'>Forneça um nome de banco</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='acc_bank_branch_edit'
+                                               class='form-label'>Número da agência bancária</label>
+                                        <input type='text' class='form-control mask_number'
+                                               id='acc_bank_branch_edit' name='acc_bank_branch_edit'
+                                               placeholder='Insira o número da agência bancária' required>
+                                        <div class='invalid-feedback'>Por favor, forneça o número da agência
+                                            bancária
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='acc_bank_account_edit'
+                                               class='form-label'>Número de conta bancária</label>
+                                        <input type='text' class='form-control mask_number'
+                                               id='acc_bank_account_edit' name='acc_bank_account_edit'
+                                               placeholder='Digite o número da conta bancária' required>
+                                        <div class='invalid-feedback'>Forneça o número da conta bancária</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='d-none not_bank_account_modal_edit'>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='acc_name_is_not_bank'
+                                               class='form-label'>Nome da Conta</label>
+                                        <input type='text' class='form-control valid_entry' id='acc_name_is_not_bank'
+                                               name='acc_name_is_not_bank'
+                                               placeholder='Digite o nome da conta' required>
+                                        <div class='invalid-feedback'>Forneça um nome para a conta</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-12'>
+                                    <div class='mb-3'>
+                                        <label for='acc_description_edit' class='form-label'>Descrição</label>
+                                        <input type='text' class='form-control valid_opt_entry'
+                                               id='acc_description_edit'
+                                               name='acc_description_edit'
+                                               placeholder='Insira a descrição da conta'>
+                                        <div class='invalid-feedback'></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='submit' class='btn btn-primary'>Editar etiqueta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelEditModal -->

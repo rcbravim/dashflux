@@ -13,7 +13,7 @@ def category_return_id_by_name_controller():
     category = db.session.query(
         Category.id
     ).filter(
-        Category.cat_name == category_name,
+        Category.cat_name.ilike('%{}%'.format(category_name)),
         Category.cat_type == category_type,
         Category.cat_status == True,
         Category.user_id == user_id

@@ -43,7 +43,6 @@
                                 <form class='form-horizontal' action="{{ url_for('board.establishments') }}"
                                       method='get'>
                                     <div class='row mb-3 align-items-end'>
-
                                         <div class='col-md mb-3'>
                                             <label for='search'>Estabelecimento</label>
                                             <input type='text' class='form-control match-select2' id='search'
@@ -51,9 +50,16 @@
                                                    placeholder='Pesquise pelo nome do estabelecimento'
                                                    value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
                                         </div>
-                                        <div class='col-md-3 mb-3 align-self-end'>
+                                        <div class='col-sm-2 mb-3 align-self-end'>
                                             <div class='d-grid'>
                                                 <button type='submit' class='btn btn-primary w-xs'>Pesquisar</button>
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-2 align-self-end'>
+                                            <div class='mb-3'>
+                                                <div class='text-sm-end d-grid'>
+                                                    <a href="{{ url_for('board.establishments') }}" class='btn btn-info w-xs'>Limpar</a>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

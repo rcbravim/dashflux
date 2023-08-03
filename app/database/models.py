@@ -1,7 +1,7 @@
 from flask_login import UserMixin
+from datetime import datetime
 
 from app.database.database import db
-from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -104,7 +104,7 @@ class Category(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    acc_name = db.Column(db.String(250), default=None)
+    acc_name = db.Column(db.String(250), nullable=False)
     acc_description = db.Column(db.String(250), default=None)
     acc_is_bank = db.Column(db.Boolean, default=False)
     acc_bank_name = db.Column(db.String(250), default=None)
