@@ -54,7 +54,7 @@ def verify_controller(max_attempts):
                 user.use_date_updated = datetime.utcnow()
                 db.session.commit()
 
-                insert_default_records(user.id)
+                # insert_default_records(user.id)
 
             return redirect(url_for('auth.login', success='Validação bem sucedida, favor efetuar login!'))
 
@@ -66,6 +66,7 @@ def verify_controller(max_attempts):
             return redirect(url_for('auth.failed'))
 
 
+# depreciated
 def insert_default_records(user_id):
     default_category_1 = Category(
         cat_name='Organizar (Saídas)',
