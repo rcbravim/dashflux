@@ -90,7 +90,7 @@ class Analytic(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
-    cat_type = db.Column(db.SmallInteger, nullable=False)
+    cat_type = db.Column(db.SmallInteger, nullable=False, comment="1 -> Entradas; 2 -> Saídas")
     cat_description = db.Column(db.String(250), default=None)
     cat_status = db.Column(db.Boolean, nullable=False, default=True)
     cat_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

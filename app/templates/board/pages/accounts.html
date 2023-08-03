@@ -76,8 +76,8 @@
                                         <div class='col-2 align-self-end'>
                                             <div class='mb-3'>
                                                 <div class='text-sm-end d-grid'>
-                                                    <a href="{{ url_for('board.accounts') }}" class='btn btn-info w-xs'>
-                                                        Limpar</a>
+                                                    <a href="{{ url_for('board.accounts') }}"
+                                                       class='btn btn-info w-xs'>Limpar Pesquisa</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -114,14 +114,23 @@
                                             </td>
                                             <td>
                                                 <div class='d-flex gap-3'>
-                                                    <a data-bs-toggle='modal' data-bs-target='.editAccountModal'
-                                                       data-value='{{ row.id }}'
-                                                       class='text-success accounts_edit' style='cursor:pointer;'><i
-                                                            class='mdi mdi-pencil font-size-18'></i></a>
-                                                    <a data-bs-toggle='modal' data-bs-target='.removeAccountModal'
-                                                       data-value='{{ row.id }}'
-                                                       class='text-danger accounts_del' style='cursor:pointer;'><i
-                                                            class='mdi mdi-delete font-size-18'></i></a>
+                                                    {% if row.id == 1 %}
+                                                        <a class='text-success'>
+                                                           <i class="mdi mdi-pencil-off font-size-18"></i>
+                                                        </a>
+                                                        <a class='text-danger'>
+                                                           <i class="mdi mdi-delete-off font-size-18"></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a data-bs-toggle='modal' data-bs-target='.editAccountModal'
+                                                           data-value='{{ row.id }}'
+                                                           class='text-success accounts_edit' style='cursor:pointer;'><i
+                                                                class='mdi mdi-pencil font-size-18'></i></a>
+                                                        <a data-bs-toggle='modal' data-bs-target='.removeAccountModal'
+                                                           data-value='{{ row.id }}'
+                                                           class='text-danger accounts_del' style='cursor:pointer;'><i
+                                                                class='mdi mdi-delete font-size-18'></i></a>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                         </tr>
@@ -139,14 +148,23 @@
                                                 </span>
                                             <td>
                                                 <div class='d-flex gap-3'>
-                                                    <a data-bs-toggle='modal' data-bs-target='.editAccountModal'
-                                                       data-value='{{ row.id }}'
-                                                       class='text-success accounts_edit' style='cursor:pointer;'><i
-                                                            class='mdi mdi-pencil font-size-18'></i></a>
-                                                    <a data-bs-toggle='modal' data-bs-target='.removeAccountModal'
-                                                       data-value='{{ row.id }}'
-                                                       class='text-danger accounts_del' style='cursor:pointer;'><i
-                                                            class='mdi mdi-delete font-size-18'></i></a>
+                                                    {% if row.id == 1 %}
+                                                        <a class='text-success'>
+                                                           <i class="mdi mdi-pencil-off font-size-18"></i>
+                                                        </a>
+                                                        <a class='text-danger'>
+                                                           <i class="mdi mdi-delete-off font-size-18"></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a data-bs-toggle='modal' data-bs-target='.editAccountModal'
+                                                           data-value='{{ row.id }}'
+                                                           class='text-success accounts_edit' style='cursor:pointer;'><i
+                                                                class='mdi mdi-pencil font-size-18'></i></a>
+                                                        <a data-bs-toggle='modal' data-bs-target='.removeAccountModal'
+                                                           data-value='{{ row.id }}'
+                                                           class='text-danger accounts_del' style='cursor:pointer;'><i
+                                                                class='mdi mdi-delete font-size-18'></i></a>
+                                                    {% endif %}
                                                 </div>
                                             </td>
                                         </tr>

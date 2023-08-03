@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 
 from flask import request, render_template, session, redirect, url_for
+from sqlalchemy import or_
 
 from app.database.models import Category, Transaction
 from app.database.database import db
@@ -13,6 +14,7 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
 def categories_controller():
     success = session.pop('success', None)
+    error = session.pop('error', None)
 
     if request.method == 'GET':
 
@@ -27,7 +29,10 @@ def categories_controller():
             Category.cat_date_created
         ).filter(
             Category.cat_status == True,
-            Category.user_id == session_id
+            or_(
+                Category.user_id == session_id,
+                Category.user_id == 1
+            )
         ).order_by(
             Category.cat_name.asc()
         )
@@ -66,7 +71,7 @@ def categories_controller():
             }
         }
 
-        return render_template('board/pages/categories.html', context=context, success=success)
+        return render_template('board/pages/categories.html', context=context, success=success, error=error)
 
     elif request.method == 'POST':
 
@@ -93,6 +98,10 @@ def categories_controller():
         # delete category
         if request.form.get('_method') == 'DELETE':
             category_id = request.form.get('del_category')
+
+            if category_id == '1' or category_id == '2':
+                session['error'] = 'Não é possível excluir registros padrões do sistema!'
+                return redirect(url_for('board.categories'))
 
             # 1/2 delete record in category table
             category = db.session.query(

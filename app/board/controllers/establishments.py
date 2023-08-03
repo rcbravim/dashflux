@@ -2,6 +2,7 @@ import math
 import os
 from datetime import datetime
 from flask import request, render_template, session, redirect, url_for
+from sqlalchemy import or_
 
 from app.database.models import Establishment, Transaction
 from app.database.database import db
@@ -12,6 +13,7 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
 def establishments_controller():
     success = session.pop('success', None)
+    error = session.pop('error', None)
 
     if request.method == 'GET':
 
@@ -23,23 +25,19 @@ def establishments_controller():
             Establishment.id,
             Establishment.est_name,
             Establishment.est_date_created
+        ).filter(
+            Establishment.est_status == True,
+            or_(
+                Establishment.user_id == session_id,
+                Establishment.user_id == 1)
+        ).order_by(
+            Establishment.est_name.asc()
         )
 
         if request.args.get('search'):
             query = query.filter(
-                Establishment.est_name.ilike('%{}%'.format(request.args.get('search'))),
-                Establishment.est_status == True,
-                Establishment.user_id == session_id
+                Establishment.est_name.ilike('%{}%'.format(request.args.get('search')))
             )
-        else:
-            query = query.filter(
-                Establishment.est_status == True,
-                Establishment.user_id == session_id
-            )
-
-        query = query.order_by(
-            Establishment.est_name.asc()
-        )
 
         establishments_all = query.all()
 
@@ -49,16 +47,12 @@ def establishments_controller():
         # Counting total pages
         total_pages = math.ceil(len(establishments_all) / PG_LIMIT)
 
-        types = []  # todo: remover
-
         # Set page range
         pg_range = paginator(pg, total_pages)
 
         context = {
-            # 'types': types,
             'establishments': establishments,
             'filter': {
-                # 'type': request.form.get('type', ''),
                 'search': request.form.get('search', '')
             },
             'pages': {
@@ -68,7 +62,7 @@ def establishments_controller():
             }
         }
 
-        return render_template('board/pages/establishments.html', context=context, success=success)
+        return render_template('board/pages/establishments.html', context=context, success=success, error=error)
 
     elif request.method == 'POST':
 
@@ -93,6 +87,10 @@ def establishments_controller():
         # delete establishment
         if request.form.get('_method') == 'DELETE':
             establishment_id = request.form.get('del_establishment')
+
+            if establishment_id == '1':
+                session['error'] = 'Não é possível excluir registros padrões do sistema!'
+                return redirect(url_for('board.establishments'))
 
             # 1/2 delete record in establishment table
             establishment = db.session.query(

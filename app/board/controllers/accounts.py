@@ -14,6 +14,7 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
 def accounts_controller():
     success = session.pop('success', None)
+    error = session.pop('error', None)
 
     if request.method == 'GET':
 
@@ -31,7 +32,10 @@ def accounts_controller():
             Account.acc_bank_account
         ).filter(
             Account.acc_status == True,
-            Account.user_id == session_id
+            or_(
+                Account.user_id == session_id,
+                Account.user_id == 1
+            )
         ).order_by(
             Account.acc_name.asc()
         )
@@ -86,7 +90,7 @@ def accounts_controller():
             }
         }
 
-        return render_template('board/pages/accounts.html', context=context, success=success)
+        return render_template('board/pages/accounts.html', context=context, success=success, error=error)
 
     elif request.method == 'POST':
 
@@ -124,6 +128,10 @@ def accounts_controller():
         # delete account
         if request.form.get('_method') == 'DELETE':
             account_id = request.form.get('del_account')
+
+            if account_id == '1':
+                session['error'] = 'Não é possível excluir registros padrões do sistema!'
+                return redirect(url_for('board.accounts'))
 
             # 1/2 delete record in account table
             account = db.session.query(
