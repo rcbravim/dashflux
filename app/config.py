@@ -6,6 +6,8 @@ from app.library.filters import *
 
 class Config:
     def __init__(self, app):
+
+        # application
         app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
         app.config['SESSION_PERMANENT'] = False
         app.config['SESSION_TYPE'] = 'filesystem'
@@ -13,7 +15,7 @@ class Config:
         app.config['TEMPLATE_FOLDER'] = 'app/templates'
         app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, 'logs')
 
-        # mail config
+        # mail
         app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER')
         app.config['MAIL_PORT'] = os.getenv('MAIL_PORT')
         app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
@@ -31,6 +33,7 @@ class Config:
         app.template_filter('date_day')(date_day)
         app.template_filter('format_currency')(format_currency)
         app.template_filter('format_date')(format_date)
+        app.template_filter('format_date_dmY')(format_date_dmY)
 
         # jinja func
         app.jinja_env.globals.update(date_now=datetime.utcnow().date)

@@ -1,7 +1,7 @@
 import json
 from flask import request, session
 
-from app.database.models import Category, Establishment, Account, Transaction, Analytic
+from app.database.models import Category, Establishment, Account, Transaction
 from app.database.database import db
 
 
@@ -14,9 +14,12 @@ def index_edit_controller():
         Transaction.tra_situation,
         Transaction.tra_amount,
         Transaction.tra_description,
+        Category.id.label('cat_id'),
         Category.cat_type,
         Category.cat_name,
+        Establishment.id.label('est_id'),
         Establishment.est_name,
+        Account.id.label('acc_id'),
         Account.acc_name,
         Account.acc_is_bank,
         Account.acc_bank_name,
@@ -32,8 +35,7 @@ def index_edit_controller():
     ).filter(
         Transaction.id == transaction_id,
         Transaction.tra_status == True,
-        Establishment.user_id == user_id,
-        Category.user_id == user_id
+        Transaction.user_id == user_id
     ).first()
 
     data = {
@@ -46,15 +48,18 @@ def index_edit_controller():
             },
         'establishment':
             {
+                'id': data_query.est_id,
                 'name': data_query.est_name
             },
         'category':
             {
+                'id': data_query.cat_id,
                 'name': data_query.cat_name,
                 'type': data_query.cat_type
             },
         'account':
             {
+                'id': data_query.acc_id,
                 'name': data_query.acc_name,
                 'is_bank': data_query.acc_is_bank,
                 'bank': data_query.acc_bank_name,

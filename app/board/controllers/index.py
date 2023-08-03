@@ -4,7 +4,7 @@ from datetime import datetime
 
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
-from sqlalchemy import func, extract
+from sqlalchemy import func, extract, or_
 
 from app.database.models import Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
@@ -93,7 +93,11 @@ def index_controller():
             category.cat_name
         ).filter(
             category.cat_status == True,
-            category.user_id == user_id
+            or_(
+                category.user_id == user_id,
+                category.user_id == 1,
+                category.user_id == 2
+            )
         ).order_by(
             category.cat_name.asc()
         ).all()
@@ -103,7 +107,10 @@ def index_controller():
             establishment.est_name
         ).filter(
             establishment.est_status == True,
-            establishment.user_id == user_id
+            or_(
+                establishment.user_id == user_id,
+                establishment.user_id == 1
+            )
         ).order_by(
             establishment.est_name.asc()
         ).all()
@@ -117,8 +124,11 @@ def index_controller():
             account.acc_bank_account,
             account.acc_description
         ).filter(
-            account.user_id == user_id,
-            account.acc_status == True
+            account.acc_status == True,
+            or_(
+                account.user_id == user_id,
+                account.user_id == 1
+            )
         ).order_by(
             account.acc_bank_name.desc()
         ).all()
@@ -177,17 +187,17 @@ def index_controller():
         # edit transaction
         if request.form.get('_method') == 'PUT':
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
-            amount = float(request.form.get('amount_edit').replace('.', '').replace(',', '.'))
+            amount = float(request.form.get('modal_amount').replace('.', '').replace(',', '.'))
             entry_date = request.form.get('modal_entry_date')
 
             transaction = Transaction(
                 id=request.form.get('edit_index'),
                 tra_entry_date=datetime.strptime(entry_date, '%Y-%m-%d').date(),
-                tra_description=request.form.get('description_edit'),
+                tra_description=request.form.get('modal_description'),
                 tra_situation=request.form.get('situation'),
-                establishment_id=request.form.get('establishment_edit'),
-                account_id=request.form.get('account'),
-                category_id=request.form.get('category_edit'),
+                establishment_id=request.form.get('modal_establishment'),
+                account_id=request.form.get('modal_account'),
+                category_id=request.form.get('modal_category'),
                 tra_amount=amount * multiply,
             )
             db.session.merge(transaction)
@@ -261,7 +271,7 @@ def index_controller():
             ).filter(
                 Transaction.tra_amount < 0,
                 Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == year,
+                extract('month', Transaction.tra_entry_date) == month,
                 extract('year', Transaction.tra_entry_date) == year
             ).scalar()
 

@@ -12,5 +12,6 @@ def init_db(app):
             if not os.path.exists(app.instance_path):
                 os.makedirs(app.instance_path)
             db.drop_all()
+            click.echo('Database dropped.')
             db.create_all()
-            click.echo('Initialized the database.')
+            click.echo('Database initialized.')
