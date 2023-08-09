@@ -54,9 +54,10 @@ jobs:
               sudo docker cp dashflux:/app/instance/database.db $(pwd)/instance/database.db
             fi
             
-            echo Stop and remove the existing container
+            echo Stop, remove the existing container and cleaning with docker prune
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
+            sudo docker system prune -af || true
             
             echo Run the new container with the data volume mounted
             sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 -v $(pwd)/instance:/app/instance \
