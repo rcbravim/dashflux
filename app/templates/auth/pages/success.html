@@ -26,14 +26,19 @@
                                     </div>
                                 </div>
                                 <div class='p-2 mt-4'>
-                                    <h4>Success !</h4>
-                                    <div class='alert alert-success' role='alert'>
-                                        <p class='mb-0'>Enviamos um e-mail para <span
-                                                class='fw-semibold'>{{ email }}</span>
-                                            com instruções de redefinição de senha.</p>
-                                    </div>
-                                    <p>Se o e-mail não aparecer em breve, verifique sua pasta de spam.
-                                        Nós enviamos de <span class='fw-semibold'>noreply@invo.club</span>.</p>
+                                    <h4>Sucesso!</h4>
+                                    {% if email_sent %}
+                                        <div class='alert alert-success' role='alert'>
+                                            <p class='mb-0'>Enviamos um e-mail com instruções de redefinição de senha.</p>
+                                        </div>
+                                        <p>Se o e-mail não aparecer em breve, verifique sua pasta de spam.
+                                            Nós enviamos de <span class='fw-semibold'>noreply@dashflux.com.br</span>.
+                                        </p>
+                                    {% elif password_changed %}
+                                        <div class='alert alert-success' role='alert'>
+                                            <p class='mb-0'>Senha alterada com sucesso, favor efetuar login.</p>
+                                        </div>
+                                    {% endif %}
                                     <div class='mt-4'>
                                         <a href="{{ url_for('auth.login') }}" class='btn btn-primary'>Voltar para a
                                             Página Inicial</a>

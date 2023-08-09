@@ -29,6 +29,8 @@ $ pip install -r requirements.txt
 
 ```bash
 $ python flask init-db
+  or
+$ flask init-db
 ```
 
 ### Run Application
