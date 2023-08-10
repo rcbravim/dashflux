@@ -46,9 +46,6 @@ jobs:
             git reset --hard origin/$BRANCH
             git pull origin $BRANCH
             
-            echo Build a new Docker image with the updated code
-            sudo docker build -t $CONTAINER_NAME .
-            
             echo Copy database if not exists
             if [ ! -e /instance/database.db ]; then
               sudo docker cp dashflux:/app/instance/database.db $(pwd)/instance/database.db
@@ -58,6 +55,9 @@ jobs:
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
             sudo docker system prune -af || true
+          
+            echo Build a new Docker image with the updated code
+            sudo docker build -t $CONTAINER_NAME .
             
             echo Run the new container with the data volume mounted
             sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 -v $(pwd)/instance:/app/instance \
