@@ -30,6 +30,11 @@ def forgot():
     return forgot_controller()
 
 
+@bp.route('/recovery', methods=['GET', 'POST'])
+def recovery():
+    return recovery_controller()
+
+
 @bp.route('/failed', methods=['GET', 'POST'])
 def failed():
     return failed_controller()

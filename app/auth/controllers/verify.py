@@ -54,8 +54,6 @@ def verify_controller(max_attempts):
                 user.use_date_updated = datetime.utcnow()
                 db.session.commit()
 
-                # insert_default_records(user.id)
-
             return redirect(url_for('auth.login', success='Validação bem sucedida, favor efetuar login!'))
 
         elif session.get('attempt') <= (max_attempts - 2):
