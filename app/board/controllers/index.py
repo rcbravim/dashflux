@@ -36,16 +36,17 @@ def index_controller():
         account = Account
 
         entries_all = db.session.query(
-            category.cat_name,
-            category.cat_type,
+            # category.cat_name,
+            # category.cat_type,
             establishment.est_name,
             transaction.id,
             transaction.tra_situation,
             transaction.tra_amount,
             transaction.tra_entry_date,
             transaction.tra_description
-        ).join(
-            category, transaction.category_id == category.id
+        # ).join(
+        #     # category, transaction.category_id == category.id
+        #     Category, func.json_contains(Transaction.category_ids, str(Category.id))
         ).join(
             establishment, transaction.establishment_id == establishment.id
         ).filter(
@@ -56,6 +57,12 @@ def index_controller():
         ).order_by(
             transaction.tra_entry_date.asc()
         ).all()
+
+        filtered_transactions = []
+        for transaction in entries_all:
+            category_ids = transaction.get_category_ids()
+            if 2 in category_ids:  # Verifique se o ID da categoria está na lista
+                filtered_transactions.append(transaction)
 
         last_month_balance = db.session.query(
             func.coalesce(func.sum(Transaction.tra_amount), 0)

@@ -57,10 +57,23 @@ class Transaction(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    # category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category_ids = db.Column(db.String, nullable=False, default='')
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('transaction'))
+
+    def __init__(self, category_ids=None, **kwargs):
+        super(Transaction, self).__init__(**kwargs)
+        if category_ids is None:
+            category_ids = []
+        self.category_ids = ','.join(map(str, category_ids))
+
+    def get_category_ids(self):
+        return list(map(int, self.category_ids.split(',')))
+
+    def get_categories(self):
+        return Category.query.filter(Category.id.in_(self.get_category_ids())).all()
 
     def __repr__(self):
         return f"Transactions(id={self.id}, tra_description={self.ana_cycle}, user_id={self.user_id})"
