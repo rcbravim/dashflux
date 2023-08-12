@@ -5,6 +5,8 @@ from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract, or_
+from sqlalchemy.dialects.postgresql import array_agg
+from sqlalchemy.orm import aliased
 
 from app.database.models import Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
@@ -35,17 +37,18 @@ def index_controller():
         establishment = Establishment
         account = Account
 
+        transaction_alias = aliased(Transaction)
         entries_all = db.session.query(
-            category.cat_name,
-            category.cat_type,
             establishment.est_name,
             transaction.id,
             transaction.tra_situation,
             transaction.tra_amount,
             transaction.tra_entry_date,
-            transaction.tra_description
-        ).join(
-            category, transaction.category_id == category.id
+            transaction.tra_description,
+            func.group_concat(Category.id).label('category_ids'),
+            func.group_concat(Category.cat_name).label('category_names')
+        ).outerjoin(
+            transaction_alias.category_ids
         ).join(
             establishment, transaction.establishment_id == establishment.id
         ).filter(
@@ -72,8 +75,7 @@ def index_controller():
             entry = {
                 'id': row.id,
                 'tra_entry_date': row.tra_entry_date,
-                'cat_name': row.cat_name,
-                'cat_type': row.cat_type,
+                'categories_entry': [{'cat_name': cat_name, 'cat_id': cat_id} for cat_name, cat_id in zip(row.category_names.split(','), row.category_ids.split(','))],
                 'est_name': row.est_name,
                 'tra_situation': row.tra_situation,
                 'tra_amount': row.tra_amount,
@@ -90,7 +92,8 @@ def index_controller():
 
         categories = db.session.query(
             category.id,
-            category.cat_name
+            category.cat_name,
+            category.cat_type
         ).filter(
             category.cat_status == True,
             or_(
@@ -296,7 +299,7 @@ def index_controller():
         # new transaction
         else:
             entry_date = request.form.get('entry_date')
-            category = request.form.get('category')
+            categories = request.form.getlist('selected_categories[]')
             description = request.form.get('description')
             establishment = request.form.get('establishment')
             situation = request.form.get('situation')
@@ -311,9 +314,14 @@ def index_controller():
                 tra_amount=amount * multiply,
                 tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
                 establishment_id=establishment,
-                category_id=category,
+                # category_id=category,  # todo: remover
                 account_id=account
             )
+
+            for category in categories:
+                category_id = Category.query.get(category)
+                new_transaction.category_ids.append(category_id)
+
             db.session.add(new_transaction)
             db.session.commit()
 
