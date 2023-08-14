@@ -22,21 +22,25 @@
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='category' class='form-label'>Categoria<span class='text-danger'>*</span></label>
-                                    <select class='form-select modal_category_new' id='category' name='category' required>
+                                    <label class='form-label'>Categorias<span class='text-danger'>*</span></label>
+
+                                    <select class="select2 form-control select2-multiple"
+                                            multiple="multiple" data-placeholder="..."
+                                            id="select-multiple-categories" name="selected_categories[]">
 
                                         {% if context.categories %}
                                             {% for row in context.categories %}
                                                 {% if row.id == 2 %}
-                                                <option value='{{ row.id }}' selected>{{ row.cat_name }}</option>
+                                                    <option value='{{ row.id }}' selected>{{ row.cat_name|lower }}</option>
                                                 {% else %}
-                                                <option value='{{ row.id }}'>{{ row.cat_name }}</option>
+                                                    <option value='{{ row.id }}'>{{ row.cat_name|lower }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
-                                            <option value='' selected disabled>Registre uma categoria antes de continuar</option>
+                                            <option value='' selected disabled>Selecione ao menos uma categoria</option>
                                         {% endif %}
                                     </select>
+
                                     <div class='invalid-feedback'>Selecione uma categoria</div>
                                 </div>
                             </div>
@@ -85,18 +89,19 @@
                                             class='text-danger'>*</span></label>
                                     <select class='form-select' id='account' name='account' required>
                                         {% if context.accounts %}
-                                            {% for row in context.accounts %}
+                                        {% for row in context.accounts %}
 
-                                                {% if row.id == 1 %}
-                                                    <option value='{{ row.id }}' selected>{{ row.acc_name }}</option>
+                                        {% if row.id == 1 %}
+                                        <option value='{{ row.id }}' selected>{{ row.acc_name }}</option>
 
-                                                {% else %}
-                                                <option value='{{ row.id }}'>{{ row.acc_name }}</option>
-                                                {% endif %}
-
-                                            {% endfor %}
                                         {% else %}
-                                            <option value='' selected disabled>Registre uma conta antes de continuar</option>
+                                        <option value='{{ row.id }}'>{{ row.acc_name }}</option>
+                                        {% endif %}
+
+                                        {% endfor %}
+                                        {% else %}
+                                        <option value='' selected disabled>Registre uma conta antes de continuar
+                                        </option>
                                         {% endif %}
                                     </select>
                                     <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
@@ -153,3 +158,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+      $("#select-multiple-categories").select2({
+        dropdownParent: $("#newEntryModal")
+      });
+    });
+</script>

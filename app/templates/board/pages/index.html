@@ -215,7 +215,7 @@
                                             <th class='align-middle'>Data</th>
                                             <th class='align-middle'>Estabelecimento</th>
                                             <th class='align-middle'>Descrição</th>
-                                            <th class='align-middle'>Categoria</th>
+                                            <th class='align-middle'>Categorias</th>
                                             <th style='text-align: right;'>Valor</th>
                                             <th style='text-align: right;'>Saldo no Dia</th>
                                             <th class='align-middle'>Status</th>
@@ -230,15 +230,18 @@
                                         <td>{{ row.tra_entry_date|format_date }}</td>
                                         <td>{{ row.est_name|upper }}</td>
                                         <td>{{ row.tra_description|upper }}</td>
-
                                         <td>
-                                            {% if row.tra_amount > 0 %}
-                                            <span class='badge badge-pill badge-soft-success font-size-12'>
-                                            {% else %}
-                                            <span class='badge badge-pill badge-soft-danger font-size-12'>
-                                            {% endif %}
-                                                {{ row.cat_name|lower }}
-                                            </span>
+                                            {% for category in row.categories_entry %}
+                                                {% if row.tra_amount > 0 %}
+                                                    <span class='badge badge-pill badge-soft-success font-size-12'>
+                                                        {{ category.cat_name|lower }}
+                                                    </span>
+                                                {% else %}
+                                                    <span class='badge badge-pill badge-soft-danger font-size-12'>
+                                                        {{ category.cat_name|lower }}
+                                                    </span>
+                                                {% endif %}
+                                            {% endfor %}
                                         </td>
 
                                         <td style='text-align: right;'>{{ row.tra_amount|format_currency }}</td>
