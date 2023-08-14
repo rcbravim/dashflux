@@ -30,6 +30,14 @@ def insert_default_records(app):
         )
         db.session.add(admin_user)
 
+        # insert dev user
+        dev_user = User(
+            use_login='dev@dashflux.com.br',
+            use_password=generate_password_hash('dev@Pass123'),
+            use_is_valid=True
+        )
+        db.session.add(dev_user)
+
         # insert establishment
         default_establishment = Establishment(
             est_name='Não Informado',
@@ -62,4 +70,6 @@ def insert_default_records(app):
         db.session.add(default_account)
 
         db.session.commit()
+        click.echo('Admin user inserted.')
+        click.echo('Dev user inserted.')
         click.echo('Default records inserted.')
