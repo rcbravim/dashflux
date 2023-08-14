@@ -1,0 +1,16 @@
+/* Serve para ajustar o campo "categorias" no modal de novas entradas na página index */
+
+/* Estilo para ajustar a largura do Select2 */
+.select2-container {
+  width: 100% !important;
+}
+
+/* Estilo para ajustar a posição do Select2 apenas no modal de nova entrada */
+.new-entry-select.select2-container--default .select2-selection--multiple {
+  flex: 1;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  padding-left: 0.025rem;
+  height: 120px;
+}
