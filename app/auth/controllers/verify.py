@@ -54,8 +54,6 @@ def verify_controller(max_attempts):
                 user.use_date_updated = datetime.utcnow()
                 db.session.commit()
 
-                insert_default_records(user.id)
-
             return redirect(url_for('auth.login', success='Validação bem sucedida, favor efetuar login!'))
 
         elif session.get('attempt') <= (max_attempts - 2):
@@ -66,6 +64,7 @@ def verify_controller(max_attempts):
             return redirect(url_for('auth.failed'))
 
 
+# depreciated
 def insert_default_records(user_id):
     default_category_1 = Category(
         cat_name='Organizar (Saídas)',
@@ -84,7 +83,7 @@ def insert_default_records(user_id):
         acc_name='Conta Bancária',
         acc_description='Conta Bancária Padrão',
         acc_is_bank=True,
-        acc_bank_name='Banco Dashflux',
+        acc_bank_name='Banco',
         acc_bank_branch='0001',
         acc_bank_account='00001',
         user_id=user_id

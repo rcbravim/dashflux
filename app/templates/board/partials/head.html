@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang='en-us'>
+<html lang='pt-br'>
   <head>
     <meta charset='utf-8' />
     <title>$ DashFlux </title>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-    <meta content='financial spreadsheet' name='description' />
-    <meta content='Telurio' name='author' />
+    <meta content='dashflux financial spreadsheet' name='description' />
+    <meta content='Raphael Bravim' name='author' />
     <!-- App favicon -->
     <link rel='shortcut icon' href="{{ url_for('static', filename='global/icon/favicon.ico') }}">
     <link rel='apple-touch-icon' sizes='180x180' href="{{ url_for('static', filename='global/icon/apple-touch-icon.png') }}">
@@ -17,15 +17,25 @@
 
     <!-- select2 css -->
     <link href="{{ url_for('static', filename='board/libs/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-
-    <!-- custom css -->
-    <link href="{{ url_for('static', filename='board/libs/select2/css/select2.min.css') }}" rel="stylesheet"
+    <!-- spectrum css -->
+    <link href="{{ url_for('static', filename='board/libs/spectrum/spectrum.min.css') }}" rel="stylesheet"
           type="text/css" />
-
+    <!-- timepicker css -->
+    <link href="{{ url_for('static', filename='board/libs/timepicker/timepicker.min.css') }}" rel="stylesheet"
+          type="text/css" />
+    <!-- touchspin css -->
+    <link href="{{ url_for('static', filename='board/libs/touchspin/jquery.bootstrap-touchspin.min.css') }}" rel="stylesheet"
+          type="text/css" />
+    <!-- apexcharts css -->
+    <link href="{{ url_for('static', filename='board/libs/apexcharts/apexcharts.css') }}" rel="stylesheet"
+          type="text/css" />
     <!-- Bootstrap Css -->
     <link href="{{ url_for('static', filename='global/css/bootstrap.min.css') }}" id='bootstrap-style' rel='stylesheet' type='text/css' />
     <!-- Icons Css -->
     <link href="{{ url_for('static', filename='global/css/icons.min.css') }}" rel='stylesheet' type='text/css' />
     <!-- App Css-->
     <link href="{{ url_for('static', filename='global/css/app.min.css') }}" id='app-style' rel='stylesheet' type='text/css' />
+
+    <!-- select2 css for categories multiple on new entry modal -->
+    <link href="{{ url_for('static', filename='board/css/custom-select2.css') }}" rel="stylesheet" type="text/css" />
   </head>

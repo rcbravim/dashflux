@@ -1,7 +1,7 @@
 from flask_login import UserMixin
+from datetime import datetime
 
 from app.database.database import db
-from datetime import datetime
 
 
 class User(db.Model, UserMixin):
@@ -43,6 +43,12 @@ class UserLog(db.Model):
         return f"UserLog(id={self.id}, log_ip_address={self.log_ip_address}, user_id={self.user_id})"
 
 
+# Tabela de relacionamento muitos-para-muitos entre Transaction e Category
+transaction_category = db.Table('transaction_category',
+    db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id'), primary_key=True),
+    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
+)
+
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tra_description = db.Column(db.String(250), nullable=True)
@@ -57,7 +63,7 @@ class Transaction(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category_ids = db.Column(db.String, nullable=False, default='')  # '1,2,3'
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('transaction'))
@@ -90,13 +96,13 @@ class Analytic(db.Model):
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
+    cat_type = db.Column(db.SmallInteger, nullable=False, comment="1 -> Entradas; 2 -> Saídas")
     cat_description = db.Column(db.String(250), default=None)
     cat_status = db.Column(db.Boolean, nullable=False, default=True)
     cat_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_deleted = db.Column(db.DateTime, nullable=True, default=None)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    cat_type = db.Column(db.SmallInteger, nullable=False)
 
     def __repr__(self):
         return '<Category %r>' % self.cat_name
@@ -104,8 +110,7 @@ class Category(db.Model):
 
 class Account(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    # acc_slug = db.Column(db.String(250), unique=True, nullable=False)
-    acc_name = db.Column(db.String(250), default=None)
+    acc_name = db.Column(db.String(250), nullable=False)
     acc_description = db.Column(db.String(250), default=None)
     acc_is_bank = db.Column(db.Boolean, default=False)
     acc_bank_name = db.Column(db.String(250), default=None)
@@ -124,6 +129,7 @@ class Account(db.Model):
 class Establishment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     est_name = db.Column(db.String(250), nullable=False)
+    est_description = db.Column(db.String(250), default=True)
     est_status = db.Column(db.Boolean, nullable=False, default=True)
     est_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     est_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
