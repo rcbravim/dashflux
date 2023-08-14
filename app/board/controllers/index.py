@@ -1,12 +1,9 @@
 import os
 import math
 from datetime import datetime
-
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract, or_
-from sqlalchemy.dialects.postgresql import array_agg
-from sqlalchemy.orm import aliased
 
 from app.database.models import Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
@@ -37,7 +34,6 @@ def index_controller():
         establishment = Establishment
         account = Account
 
-        transaction_alias = aliased(Transaction)
         entries_all = db.session.query(
             establishment.est_name,
             transaction.id,
@@ -45,10 +41,7 @@ def index_controller():
             transaction.tra_amount,
             transaction.tra_entry_date,
             transaction.tra_description,
-            func.group_concat(Category.id).label('category_ids'),
-            func.group_concat(Category.cat_name).label('category_names')
-        ).outerjoin(
-            transaction_alias.category_ids
+            transaction.category_ids
         ).join(
             establishment, transaction.establishment_id == establishment.id
         ).filter(
@@ -71,11 +64,21 @@ def index_controller():
 
         entries_with_flow = []
         for row in entries_all:
+
+            # get category names from category ids
+            categories_entry = []
+            for _id in list(filter(bool, row.category_ids.split(','))):  # simples -> row.category_ids.split(','):
+                d = {
+                    'cat_id': _id,
+                    'cat_name':  Category.query.get(_id).cat_name,
+                }
+                categories_entry.append(d)
+
             cumulative_balance += float(row.tra_amount)
             entry = {
                 'id': row.id,
                 'tra_entry_date': row.tra_entry_date,
-                'categories_entry': [{'cat_name': cat_name, 'cat_id': cat_id} for cat_name, cat_id in zip(row.category_names.split(','), row.category_ids.split(','))],
+                'categories_entry': categories_entry,  #  [{'cat_name': cat_name, 'cat_id': cat_id} for cat_name, cat_id in zip(row.category_names.split(','), row.category_ids.split(','))],
                 'est_name': row.est_name,
                 'tra_situation': row.tra_situation,
                 'tra_amount': row.tra_amount,
@@ -192,6 +195,7 @@ def index_controller():
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
             amount = float(request.form.get('modal_amount').replace('.', '').replace(',', '.'))
             entry_date = request.form.get('modal_entry_date')
+            category_ids = ','.join(request.form.get('selected_categories').split(','))
 
             transaction = Transaction(
                 id=request.form.get('edit_index'),
@@ -200,7 +204,7 @@ def index_controller():
                 tra_situation=request.form.get('situation'),
                 establishment_id=request.form.get('modal_establishment'),
                 account_id=request.form.get('modal_account'),
-                category_id=request.form.get('modal_category'),
+                category_ids=category_ids,
                 tra_amount=amount * multiply,
             )
             db.session.merge(transaction)
@@ -299,7 +303,7 @@ def index_controller():
         # new transaction
         else:
             entry_date = request.form.get('entry_date')
-            categories = request.form.getlist('selected_categories[]')
+            category_list = request.form.getlist('selected_categories[]')
             description = request.form.get('description')
             establishment = request.form.get('establishment')
             situation = request.form.get('situation')
@@ -314,13 +318,9 @@ def index_controller():
                 tra_amount=amount * multiply,
                 tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
                 establishment_id=establishment,
-                # category_id=category,  # todo: remover
+                category_ids=','.join(category_list),
                 account_id=account
             )
-
-            for category in categories:
-                category_id = Category.query.get(category)
-                new_transaction.category_ids.append(category_id)
 
             db.session.add(new_transaction)
             db.session.commit()

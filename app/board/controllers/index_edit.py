@@ -14,9 +14,7 @@ def index_edit_controller():
         Transaction.tra_situation,
         Transaction.tra_amount,
         Transaction.tra_description,
-        Category.id.label('cat_id'),
-        Category.cat_type,
-        Category.cat_name,
+        Transaction.category_ids,
         Establishment.id.label('est_id'),
         Establishment.est_name,
         Account.id.label('acc_id'),
@@ -27,8 +25,6 @@ def index_edit_controller():
         Account.acc_bank_account,
         Account.acc_description
     ).join(
-        Category, Transaction.category_id == Category.id
-    ).join(
         Establishment, Transaction.establishment_id == Establishment.id
     ).join(
         Account, Transaction.account_id == Account.id
@@ -37,6 +33,10 @@ def index_edit_controller():
         Transaction.tra_status == True,
         Transaction.user_id == user_id
     ).first()
+
+    category_names = []
+    for _id in list(filter(bool, data_query.category_ids.split(','))):  # simples -> data_query.category_ids.split(','):
+        category_names.append(Category.query.get(_id).cat_name)
 
     data = {
         'entry':
@@ -51,12 +51,8 @@ def index_edit_controller():
                 'id': data_query.est_id,
                 'name': data_query.est_name
             },
-        'category':
-            {
-                'id': data_query.cat_id,
-                'name': data_query.cat_name,
-                'type': data_query.cat_type
-            },
+        'category_names': category_names,
+        'category_ids': list(filter(bool, data_query.category_ids.split(','))),  # simples -> data_query.category_ids.split(','),
         'account':
             {
                 'id': data_query.acc_id,

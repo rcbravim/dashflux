@@ -63,8 +63,7 @@ class Transaction(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
-    category_ids = db.relationship('Category', secondary=transaction_category, back_populates='transactions')
-    # category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)  # todo: remover
+    category_ids = db.Column(db.String, nullable=False, default='')  # '1,2,3'
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('transaction'))
@@ -104,8 +103,6 @@ class Category(db.Model):
     cat_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_deleted = db.Column(db.DateTime, nullable=True, default=None)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    transactions = db.relationship('Transaction', secondary=transaction_category, back_populates='category_ids')
 
     def __repr__(self):
         return '<Category %r>' % self.cat_name

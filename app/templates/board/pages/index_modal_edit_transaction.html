@@ -18,21 +18,27 @@
                                 <div class='mb-3'>
                                     <label for='modal_entry_date' class='form-label'>Data de Entrada<span
                                             class='text-danger'>*</span></label>
-                                    <input type='date' class='form-control valid_date_nd modal_entry_date' id='modal_entry_date'
+                                    <input type='date' class='form-control valid_date_nd modal_entry_date'
+                                           id='modal_entry_date'
                                            name='modal_entry_date' value='' required>
                                     <div class='invalid-feedback'>Insira a data de entrada</div>
                                 </div>
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='modal_category' class='form-label'>Categoria<span
+                                    <label for='modal_category' class='form-label'>Categorias<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select modal_category' id='modal_category' name='modal_category' required>
+                                    <input type="hidden" id="selected_categories_input" name="selected_categories" value="">
+                                    <select class="select2 form-control select2-multiple"
+                                            multiple="multiple" data-placeholder="Selecione ao menos uma categoria"
+                                            id="modal_category" name="modal_category[]">
+
                                         {% for row in context.categories %}
-                                        <option value='{{ row.id }}'>{{ row.cat_name }}</option>
+                                            <option value="{{ row.id }}">{{ row.cat_name|lower }}</option>
                                         {% endfor %}
+
+                                        <option value='' disabled selected>Selecione ao menos uma categoria</option>
                                     </select>
-                                    <div class='invalid-feedback'>Por favor, selecione uma categoria</div>
                                 </div>
                             </div>
                         </div>
@@ -124,3 +130,11 @@
         </div>
     </div>
 </div>
+
+<script>
+    $(document).ready(function() {
+      $("#modal_category").select2({
+        dropdownParent: $("#labelEditModal")
+      });
+    });
+</script>

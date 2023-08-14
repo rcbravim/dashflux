@@ -1,4 +1,4 @@
-<div class='modal fade newEntryModal' id='newEntryModal' role='dialog' aria-hidden='true'>
+<div class='modal fade newEntryModal' id='newEntryModal' tabindex='-1' role='dialog' aria-hidden='true'>
     <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
         <div class='modal-content'>
             <div class='modal-header'>
@@ -160,18 +160,9 @@
 </div>
 
 <script>
-
     $(document).ready(function() {
       $("#select-multiple-categories").select2({
         dropdownParent: $("#newEntryModal")
       });
-<!--      $('#select-multiple-categories').addClass('is-invalid');-->
     });
-
-<!--for all-->
-<!--     $('select:not(.normal)').each(function () {-->
-<!--            $(this).select2({-->
-<!--                dropdownParent: $(this).parent()-->
-<!--            });-->
-<!--        });-->
 </script>

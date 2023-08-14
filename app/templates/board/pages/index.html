@@ -232,7 +232,7 @@
                                         <td>{{ row.tra_description|upper }}</td>
                                         <td>
                                             {% for category in row.categories_entry %}
-                                                {% if category.cat_id == 1 %}>
+                                                {% if row.tra_amount > 0 %}
                                                     <span class='badge badge-pill badge-soft-success font-size-12'>
                                                         {{ category.cat_name|lower }}
                                                     </span>
