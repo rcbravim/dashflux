@@ -86,6 +86,11 @@ $ python flask run --debug
   - sudo service nginx restart
 - make http rule on ec2 security group
 
+## For Deploy With DB Changes (AWS EC2)
+- access ec2 intance
+- docker exec -it dashflux bash
+- flask init-db
+
 ## Hosting and Certificates (HTTPS)
 - register/buy a domain (godaddy.com, registro.br, locaweb.com.br)
 - if AWS -> go to route 53, create a new host zone, and put the relationship with your ec2 ipv4 instance
