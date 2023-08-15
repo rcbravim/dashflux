@@ -39,3 +39,6 @@ def recovery():
 def failed():
     return failed_controller()
 
+@bp.route('/error', methods=['GET', 'POST'])
+def error():
+    return error_controller()
