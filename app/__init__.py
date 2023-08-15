@@ -44,9 +44,4 @@ def create_app():
     # translate dates
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
-    # # service worker (pwa)
-    # @app.route('/service-worker.js')
-    # def service_worker():
-    #     return send_file('static/global/js/pwabuilder-sw.js')
-
     return app
