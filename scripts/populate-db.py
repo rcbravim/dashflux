@@ -1,12 +1,11 @@
 import os
 import random
-import sys
 from datetime import timedelta
-
 from flask import Flask
 from werkzeug.security import generate_password_hash
-
 from app.database.models import *
+
+# depreciated -> need adjustment for recent updates
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance_path, 'database.db').replace('\\scripts', '')
@@ -14,21 +13,17 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance
 # init app with sqlalchemy instance
 db.init_app(app)
 
-only_user = True
+# dev system user
+user_id = 2
 
 with app.app_context():
     # Criar usuário
     user = User(
         use_login="dev@dashflux.com.br",
-        use_password=generate_password_hash("password"),
+        use_password=generate_password_hash("dev@Pass123"),
         use_is_valid=True
     )
     db.session.add(user)
-
-    if only_user:
-        db.session.commit()
-        print('user dev cadastrado')
-        sys.exit()
 
     # Criar alguns registros de log fictícios
     for i in range(50):
@@ -37,7 +32,7 @@ with app.app_context():
             log_ip_address=f"IP Address {i}",
             log_risk_level=random.randint(1, 5),
             log_date_created=datetime.utcnow(),
-            user_id=1
+            user_id=user_id
         )
         db.session.add(log)
 
@@ -52,7 +47,7 @@ with app.app_context():
             tra_situation=random.randint(1, 3),
             tra_amount=random.randint(-1000, 1000),
             tra_entry_date=random_date,
-            user_id=1,
+            user_id=user_id,
             establishment_id=random.randint(1, 10),
             category_id=random.randint(1, 10),
             account_id=random.randint(1, 10)
@@ -66,7 +61,7 @@ with app.app_context():
             ana_year=datetime.utcnow().year,
             ana_incomes=random.randint(0, 1000),
             ana_expenses=random.randint(0, 1000),
-            user_id=1
+            user_id=user_id
         )
         db.session.add(analytic)
 
@@ -76,7 +71,7 @@ with app.app_context():
         category = Category(
             cat_name=name,
             cat_description=f"Description for {name}",
-            user_id=1,
+            user_id=user_id,
             cat_type=random.randint(1, 2)
         )
         db.session.add(category)
@@ -91,7 +86,7 @@ with app.app_context():
             acc_bank_name=f"Account {i}" if is_bank else None,
             acc_bank_branch=random.randint(0, 9999) if is_bank else None,
             acc_bank_account=random.randint(0, 99999) if is_bank else None,
-            user_id=1
+            user_id=user_id
         )
         db.session.add(account)
 
@@ -99,7 +94,7 @@ with app.app_context():
     for i in range(10):
         establishment = Establishment(
             est_name=f"Establishment {i}",
-            user_id=1
+            user_id=user_id
         )
         db.session.add(establishment)
 
