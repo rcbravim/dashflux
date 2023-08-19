@@ -1,5 +1,5 @@
 import click
-from flask import render_template
+from flask import render_template, request, url_for, redirect
 from werkzeug.security import generate_password_hash
 
 from app.database.database import db
@@ -9,6 +9,10 @@ from app.database.models import User, Establishment, Category, Account
 def auth_config(login_manager):
     @login_manager.unauthorized_handler
     def unauthorized():
+
+        if request.url_rule.endpoint == 'board.index':
+            return redirect(url_for('auth.login'))
+
         error = 'Não Autorizado!'
         return render_template('auth/pages/401.html', error=error)
 

@@ -1,5 +1,5 @@
 import locale
-from flask import Flask, send_file
+from flask import Flask
 from flask_login import LoginManager
 
 from app.auth_config import auth_config, insert_default_records
@@ -43,10 +43,5 @@ def create_app():
 
     # translate dates
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
-
-    # # service worker (pwa)
-    # @app.route('/service-worker.js')
-    # def service_worker():
-    #     return send_file('static/global/js/pwabuilder-sw.js')
 
     return app

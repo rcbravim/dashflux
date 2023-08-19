@@ -18,10 +18,20 @@
               <span key='t-labels'>Etiquetas</span>
             </a>
             <ul class='sub-menu' aria-expanded='false'>
-              <li><a href="{{ url_for('board.establishments') }}" key='t-beneficiaries'>Estabelecimentos</a></li>
-              <li><a href="{{ url_for('board.categories') }}" key='t-categories'>Categorias</a></li>
-              <li><a href="{{ url_for('board.accounts') }}" key='t-financial'>Contas</a></li>
+              <li>
+                <a href="{{ url_for('board.establishments') }}" key='t-beneficiaries'>
+                  <i class='mdi mdi-store-outline'></i>Estabelecimentos</a></li>
+              <li><a href="{{ url_for('board.categories') }}" key='t-categories'>
+                <i class='mdi mdi-clipboard-list-outline'></i>Categorias</a></li>
+              <li><a href="{{ url_for('board.accounts') }}" key='t-financial'>
+                <i class='mdi mdi-bank-outline'></i>Contas</a></li>
             </ul>
+          </li>
+          <li id='import-csv-menu'>
+            <a href="{{ url_for('board.upload') }}" class='waves-effect'>
+              <i class='bx bx-upload'></i>
+              <span key='t-upload'>Upload</span>
+            </a>
           </li>
           <li class='menu-title' key='t-apps'>Informações da Conta</li>
           <li id='profile-menu'>
