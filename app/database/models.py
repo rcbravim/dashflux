@@ -43,12 +43,6 @@ class UserLog(db.Model):
         return f"UserLog(id={self.id}, log_ip_address={self.log_ip_address}, user_id={self.user_id})"
 
 
-# Tabela de relacionamento muitos-para-muitos entre Transaction e Category
-transaction_category = db.Table('transaction_category',
-    db.Column('transaction_id', db.Integer, db.ForeignKey('transaction.id'), primary_key=True),
-    db.Column('category_id', db.Integer, db.ForeignKey('category.id'), primary_key=True)
-)
-
 class Transaction(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tra_description = db.Column(db.String(250), nullable=True)
@@ -129,7 +123,7 @@ class Account(db.Model):
 class Establishment(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     est_name = db.Column(db.String(250), nullable=False)
-    est_description = db.Column(db.String(250), default=True)
+    est_description = db.Column(db.String(250), default=None)
     est_status = db.Column(db.Boolean, nullable=False, default=True)
     est_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     est_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)

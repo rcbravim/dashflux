@@ -12,3 +12,4 @@ from .account_return_id_by_name import account_return_id_by_name_controller
 from .index_edit import index_edit_controller
 from .logout import logout_controller
 from .support import support_controller
+from .upload import upload_controller
