@@ -80,3 +80,8 @@ def account_return_id_by_name():
 @bp.route('/index_edit', methods=['GET', 'POST'])
 def index_edit():
     return index_edit_controller()
+
+
+@bp.route('/upload', methods=['GET', 'POST'])
+def upload():
+    return upload_controller()
