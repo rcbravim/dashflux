@@ -47,7 +47,15 @@ def categories_controller():
                 Category.cat_name.ilike('%{}%'.format(request.args.get('search')))
             )
 
-        categories_all = query.all()
+        categories_default = query.filter(
+            Category.user_id == 1
+        ).all()
+
+        categories_user = query.filter(
+            Category.user_id == session_id
+        ).all()
+
+        categories_all = categories_default + categories_user
 
         # Separate rows for exposure
         categories = categories_all[pg_offset:(pg_offset + PG_LIMIT)]

@@ -1,57 +1,58 @@
 <div id='layout-wrapper'>
-  <!-- ========== Left Sidebar Start ========== -->
-  <div class='vertical-menu'>
-    <div data-simplebar class='h-100'>
-      <!--- Sidemenu -->
-      <div id='sidebar-menu'>
-        <!-- Left Menu Start -->
-        <ul class='metismenu list-unstyled' id='side-menu'>
-          <li class='menu-title' key='t-menu'>Menu</li>
-          <li>
-            <a href="{{ url_for('board.index') }}" class='waves-effect'>
-              <i class='bx bx-home-circle'></i><span key='t-dashboards'>Painel</span>
-            </a>
-          </li>
-          <li id='lables-menu'>
-            <a class='has-arrow waves-effect'>
-              <i class='mdi mdi-label-multiple-outline'></i>
-              <span key='t-labels'>Etiquetas</span>
-            </a>
-            <ul class='sub-menu' aria-expanded='false'>
-              <li>
-                <a href="{{ url_for('board.establishments') }}" key='t-beneficiaries'>
-                  <i class='mdi mdi-store-outline'></i>Estabelecimentos</a></li>
-              <li><a href="{{ url_for('board.categories') }}" key='t-categories'>
-                <i class='mdi mdi-clipboard-list-outline'></i>Categorias</a></li>
-              <li><a href="{{ url_for('board.accounts') }}" key='t-financial'>
-                <i class='mdi mdi-bank-outline'></i>Contas</a></li>
-            </ul>
-          </li>
-          <li id='import-csv-menu'>
-            <a href="{{ url_for('board.upload') }}" class='waves-effect'>
-              <i class='bx bx-upload'></i>
-              <span key='t-upload'>Upload</span>
-            </a>
-          </li>
-          <li class='menu-title' key='t-apps'>Informações da Conta</li>
-          <li id='profile-menu'>
-            <a href="{{ url_for('board.profile') }}" class='waves-effect'>
-              <i class='bx bx-user'></i>
-              <span key='t-profile'>Perfil</span>
-            </a>
-          </li>
-<!--          todo: modulo de contato-->
-<!--          <li class='menu-title' key='t-apps'>Informações de Contato</li>-->
-<!--          <li id='profile-menu'>-->
-<!--            <a href="{{ url_for('board.support') }}" class='waves-effect'>-->
-<!--              <i class='bx bx-mail-send'></i>-->
-<!--              <span key='t-profile'>Contato</span>-->
-<!--            </a>-->
-<!--          </li>-->
-        </ul>
-      </div>
-      <!-- Sidebar -->
+    <!-- ========== Left Sidebar Start ========== -->
+    <div class='vertical-menu'>
+        <div data-simplebar class='h-100'>
+            <!--- Sidemenu -->
+            <div id='sidebar-menu'>
+                <!-- Left Menu Start -->
+                <ul class='metismenu list-unstyled' id='side-menu'>
+                    <li class='menu-title' key='t-menu'>Menu</li>
+                    <li>
+                        <a href="{{ url_for('board.index') }}" class='waves-effect'>
+                            <i class='mdi mdi-table-of-contents'></i>
+                            <span key='t-dashboards'>Dashboard</span>
+                        </a>
+                    </li>
+                    <li id='lables-menu'>
+                        <a class='has-arrow waves-effect'>
+                            <i class='mdi mdi-label-multiple-outline'></i>
+                            <span key='t-labels'>Etiquetas</span>
+                        </a>
+                        <ul class='sub-menu' aria-expanded='false'>
+                            <li>
+                                <a href="{{ url_for('board.establishments') }}" key='t-beneficiaries'>
+                                    <i class='mdi mdi-store-outline'></i>Estabelecimentos</a></li>
+                            <li><a href="{{ url_for('board.categories') }}" key='t-categories'>
+                                <i class='mdi mdi-clipboard-list-outline'></i>Categorias</a></li>
+                            <li><a href="{{ url_for('board.accounts') }}" key='t-financial'>
+                                <i class='mdi mdi-bank-outline'></i>Contas</a></li>
+                        </ul>
+                    </li>
+                    <li id='import-csv-menu'>
+                        <a href="{{ url_for('board.upload') }}" class='waves-effect'>
+                            <i class='bx bx-upload'></i>
+                            <span key='t-upload'>Upload</span>
+                        </a>
+                    </li>
+                    <li class='menu-title' key='t-apps'>Informações da Conta</li>
+                    <li id='profile-menu'>
+                        <a href="{{ url_for('board.profile') }}" class='waves-effect'>
+                            <i class='bx bx-user'></i>
+                            <span key='t-profile'>Perfil</span>
+                        </a>
+                    </li>
+                    <!--          todo: modulo de contato-->
+                    <!--          <li class='menu-title' key='t-apps'>Informações de Contato</li>-->
+                    <!--          <li id='profile-menu'>-->
+                    <!--            <a href="{{ url_for('board.support') }}" class='waves-effect'>-->
+                    <!--              <i class='bx bx-mail-send'></i>-->
+                    <!--              <span key='t-profile'>Contato</span>-->
+                    <!--            </a>-->
+                    <!--          </li>-->
+                </ul>
+            </div>
+            <!-- Sidebar -->
+        </div>
     </div>
-  </div>
-  <!-- Left Sidebar End -->
+    <!-- Left Sidebar End -->
 </div>

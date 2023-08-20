@@ -56,20 +56,33 @@ def accounts_controller():
 
         bank_accounts_all = query.filter(
             Account.acc_is_bank == True
-        ).all()
-
+        )
         not_bank_accounts_all = query.filter(
             Account.acc_is_bank == False
-        ).all()
+        )
 
-        accounts_all = query.all()
+        bank_accounts_default = bank_accounts_all.filter(
+            Account.user_id == 1
+        )
+        bank_accounts_user = bank_accounts_all.filter(
+            Account.user_id == session_id
+        )
+        bank_accounts_all =  bank_accounts_default.all() + bank_accounts_user.all()
+
+        not_bank_accounts_default = not_bank_accounts_all.filter(
+            Account.user_id == 1
+        )
+        not_bank_accounts_user = not_bank_accounts_all.filter(
+            Account.user_id == session_id
+        )
+        not_bank_accounts_all = not_bank_accounts_default.all() + not_bank_accounts_user.all()
 
         # Separate rows for exposure
         bank_accounts = bank_accounts_all[pg_offset:(pg_offset + PG_LIMIT)]
         not_bank_accounts = not_bank_accounts_all[pg_offset:(pg_offset + PG_LIMIT)]
 
         # Counting total pages
-        total_pages = math.ceil(len(accounts_all) / PG_LIMIT)
+        total_pages = math.ceil(len(bank_accounts + not_bank_accounts) / PG_LIMIT)
 
         # Set page range
         pg_range = paginator(pg, total_pages)

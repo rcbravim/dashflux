@@ -91,11 +91,9 @@
                                 {% if context.accounts %}
                                 <div class='table-responsive'>
 
-                                    <!--                                    <label for='type'>Contas Bancárias</label>-->
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-<!--                                            <th class='align-middle'>Data de registro</th>-->
                                             <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'>Nome da conta</th>
                                             <th class='align-middle'>Instituição</th>
@@ -104,40 +102,12 @@
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        {% for row in context.accounts.bank_accounts %}
-                                        <tr>
-<!--                                            <td>{{ row.acc_date_created|format_date_dmY }}</td>-->
-                                            <td><span class='badge badge-pill badge-soft-warning font-size-12'>Conta bancária</span></td>
-                                            <td>{{ row.acc_name|upper }}</td>
-                                            <td>{{ row.acc_bank_name|upper }}</td>
-                                            <td>{{ row.acc_bank_branch }} / {{ row.acc_bank_account }}</td>
-                                            <td>
-                                                <div class='d-flex gap-3'>
-                                                    {% if row.id == 1 %}
-                                                        <a class='text-success'>
-                                                           <i class="mdi mdi-pencil-off font-size-18"></i>
-                                                        </a>
-                                                        <a class='text-danger'>
-                                                           <i class="mdi mdi-delete-off font-size-18"></i>
-                                                        </a>
-                                                    {% else %}
-                                                        <a data-bs-toggle='modal' data-bs-target='.editAccountModal'
-                                                           data-value='{{ row.id }}'
-                                                           class='text-success accounts_edit' style='cursor:pointer;'><i
-                                                                class='mdi mdi-pencil font-size-18'></i></a>
-                                                        <a data-bs-toggle='modal' data-bs-target='.removeAccountModal'
-                                                           data-value='{{ row.id }}'
-                                                           class='text-danger accounts_del' style='cursor:pointer;'><i
-                                                                class='mdi mdi-delete font-size-18'></i></a>
-                                                    {% endif %}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        {% endfor %}
-
                                         {% for row in context.accounts.not_bank_accounts %}
+                                        {% if row.id == 1 %}
+                                        <tr class="text-warning">
+                                        {% else %}
                                         <tr>
-<!--                                            <td>{{ row.acc_date_created|format_date_dmY }}</td>-->
+                                        {% endif %}
                                             <td><span class='badge badge-pill badge-soft-primary font-size-12'>Outro
                                                 tipo</span>
                                             <td>{{ row.acc_name|upper }}</td>
@@ -166,7 +136,36 @@
                                             </td>
                                         </tr>
                                         {% endfor %}
-
+                                        {% for row in context.accounts.bank_accounts %}
+                                        <tr>
+                                            <td><span class='badge badge-pill badge-soft-success font-size-12'>Conta
+                                                bancária</span></td>
+                                            <td>{{ row.acc_name|upper }}</td>
+                                            <td>{{ row.acc_bank_name|upper }}</td>
+                                            <td>{{ row.acc_bank_branch }} / {{ row.acc_bank_account }}</td>
+                                            <td>
+                                                <div class='d-flex gap-3'>
+                                                    {% if row.id == 1 %}
+                                                        <a class='text-success'>
+                                                           <i class="mdi mdi-pencil-off font-size-18"></i>
+                                                        </a>
+                                                        <a class='text-danger'>
+                                                           <i class="mdi mdi-delete-off font-size-18"></i>
+                                                        </a>
+                                                    {% else %}
+                                                        <a data-bs-toggle='modal' data-bs-target='.editAccountModal'
+                                                           data-value='{{ row.id }}'
+                                                           class='text-success accounts_edit' style='cursor:pointer;'><i
+                                                                class='mdi mdi-pencil font-size-18'></i></a>
+                                                        <a data-bs-toggle='modal' data-bs-target='.removeAccountModal'
+                                                           data-value='{{ row.id }}'
+                                                           class='text-danger accounts_del' style='cursor:pointer;'><i
+                                                                class='mdi mdi-delete font-size-18'></i></a>
+                                                    {% endif %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
                                         </tbody>
                                     </table>
                                 </div>

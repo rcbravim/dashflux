@@ -95,7 +95,6 @@
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-<!--                                            <th class='align-middle'>Data de Registro</th>-->
                                             <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'>Categoria</th>
                                             <th class='align-middle'></th>
@@ -103,8 +102,11 @@
                                         </thead>
                                         <tbody>
                                         {% for row in context.categories %}
+                                        {% if row.id == 1 or row.id == 2 %}
+                                        <tr class="text-warning">
+                                        {% else %}
                                         <tr>
-<!--                                            <td>{{ row.cat_date_created|format_date_dmY }}</td>-->
+                                        {% endif %}
                                             <td>
                                                 {% if row.cat_type == 1 %}
                                                 <span class='badge badge-pill badge-soft-success font-size-12'>
