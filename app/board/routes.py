@@ -85,3 +85,13 @@ def index_edit():
 @bp.route('/upload', methods=['GET', 'POST'])
 def upload():
     return upload_controller()
+
+
+@bp.route('/clean', methods=['GET', 'POST'])
+def clean():
+    return clean_controller()
+
+
+@bp.route('/backup', methods=['GET', 'POST'])
+def backup():
+    return backup_controller()

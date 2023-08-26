@@ -13,3 +13,5 @@ from .index_edit import index_edit_controller
 from .logout import logout_controller
 from .support import support_controller
 from .upload import upload_controller
+from .clean import clean_controller
+from .backup import backup_controller
