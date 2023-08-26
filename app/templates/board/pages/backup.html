@@ -1,0 +1,55 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+<div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start right Content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+        <div class='page-content'>
+            <div class='container-fluid'>
+                <!-- start page title -->
+                <div class='row'>
+                    <div class='col-12'>
+                        <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                            <h4 class='mb-sm-0 font-size-18'>Backup</h4>
+                            <div class='page-title-right'>
+                                <ol class='breadcrumb m-0'>
+                                    <li class='breadcrumb-item'>Menu</li>
+                                    <li class='breadcrumb-item active'>Backup</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+                <div class='row'>
+                    <div class='col-md'>
+                        <div class='row mb-2'>
+                            <div class='col-sm'>
+                                <h4 class='card-title'>Faça download do arquivo com todas as transações.</h4>
+                            </div>
+                        </div>
+                        <div class='card align-items-center'>
+                            <div class='card-body'>
+                                <div class='d-flex flex-wrap gap-2'>
+                                    <form method="post" action="{{ url_for('board.backup') }}">
+                                        <button type="submit" class="btn btn-success waves-effect waves-light">
+                                            Backup CSV
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+</div>
+</body>
+
+{% include 'board/partials/footer.html' %}
