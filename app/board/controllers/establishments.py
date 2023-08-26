@@ -32,7 +32,7 @@ def establishments_controller():
                 Establishment.user_id == session_id,
                 Establishment.user_id == 1)
         ).order_by(
-            Establishment.est_name.asc()
+            Establishment.est_name
         )
 
         if request.args.get('search'):
@@ -43,7 +43,15 @@ def establishments_controller():
                 )
             )
 
-        establishments_all = query.all()
+        establishment_default = query.filter(
+            Establishment.user_id == 1
+        ).all()
+
+        establishment_user = query.filter(
+            Establishment.user_id == session_id
+        ).all()
+
+        establishments_all = establishment_default + establishment_user
 
         # Separate rows for exposure
         establishments = establishments_all[pg_offset:(pg_offset + PG_LIMIT)]
