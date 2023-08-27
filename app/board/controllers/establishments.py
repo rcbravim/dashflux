@@ -17,7 +17,7 @@ def establishments_controller():
 
     if request.method == 'GET':
 
-        pg = int(request.form.get('pg', 1))
+        pg = int(request.args.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
         session_id = session.get('user_id')
 
