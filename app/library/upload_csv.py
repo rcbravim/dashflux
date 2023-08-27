@@ -103,7 +103,7 @@ def insert_transactions(df):
                 category_ids = category_ids + ',' + str(category.id) if category_ids != '' else str(category.id)
 
         account = Account.query.filter_by(acc_name=row['conta']).first()
-        account_id = account.id if account else None
+        account_id = account.id if account else 1
 
         transaction = Transaction(
             tra_description=row['descrição'],
@@ -166,7 +166,9 @@ def upload_records(csv_file):
         print("Processo de Importação Inicializado")
 
         df = pd.read_csv(csv_file, encoding='ISO-8859-1', delimiter=';')
-        df = df.dropna()
+        df = df.dropna(how='all')
+        df = df.query('valor not in ["0", 0]')
+        df = df.fillna('')
 
         # validação de colunas
         if columns != df.columns.to_list():
@@ -189,10 +191,6 @@ def upload_records(csv_file):
             error = 'data da transação inválida'
             print(error, e)
             return False, error
-
-        # drop non valid transaction
-        df = df.query('valor not in ["0", 0]')
-        df = df.fillna('')
 
         insert_establishments(df)
         insert_categories(df)
