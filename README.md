@@ -1,5 +1,7 @@
 # DASHFLUX - GERENCIADOR FINANCEIRO MIN
 
+## PARA DESENVOLVIMENTO
+
 ## [Setup]
 
 > Python Version: 3.10
