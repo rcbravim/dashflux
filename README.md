@@ -62,8 +62,8 @@ $ python flask run --debug
   - sudo service docker status (to check it out)
 - generate an ssh key: ssh-keygen -t rsa
 - put the .pub file content on GitHub as a deployment key
-- clone the repository in some ec2 folder (e.g. /app) using ssh git clone
-- access the project folder (cd dashflux)
+- clone the repository on workdir folder using ssh git clone (must match to the workflow git actions file, "app-dashflux" int this case)
+- access the workir folder
 - docker build -t dashflux . 
 - the next step its a first run, to ensure the database its being created
 - sudo docker run -d --name dashflux -p 5000:5000 --restart always dashflux
