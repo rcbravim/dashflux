@@ -1,6 +1,27 @@
-# DASHFLUX - GERENCIADOR FINANCEIRO MIN
+# DASHFLUX - GERENCIADOR FINANCEIRO
 
-## PARA DESENVOLVIMENTO
+## SOBRE
+
+  ### Dashflux é uma aplicação web feita em python/flask, com banco de dados monolitico em sqlite.
+    login
+  ![img.png](images%2Fimg.png)
+
+    recuperação/alteração de senha
+  ![img_1.png](images/img_1.png)
+
+    cadastros de estabelecimentos, categorias e contas
+  ![img.png](images/img_2.png)
+
+    lançamento de receitas e despesas
+  ![img.png](images/img_3.png)
+
+    upload/download csv para facil lançamentos
+  ![img.png](images/img_4.png)
+    
+
+=================================================================
+
+## DESENVOLVIMENTO
 
 ## [Setup]
 
@@ -50,7 +71,9 @@ $ python flask run --debug
     run --debug --reload (to run application, in debug mode)
 ```
 
-## Deploy (AWS EC2)
+=================================================================
+
+## DEPLOY (AWS EC2)
 - up an ec2 instance: aws > ec2 > executar instâncias > criar par de chaves 
 - get the .pem file and save it on local folder
 - put the all content of .pem file in a secret inside GitHub project (secrets.EC2_PRIVATE_KEY)
