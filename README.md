@@ -1,4 +1,27 @@
-# DASHFLUX - GERENCIADOR FINANCEIRO MIN
+# DASHFLUX - GERENCIADOR FINANCEIRO
+
+## SOBRE
+
+  ### Dashflux é uma aplicação web feita em python/flask, com banco de dados monolitico em sqlite.
+    login
+  ![img.png](images%2Fimg.png)
+
+    recuperação/alteração de senha
+  ![img_1.png](images/img_1.png)
+
+    cadastros de estabelecimentos, categorias e contas
+  ![img.png](images/img_2.png)
+
+    lançamento de receitas e despesas
+  ![img.png](images/img_3.png)
+
+    upload/download csv para facil lançamentos
+  ![img.png](images/img_4.png)
+    
+
+=================================================================
+
+## DESENVOLVIMENTO
 
 ## [Setup]
 
@@ -48,7 +71,9 @@ $ python flask run --debug
     run --debug --reload (to run application, in debug mode)
 ```
 
-## Deploy (AWS EC2)
+=================================================================
+
+## DEPLOY (AWS EC2)
 - up an ec2 instance: aws > ec2 > executar instâncias > criar par de chaves 
 - get the .pem file and save it on local folder
 - put the all content of .pem file in a secret inside GitHub project (secrets.EC2_PRIVATE_KEY)
@@ -60,8 +85,8 @@ $ python flask run --debug
   - sudo service docker status (to check it out)
 - generate an ssh key: ssh-keygen -t rsa
 - put the .pub file content on GitHub as a deployment key
-- clone the repository in some ec2 folder (e.g. /app) using ssh git clone
-- access the project folder (cd dashflux)
+- clone the repository on workdir folder using ssh git clone (must match to the workflow git actions file, "app-dashflux" int this case)
+- access the workir folder
 - docker build -t dashflux . 
 - the next step its a first run, to ensure the database its being created
 - sudo docker run -d --name dashflux -p 5000:5000 --restart always dashflux
