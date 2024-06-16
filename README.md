@@ -56,6 +56,12 @@ $ python flask init-db
 $ flask init-db
 ```
 
+### Insert Default Users/Records
+
+```bash
+$ flask insert-default-records
+```
+
 ### Run Application
 
 ```bash
@@ -121,3 +127,12 @@ $ python flask run --debug
 - if AWS -> go to route 53, create a new host zone, and put the relationship with your ec2 ipv4 instance
 - create the registers (A, NS, SOA, CNAME, etc...)
 - install and run certbot: https://certbot.eff.org/instructions?ws=nginx&os=pip or https://www.digitalocean.com/community/tutorials/how-to-secure-nginx-with-let-s-encrypt-on-ubuntu-20-04
+- Cron Tab to Automatic Renewal 
+  > echo "0 0,12 * * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null
+- Check for Renewal Certs
+  > sudo certbot renew --dry-run
+- Renewal Certificate
+  > sudo certbot renew -q
+
+## Troubleshotting
+- chown -R <current_user> <repo_folder>
