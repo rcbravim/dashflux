@@ -1,8 +1,8 @@
 blinker==1.6.2
 cachelib==0.10.2
 click==8.1.6
-Flask==2.2.5
-Flask-Login==0.6.2
+Flask==3.0.0
+Flask-Login==0.6.3
 Flask-Mail==0.9.1
 Flask-Session==0.4.0
 Flask-SQLAlchemy==3.0.5
