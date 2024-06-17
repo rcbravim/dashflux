@@ -302,58 +302,62 @@ def index_controller():
 
         # new transaction
         else:
-            entry_date = request.form.get('entry_date')
+            entry_date = datetime.strptime(request.form.get('entry_date'), "%Y-%m-%d")
             category_list = request.form.getlist('selected_categories[]')
             description = request.form.get('description')
+            repetition = int(request.form.get('repetition'))
             establishment = request.form.get('establishment')
             situation = request.form.get('situation')
             account = request.form.get('account')
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
             amount = float(request.form.get('amount').replace('.', '').replace(',', '.'))
 
-            new_transaction = Transaction(
-                user_id=user_id,
-                tra_description=description,
-                tra_situation=situation,
-                tra_amount=amount * multiply,
-                tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
-                establishment_id=establishment,
-                category_ids=','.join(category_list),
-                account_id=account
-            )
+            for i in range(repetition):
+                new_transaction = Transaction(
+                    user_id=user_id,
+                    tra_description=description,
+                    tra_situation=situation,
+                    tra_amount=amount * multiply,
+                    tra_entry_date=entry_date.date(),
+                    establishment_id=establishment,
+                    category_ids=','.join(category_list),
+                    account_id=account
+                )
 
-            db.session.add(new_transaction)
-            db.session.commit()
+                db.session.add(new_transaction)
+                db.session.commit()
 
-            entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
-            ref_month = entry_date_datetime.month
-            ref_year = entry_date_datetime.year
+                ref_month = entry_date.month
+                ref_year = entry_date.year
 
-            incomes = db.session.query(
-                func.coalesce(func.sum(Transaction.tra_amount), 0)
-            ).filter(
-                Transaction.tra_amount > 0,
-                Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_month
-            ).scalar()
+                incomes = db.session.query(
+                    func.coalesce(func.sum(Transaction.tra_amount), 0)
+                ).filter(
+                    Transaction.tra_amount > 0,
+                    Transaction.user_id == user_id,
+                    extract('month', Transaction.tra_entry_date) == ref_month
+                ).scalar()
 
-            expenses = db.session.query(
-                func.coalesce(func.sum(Transaction.tra_amount), 0)
-            ).filter(
-                Transaction.tra_amount < 0,
-                Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_month
-            ).scalar()
+                expenses = db.session.query(
+                    func.coalesce(func.sum(Transaction.tra_amount), 0)
+                ).filter(
+                    Transaction.tra_amount < 0,
+                    Transaction.user_id == user_id,
+                    extract('month', Transaction.tra_entry_date) == ref_month
+                ).scalar()
 
-            new_analytic = Analytic(
-                ana_month=ref_month,
-                ana_year=ref_year,
-                ana_incomes=incomes,
-                ana_expenses=expenses,
-                user_id=user_id
-            )
-            db.session.merge(new_analytic)
-            db.session.commit()
+                new_analytic = Analytic(
+                    ana_month=ref_month,
+                    ana_year=ref_year,
+                    ana_incomes=incomes,
+                    ana_expenses=expenses,
+                    user_id=user_id
+                )
+                db.session.merge(new_analytic)
+                db.session.commit()
+
+                entry_date += relativedelta(months=1)
+
             session['success'] = 'Lançamento Cadastrado!'
             return redirect(
                 url_for(
