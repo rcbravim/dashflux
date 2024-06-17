@@ -7,7 +7,7 @@ from sqlalchemy import func, extract, or_
 
 from app.database.models import Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
-from app.library.helper import paginator
+from app.library.helper import paginator, generate_hash
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 50))
 
@@ -254,10 +254,21 @@ def index_controller():
         # delete transaction
         elif request.form.get('_method') == 'DELETE':
             entry_date = request.form.get('modal_entry_date_delete')
+            action = request.form.get('action')
 
             transaction = Transaction.query.filter_by(id=request.form.get('del_index')).first()
-            db.session.delete(transaction)
-            db.session.commit()
+            if transaction.tra_bound_hash is None or action == 'single':
+                transactions = [transaction]
+            else:
+                transactions = Transaction.query.filter_by(
+                    tra_bound_hash=transaction.tra_bound_hash
+                ).filter(
+                    Transaction.tra_entry_date >= entry_date,
+                ).all()
+
+            for transaction in transactions:
+                db.session.delete(transaction)
+                db.session.commit()
 
             # edit analytic
             user_id = session.get('user_id')
@@ -312,6 +323,7 @@ def index_controller():
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
             amount = float(request.form.get('amount').replace('.', '').replace(',', '.'))
 
+            tra_bound_hash = None
             for i in range(repetition):
                 new_transaction = Transaction(
                     user_id=user_id,
@@ -323,6 +335,9 @@ def index_controller():
                     category_ids=','.join(category_list),
                     account_id=account
                 )
+                if repetition > 1:
+                    tra_bound_hash = generate_hash(str(new_transaction.id)) if i == 0 else tra_bound_hash
+                    new_transaction.tra_bound_hash = tra_bound_hash
 
                 db.session.add(new_transaction)
                 db.session.commit()

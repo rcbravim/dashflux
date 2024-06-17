@@ -1,3 +1,5 @@
+import hashlib
+
 from unicodedata import normalize
 from typing import List
 
@@ -30,3 +32,7 @@ def compare_values(value_1, value_2):
 
 def normalize_for_match(value):
     return normalize('NFKD', value).encode('ASCII', 'ignore').decode('ASCII').lower().strip()
+
+
+def generate_hash(value: str) -> str:
+    return hashlib.md5(str(value).encode()).hexdigest()
