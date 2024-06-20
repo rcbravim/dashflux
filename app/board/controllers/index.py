@@ -3,11 +3,11 @@ import math
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
-from sqlalchemy import func, extract, or_
+from sqlalchemy import func, extract, or_, and_
 
 from app.database.models import Category, Establishment, Account, Transaction, Analytic
 from app.database.database import db
-from app.library.helper import paginator
+from app.library.helper import paginator, generate_hash
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 50))
 
@@ -195,20 +195,83 @@ def index_controller():
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
             amount = float(request.form.get('modal_amount').replace('.', '').replace(',', '.'))
             entry_date = request.form.get('modal_entry_date')
-            category_ids = ','.join(request.form.get('selected_categories').split(','))
+            category_ids = ','.join(request.form.get('modal_category[]').split(','))
+            repetitions = ','.join(request.form.get('selected_repetitions').split(',')).split(',')
+            action = request.form.get('action')
 
-            transaction = Transaction(
-                id=request.form.get('edit_index'),
-                tra_entry_date=datetime.strptime(entry_date, '%Y-%m-%d').date(),
-                tra_description=request.form.get('modal_description'),
-                tra_situation=request.form.get('situation'),
-                establishment_id=request.form.get('modal_establishment'),
-                account_id=request.form.get('modal_account'),
-                category_ids=category_ids,
-                tra_amount=amount * multiply,
-            )
-            db.session.merge(transaction)
-            db.session.commit()
+            transaction = Transaction.query.filter_by(id=request.form.get('edit_index')).first()
+
+            transaction.tra_entry_date = datetime.strptime(entry_date, '%Y-%m-%d').date()
+            transaction.tra_description = request.form.get('modal_description')
+            transaction.tra_situation = int(request.form.get('situation'))
+            transaction.establishment_id = int(request.form.get('modal_establishment'))
+            transaction.account_id = int(request.form.get('modal_account'))
+            transaction.category_ids = category_ids
+            transaction.tra_amount = amount * multiply
+
+            if action == 'single':
+                if repetitions == ['']:
+                    transaction.tra_bound_hash = None
+                    db.session.merge(transaction)
+                    db.session.commit()
+                else:
+                    hash_bound = generate_hash(str(now))
+                    db.session.merge(transaction)
+                    db.session.commit()
+
+                    repetitions.append(datetime.strptime(entry_date, '%Y-%m-%d').strftime("%m-%y"))
+                    repetitions = [datetime.strptime(d, "%m-%y") for d in repetitions]
+                    for repetition_date in repetitions:
+                        bound_transaction = db.session.query(Transaction).filter_by(
+                                tra_bound_hash=transaction.tra_bound_hash
+                            ).filter(
+                                and_(
+                                    func.extract('month', Transaction.tra_entry_date) == repetition_date.month,
+                                    func.extract('year', Transaction.tra_entry_date) == repetition_date.year
+                                )
+                            ).first()
+
+                        bound_transaction.tra_bound_hash = hash_bound
+                        db.session.merge(bound_transaction)
+                        db.session.commit()
+
+            else:
+                bound_transactions = db.session.query(
+                    Transaction).filter(
+                        Transaction.tra_entry_date > entry_date,
+                    ).filter_by(
+                        tra_bound_hash=transaction.tra_bound_hash
+                    ).all()
+
+                if len(repetitions) != len(bound_transactions):
+                    bound_hash = generate_hash(str(now))
+                else:
+                    bound_hash = transaction.tra_bound_hash
+
+                db.session.merge(transaction)
+                db.session.commit()
+
+                repetitions = [datetime.strptime(d, "%m-%y") for d in repetitions]
+                for repetition_date in repetitions:
+                    bound_transaction = db.session.query(Transaction).filter_by(
+                        tra_bound_hash=transaction.tra_bound_hash
+                    ).filter(
+                        and_(
+                            func.extract('month', Transaction.tra_entry_date) == repetition_date.month,
+                            func.extract('year', Transaction.tra_entry_date) == repetition_date.year
+                        )
+                    ).first()
+
+                    bound_transaction.tra_description = request.form.get('modal_description')
+                    bound_transaction.tra_situation = int(request.form.get('situation'))
+                    bound_transaction.establishment_id = int(request.form.get('modal_establishment'))
+                    bound_transaction.account_id = int(request.form.get('modal_account'))
+                    bound_transaction.category_ids = category_ids
+                    bound_transaction.tra_amount = amount * multiply
+                    bound_transaction.tra_bound_hash = bound_hash
+
+                    db.session.merge(bound_transaction)
+                    db.session.commit()
 
             # edit analytic
             user_id = session.get('user_id')
@@ -254,10 +317,21 @@ def index_controller():
         # delete transaction
         elif request.form.get('_method') == 'DELETE':
             entry_date = request.form.get('modal_entry_date_delete')
+            action = request.form.get('action')
 
             transaction = Transaction.query.filter_by(id=request.form.get('del_index')).first()
-            db.session.delete(transaction)
-            db.session.commit()
+            if transaction.tra_bound_hash is None or action == 'single':
+                transactions = [transaction]
+            else:
+                transactions = Transaction.query.filter_by(
+                    tra_bound_hash=transaction.tra_bound_hash
+                ).filter(
+                    Transaction.tra_entry_date >= entry_date,
+                ).all()
+
+            for transaction in transactions:
+                db.session.delete(transaction)
+                db.session.commit()
 
             # edit analytic
             user_id = session.get('user_id')
@@ -302,58 +376,66 @@ def index_controller():
 
         # new transaction
         else:
-            entry_date = request.form.get('entry_date')
+            entry_date = datetime.strptime(request.form.get('entry_date'), "%Y-%m-%d")
             category_list = request.form.getlist('selected_categories[]')
             description = request.form.get('description')
+            repetition = int(request.form.get('repetition'))
             establishment = request.form.get('establishment')
             situation = request.form.get('situation')
             account = request.form.get('account')
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
             amount = float(request.form.get('amount').replace('.', '').replace(',', '.'))
 
-            new_transaction = Transaction(
-                user_id=user_id,
-                tra_description=description,
-                tra_situation=situation,
-                tra_amount=amount * multiply,
-                tra_entry_date=datetime.strptime(entry_date, "%Y-%m-%d").date(),
-                establishment_id=establishment,
-                category_ids=','.join(category_list),
-                account_id=account
-            )
+            tra_bound_hash = None
+            for i in range(repetition):
+                new_transaction = Transaction(
+                    user_id=user_id,
+                    tra_description=description,
+                    tra_situation=situation,
+                    tra_amount=amount * multiply,
+                    tra_entry_date=entry_date.date(),
+                    establishment_id=establishment,
+                    category_ids=','.join(category_list),
+                    account_id=account
+                )
+                if repetition > 1:
+                    tra_bound_hash = generate_hash(str(now)) if i == 0 else tra_bound_hash
+                    new_transaction.tra_bound_hash = tra_bound_hash
 
-            db.session.add(new_transaction)
-            db.session.commit()
+                db.session.add(new_transaction)
+                db.session.commit()
 
-            entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
-            ref_month = entry_date_datetime.month
-            ref_year = entry_date_datetime.year
+                ref_month = entry_date.month
+                ref_year = entry_date.year
 
-            incomes = db.session.query(
-                func.coalesce(func.sum(Transaction.tra_amount), 0)
-            ).filter(
-                Transaction.tra_amount > 0,
-                Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_month
-            ).scalar()
+                incomes = db.session.query(
+                    func.coalesce(func.sum(Transaction.tra_amount), 0)
+                ).filter(
+                    Transaction.tra_amount > 0,
+                    Transaction.user_id == user_id,
+                    extract('month', Transaction.tra_entry_date) == ref_month
+                ).scalar()
 
-            expenses = db.session.query(
-                func.coalesce(func.sum(Transaction.tra_amount), 0)
-            ).filter(
-                Transaction.tra_amount < 0,
-                Transaction.user_id == user_id,
-                extract('month', Transaction.tra_entry_date) == ref_month
-            ).scalar()
+                expenses = db.session.query(
+                    func.coalesce(func.sum(Transaction.tra_amount), 0)
+                ).filter(
+                    Transaction.tra_amount < 0,
+                    Transaction.user_id == user_id,
+                    extract('month', Transaction.tra_entry_date) == ref_month
+                ).scalar()
 
-            new_analytic = Analytic(
-                ana_month=ref_month,
-                ana_year=ref_year,
-                ana_incomes=incomes,
-                ana_expenses=expenses,
-                user_id=user_id
-            )
-            db.session.merge(new_analytic)
-            db.session.commit()
+                new_analytic = Analytic(
+                    ana_month=ref_month,
+                    ana_year=ref_year,
+                    ana_incomes=incomes,
+                    ana_expenses=expenses,
+                    user_id=user_id
+                )
+                db.session.merge(new_analytic)
+                db.session.commit()
+
+                entry_date += relativedelta(months=1)
+
             session['success'] = 'Lançamento Cadastrado!'
             return redirect(
                 url_for(

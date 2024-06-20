@@ -49,6 +49,7 @@ class Transaction(db.Model):
     tra_situation = db.Column(db.Integer, nullable=False)
     tra_amount = db.Column(db.Numeric(15, 3), nullable=False)
     tra_entry_date = db.Column(db.Date, nullable=False)
+    tra_bound_hash = db.Column(db.String, nullable=True)
 
     tra_status = db.Column(db.Boolean, default=True, nullable=False)
     tra_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -57,7 +58,7 @@ class Transaction(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
-    category_ids = db.Column(db.String, nullable=False, default='')  # '1,2,3'
+    category_ids = db.Column(db.String, nullable=False, default='', comment="1,2,3,4,5")
     account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('transaction'))
