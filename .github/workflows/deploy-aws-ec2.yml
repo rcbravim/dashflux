@@ -18,6 +18,10 @@ env:
   MAIL_PORT: ${{ secrets.MAIL_PORT }}
   JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
   FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
+  ADMIN_USER: ${{ secrets.ADMIN_USER }}
+  ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+  DEV_USER: ${{ secrets.DEV_USER }}
+  DEV_PASS: ${{ secrets.DEV_PASS }}
 
 on:
   push:
