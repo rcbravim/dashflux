@@ -29,7 +29,7 @@ def register_controller():
         if user is not None:
             if not user.use_is_valid:
                 session['mail'] = use_login
-                return redirect(url_for('auth.verify', send=True))  # todo: check
+                return redirect(url_for('auth.verify', send=True))
             error = 'Email já cadastrado!'
         else:
             new_user = User(

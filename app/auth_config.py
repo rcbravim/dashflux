@@ -1,4 +1,6 @@
+import os
 import click
+
 from flask import render_template, request, url_for, redirect
 from werkzeug.security import generate_password_hash
 
@@ -27,8 +29,8 @@ def insert_default_records(app):
 
         # insert admin user
         admin_user = User(
-            use_login='admin@dashflux.com.br',
-            use_password=generate_password_hash('@Da113104'),
+            use_login=os.getenv('ADMIN_USER'),
+            use_password=generate_password_hash(os.getenv('ADMIN_PASS')),
             use_is_manager=True,
             use_is_valid=True
         )
@@ -36,8 +38,8 @@ def insert_default_records(app):
 
         # insert dev user
         dev_user = User(
-            use_login='dev@dashflux.com.br',
-            use_password=generate_password_hash('dev@Pass123'),
+            use_login=os.getenv('DEV_USER'),
+            use_password=generate_password_hash(os.getenv('DEV_PASS')),
             use_is_valid=True
         )
         db.session.add(dev_user)

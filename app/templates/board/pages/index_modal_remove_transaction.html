@@ -20,16 +20,22 @@
                         <span class='modal_entry_status badge badge-pill font-size-12 mb-2'></span>
                     </div>
                     <p class='mb-2 modal_amount'>Quantia: <span class='text-primary'></span></p>
-                    <p class='mb-2 modal_transaction_type'>Tipo: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_transaction_type_del'>Tipo: <span class='text-primary'></span></p>
                     <p class='mb-2 modal_description'>Descrição: <span class='text-primary'></span></p>
                     <p class='mb-2 modal_category_del'>Categorias: <span class='text-primary' id="category_badges"></span></p>
-                    <p class='mb-4 modal_establishment_del'>Estabelecimento: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_establishment_del'>Estabelecimento: <span class='text-primary'></span></p>
+                    <p class='mb-4 modal_bounds_del d-none'>Transações Vinculadas: <span class='text-primary'
+                                                                                   id='bound_badges'></span></p>
                 </div>
                 <div class='modal-footer'>
-                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
-                    </button>
-                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover Registro</button>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='removeSingle'
+                            data-action='single'> Remover Este Registro</button>
+                    <button type='submit' class='btn btn-danger waves-effect waves-light d-none' id='removeAll'
+                            data-action='all'> Remover Todos Registros Seguintes</button>
                 </div>
+                <input type='hidden' id='action' name='action' value=''>
             </form>
         </div>
     </div>
