@@ -5,13 +5,16 @@
                 <h5 class='modal-title'>Editar Entrada</h5>
                 <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
-            <form class='needs-validation' method='post' action="{{ url_for('board.index') }}" novalidate>
+            <form class='needs-validation' id='editForm' method='post' action="{{ url_for('board.index') }}" novalidate>
                 <input type='hidden' name='_method' value='PUT'/>
                 {{ csrf_token }}
                 <input type='hidden' name='m' value='{{ context.filter.month }}'/>
                 <input type='hidden' name='y' value='{{ context.filter.year }}'/>
                 <input type='hidden' id='edit_index' name='edit_index'/>
                 <div class='modal-body'>
+                    <div id="editAlert" class="alert alert-warning d-none" role="alert">
+                        Nenhuma alteração foi realizada.
+                    </div>
                     <div class='content mt-1'>
                         <div class='row'>
                             <div class='col-lg-6'>
@@ -39,17 +42,6 @@
 
                                         <option value='' disabled selected>Selecione ao menos uma categoria</option>
                                     </select>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label for='modal_description' class='form-label'>Descrição | Observações</label>
-                                    <input type='text' class='form-control valid_opt_entry_nd note_modal'
-                                           id='modal_description' name='modal_description'
-                                           placeholder='Insira suas Observações' maxlength='128'>
-                                    <div class='invalid-feedback'></div>
                                 </div>
                             </div>
                         </div>
@@ -91,7 +83,7 @@
                                 <div class='mb-3'>
                                     <label for='type_transaction' class='form-label'>Tipo<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select type_transaction_modal' id='type_transaction'
+                                    <select class='form-select modal_transaction_type_edit' id='type_transaction'
                                             name='type_transaction'>
                                         <option value='1'>Entrada</option>
                                         <option value='2'>Saída</option>
@@ -121,11 +113,40 @@
                                 </div>
                             </div>
                         </div>
+                        <div class='row'>
+                            <div class='col-lg'>
+                                <div class='mb-3'>
+                                    <label for='modal_description' class='form-label'>Descrição | Observações</label>
+                                    <input type='text' class='form-control valid_opt_entry_nd note_modal'
+                                           id='modal_description' name='modal_description'
+                                           placeholder='Insira suas Observações' maxlength='128'>
+                                    <div class='invalid-feedback'></div>
+                                </div>
+                            </div>
+                            <div class='col-lg-6 d-none' id='modal_repetition_container'>
+                                <div class='mb-3'>
+                                    <label for='modal_repetition' class='form-label'>Vinculo de Repetição<span
+                                            class='text-danger'>*</span></label>
+                                    <input type="hidden" id="selected_repetition_input" name="selected_repetitions"
+                                           value="">
+                                    <select class="select2 form-control select2-multiple"
+                                            multiple="multiple" data-placeholder=""
+                                            id="modal_repetition" name="modal_repetition[]">
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class='modal-footer'>
-                    <button type='submit' class='btn btn-primary'>Editar Entrada</button>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='editSingle'
+                            data-action='single'>Editar Este Registro</button>
+                    <button type='submit' class='btn btn-danger waves-effect waves-light d-none' id='editAll'
+                            data-action='all'>Editar Todos Registros Selecionados</button>
                 </div>
+                <input type="hidden" id="action" name="action" value="">
             </form>
         </div>
     </div>
@@ -134,6 +155,9 @@
 <script>
     $(document).ready(function() {
       $("#modal_category").select2({
+        dropdownParent: $("#labelEditModal")
+      });
+      $("#modal_repetition").select2({
         dropdownParent: $("#labelEditModal")
       });
     });
