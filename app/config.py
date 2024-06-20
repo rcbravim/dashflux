@@ -24,6 +24,12 @@ class Config:
         app.config['MAIL_USE_TLS'] = True
         app.config['MAIL_USE_SSL'] = False
 
+        # insert-default-records
+        app.config['ADMIN_USER'] = os.getenv('ADMIN_USER')
+        app.config['ADMIN_PASS'] = os.getenv('ADMIN_PASS')
+        app.config['DEV_USER'] = os.getenv('DEV_USER')
+        app.config['DEV_PASS'] = os.getenv('DEV_PASS')
+
         # filters
         app.template_filter('md5')(md5_filter)
         app.template_filter('slice3')(slice3_filter)
