@@ -36,8 +36,14 @@ def insert_categories(df):
     count = 0
     user_id = session.get('user_id')
 
-    categories = set([categoria for sublist in df['categorias'].str.split(',') for categoria in sublist])
-    amounts = set(df['valor'])
+    categories = []
+    for row in df.iterrows():
+        amount = row[1]['valor']
+        if isinstance(amount, str):
+            amount = float(amount.replace('.', '').replace(',', '.'))
+        cat_type = 1 if amount > 0 else 2
+        for cat_name in row[1]['categorias'].split(','):
+            categories.append((cat_name, cat_type))
 
     db_categories = db.session.query(
         Category.cat_name,
@@ -48,12 +54,9 @@ def insert_categories(df):
 
     tuple_db_categories = [(normalize_for_match(name), cat_type) for name, cat_type in db_categories]
 
-    for name, amount in zip(categories, amounts):
-        if isinstance(amount, str):
-            amount = float(amount.replace('.', '').replace(',', '.'))
-        category_type = 1 if amount > 0 else 2
-        if name != '' and (normalize_for_match(name), category_type) not in tuple_db_categories:
-            category = Category(cat_name=name.upper(), user_id=user_id, cat_type=category_type)
+    for name, cat_type in categories:
+        if name != '' and (normalize_for_match(name), cat_type) not in tuple_db_categories:
+            category = Category(cat_name=name.upper(), user_id=user_id, cat_type=cat_type)
             db.session.add(category)
             count += 1
 
