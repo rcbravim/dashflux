@@ -47,17 +47,6 @@
                         </div>
 
                         <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label for='description' class='form-label'>Descrição | Observações</label>
-                                    <input type='text' class='form-control valid_opt_entry' id='description'
-                                           name='description'
-                                           placeholder='Se preferir, adicione maiores detalhes' maxlength='128'>
-                                    <div class='invalid-feedback'></div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
                                     <label for='establishment' class='form-label'>Estabelecimento<span
@@ -149,9 +138,34 @@
                                 </div>
                             </div>
                         </div>
+                        <div class='row'>
+                            <div class='col-lg-9'>
+                                <div class='mb-3'>
+                                    <label for='description' class='form-label'>Descrição | Observações</label>
+                                    <input type='text' class='form-control valid_opt_entry' id='description'
+                                           name='description'
+                                           placeholder='Se preferir, adicione maiores detalhes' maxlength='128'>
+                                    <div class='invalid-feedback'></div>
+                                </div>
+                            </div>
+                            <div class='col-lg-3'>
+                                <div class='mb-3'>
+                                    <label for='repetition' class='form-label'>Repetir | Mensal<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select' id='repetition' name='repetition'>
+                                        <option value='1' selected>Não</option>
+                                        {% for i in range(2, 13) %}
+                                        <option value="{{ i }}">{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
                     <button type='submit' class='btn btn-primary'>Adicionar Entrada</button>
                 </div>
             </form>

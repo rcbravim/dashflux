@@ -77,7 +77,7 @@ def account_return_id_by_name():
     return account_return_id_by_name_controller()
 
 
-@bp.route('/index_edit', methods=['GET', 'POST'])
+@bp.route('/index_edit', methods=['GET', 'POST', 'PUT'])
 def index_edit():
     return index_edit_controller()
 
