@@ -43,51 +43,6 @@ class UserLog(db.Model):
         return f"UserLog(id={self.id}, log_ip_address={self.log_ip_address}, user_id={self.user_id})"
 
 
-class Transaction(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    tra_description = db.Column(db.String(250), nullable=True)
-    tra_situation = db.Column(db.Integer, nullable=False)
-    tra_amount = db.Column(db.Numeric(15, 3), nullable=False)
-    tra_entry_date = db.Column(db.Date, nullable=False)
-    tra_bound_hash = db.Column(db.String, nullable=True)
-
-    tra_status = db.Column(db.Boolean, default=True, nullable=False)
-    tra_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    tra_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    tra_date_deleted = db.Column(db.DateTime, nullable=True)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
-    category_ids = db.Column(db.String, nullable=False, default='', comment="1,2,3,4,5")
-    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
-
-    user = db.relationship('User', backref=db.backref('transaction'))
-
-    def __repr__(self):
-        return f"Transactions(id={self.id}, tra_description={self.ana_cycle}, user_id={self.user_id})"
-
-
-class Analytic(db.Model):
-    ana_month = db.Column(db.Integer, db.CheckConstraint('ana_month BETWEEN 1 AND 12'), nullable=False)
-    ana_year = db.Column(db.Integer, nullable=False)
-    ana_incomes = db.Column(db.Numeric(15, 3), nullable=False)
-    ana_expenses = db.Column(db.Numeric(15, 3), nullable=False)
-    ana_status = db.Column(db.Boolean, nullable=False, default=True)
-    ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    ana_date_deleted = db.Column(db.DateTime, default=None)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
-    user = db.relationship('User', backref=db.backref('analytics'))
-
-    __table_args__ = (
-        db.PrimaryKeyConstraint('ana_month', 'ana_year', 'user_id'),
-    )
-
-    def __repr__(self):
-        return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
-
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
@@ -133,3 +88,92 @@ class Establishment(db.Model):
 
     def __repr__(self):
         return '<Establishment %r>' % self.est_name
+
+
+class CreditCardReceipt(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ccr_name = db.Column(db.String(250), nullable=False)
+    ccr_description = db.Column(db.String(250), nullable=True)
+    ccr_flag = db.Column(db.String(250), nullable=False)
+    ccr_last_digits = db.Column(db.String(4), nullable=True)
+    ccr_due_date = db.Column(db.Integer, nullable=False)
+
+    ccr_status = db.Column(db.Boolean, default=True, nullable=False)
+    ccr_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ccr_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ccr_date_deleted = db.Column(db.DateTime, nullable=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('credit_card_receipt'))
+
+    def __repr__(self):
+        return f"CreditCardReceipt(id={self.id}, ccr_name={self.ccr_name}, user_id={self.user_id})"
+
+
+class Analytic(db.Model):
+    ana_month = db.Column(db.Integer, db.CheckConstraint('ana_month BETWEEN 1 AND 12'), nullable=False)
+    ana_year = db.Column(db.Integer, nullable=False)
+    ana_incomes = db.Column(db.Numeric(15, 3), nullable=False)
+    ana_expenses = db.Column(db.Numeric(15, 3), nullable=False)
+    ana_status = db.Column(db.Boolean, nullable=False, default=True)
+    ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ana_date_deleted = db.Column(db.DateTime, default=None)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('analytics'))
+
+    __table_args__ = (
+        db.PrimaryKeyConstraint('ana_month', 'ana_year', 'user_id'),
+    )
+
+    def __repr__(self):
+        return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
+
+
+class Transaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    tra_description = db.Column(db.String(250), nullable=True)
+    tra_situation = db.Column(db.Integer, nullable=False)
+    tra_amount = db.Column(db.Numeric(15, 3), nullable=False)
+    tra_entry_date = db.Column(db.Date, nullable=False)
+    tra_bound_hash = db.Column(db.String, nullable=True)
+
+    tra_status = db.Column(db.Boolean, default=True, nullable=False)
+    tra_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    tra_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    tra_date_deleted = db.Column(db.DateTime, nullable=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
+    category_ids = db.Column(db.String, nullable=False, default='', comment="1,2,3,4,5")
+    account_id = db.Column(db.Integer, db.ForeignKey('account.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('transaction'))
+
+    def __repr__(self):
+        return f"Transactions(id={self.id}, tra_description={self.tra_description}, user_id={self.user_id})"
+
+
+class CreditCardTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cct_description = db.Column(db.String(250), nullable=True)
+    cct_amount = db.Column(db.Numeric(15, 3), nullable=False)
+    cct_entry_date = db.Column(db.Date, nullable=False)
+    # tra_bound_hash = db.Column(db.String, nullable=True)
+
+    cct_status = db.Column(db.Boolean, default=True, nullable=False)
+    cct_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    cct_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    cct_date_deleted = db.Column(db.DateTime, nullable=True)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
+    category_ids = db.Column(db.String, nullable=False, default='', comment="1,2,3,4,5")
+    credit_card_receipt_id = db.Column(db.Integer, db.ForeignKey('credit_card_receipt.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('credit_card_transaction'))
+
+    def __repr__(self):
+        return f"CreditCardTransactions(id={self.id}, description={self.cct_description}, user_id={self.user_id})"

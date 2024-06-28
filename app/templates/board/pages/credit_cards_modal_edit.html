@@ -1,0 +1,104 @@
+<!-- labelEditModal Modal -->
+<div class='modal fade editCreditCardModal' id='editCreditCardModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar Estabelecimento</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' id='edit_credit_card_form'
+                  action="{{ url_for('board.credit_cards') }}"
+                  novalidate
+                  method='post'>
+                <input type='hidden' name='_method' value='PUT'/>
+                {{ csrf_token }}
+                <input type='hidden' id='edit_credit_card' name='edit_credit_card'/>
+                <div class='modal-body'>
+                    <div id="editAlert" class="alert alert-warning d-none" role="alert">
+                        Nenhuma alteração foi realizada.
+                    </div>
+                    <div class='content mt-1'>
+                        <div class='col'>
+                            <div class='row'>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='ccr_name_edit' class='form-label'>Nome | Apelido<span
+                                                class='text-danger'>*</span></label>
+                                        <input type='text' class='form-control'
+                                               id='ccr_name_edit'
+                                               name='ccr_name_edit'
+                                               placeholder='Identificador principal' required>
+                                        <div class='invalid-feedback'>Forneça um nome para o cartão de crédito</div>
+                                    </div>
+                                </div>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='ccr_description_edit' class='form-label'>Descrição |
+                                            Observações</label>
+                                        <input type='text' class='form-control'
+                                               id='ccr_description_edit' name='ccr_description_edit'
+                                               placeholder='(Opcional)'>
+                                        <div class='invalid-feedback'></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-4'>
+                                    <div class='mb-3'>
+                                        <label class='control-label'>Bandeira<span
+                                                class='text-danger'>*</span></label>
+                                        <select class='form-control select' name='ccr_flag_edit'
+                                                id='ccr_flag_edit'
+                                                required>
+                                            <option selected disabled>Selecione</option>
+                                            <option value='Mastercard'>Mastercard</option>
+                                            <option value='Visa'>Visa</option>
+                                            <option value='Elo'>Elo</option>
+                                            <option value='AmericanExpress'>American Express</option>
+                                            <option value='Hipercard'>Hipercard</option>
+                                            <option value='Alelo'>Alelo</option>
+                                            <option value='Outro'>Outro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class='col-lg-4'>
+                                    <div class='mb-3'>
+                                        <label for='ccr_last_digits_edit' class='form-label'>4 ultimos
+                                            digitos</label>
+                                        <input type='text' class='form-control'
+                                               id='ccr_last_digits_edit'
+                                               name='ccr_last_digits_edit'
+                                               placeholder='(Opcional)'
+                                               maxlength="4"
+                                               pattern="\d{4}">
+                                        <div class='invalid-feedback'></div>
+                                    </div>
+                                </div>
+                                <div class='col-lg-4'>
+                                    <div class='mb-3'>
+                                        <label class='control-label'>Vencimento<span
+                                                class='text-danger'>*</span></label>
+                                        <select class='form-control select' name='ccr_due_date_edit'
+                                                id='ccr_due_date_edit'
+                                                required>
+                                            <option selected disabled>Dia</option>
+                                            {% for i in range(1, 32) %}
+                                                <option value='{{ i }}'>{{ i }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary'>Editar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelEditModal -->

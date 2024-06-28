@@ -1,0 +1,102 @@
+<!-- addCreditCardsModal Modal -->
+<div class='modal fade addCreditCardModal' id='addCreditCardModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Adicionar Cartão de Crédito</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' id='add_credit_card_form'
+                  action="{{ url_for('board.credit_cards') }}"
+                  novalidate
+                  method='post'>
+                {{ csrf_token }}
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='col'>
+                            <div class='row'>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='credit_card_name' class='form-label'>Nome | Apelido<span
+                                                class='text-danger'>*</span></label>
+                                        <input type='text' class='form-control'
+                                               id='credit_card_name'
+                                               name='credit_card_name'
+                                               placeholder='Identificador principal' required>
+                                        <div class='invalid-feedback'>Forneça um nome para o cartão de crédito</div>
+                                    </div>
+                                </div>
+                                <div class='col-lg-6'>
+                                    <div class='mb-3'>
+                                        <label for='credit_card_description' class='form-label'>Descrição |
+                                            Observações</label>
+                                        <input type='text' class='form-control'
+                                               id='credit_card_description' name='credit_card_description'
+                                               placeholder='(Opcional)'>
+                                        <div class='invalid-feedback'></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class='row'>
+                                <div class='col-lg-4'>
+                                    <div class='mb-3'>
+                                        <label class='control-label'>Bandeira<span
+                                                class='text-danger'>*</span></label>
+                                        <select class='form-control select2-search-disable' name='credit_card_flag'
+                                                id='credit_card_flag'
+                                                required>
+                                            <option selected disabled>Selecione</option>
+                                            <option value='Mastercard'>Mastercard</option>
+                                            <option value='Visa'>Visa</option>
+                                            <option value='Elo'>Elo</option>
+                                            <option value='AmericanExpress'>American Express</option>
+                                            <option value='Hipercard'>Hipercard</option>
+                                            <option value='Alelo'>Alelo</option>
+                                            <option value='Outro'>Outro</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class='col-lg-4'>
+                                    <div class='mb-3'>
+                                        <label for='credit_card_last_digits' class='form-label'>4 ultimos
+                                            digitos</label>
+                                        <input type='text' class='form-control'
+                                               id='credit_card_last_digits'
+                                               name='credit_card_last_digits'
+                                               placeholder='(Opcional)'
+                                               maxlength="4"
+                                               pattern="\d{4}">
+                                        <div class='invalid-feedback'></div>
+                                    </div>
+                                </div>
+                                <div class='col-lg-4'>
+                                    <div class='mb-3'>
+                                        <label class='control-label'>Vencimento<span
+                                                class='text-danger'>*</span></label>
+                                        <select class='form-control select2-search-disable' name='credit_card_due_date'
+                                                id='credit_card_due_date'
+                                                required>
+                                            <option selected disabled>Dia</option>
+                                            {% for i in range(1, 32) %}
+                                                <option value='{{ i }}'>{{ i }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class='modal-footer'>
+                                    <button type='button' class='btn btn-secondary waves-effect'
+                                            data-bs-dismiss='modal'>Cancelar
+                                    </button>
+                                    <button type='submit' class='btn btn-primary waves-effect waves-light'>
+                                        Adicionar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end addCreditCardModal -->

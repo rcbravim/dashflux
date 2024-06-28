@@ -14,136 +14,17 @@
                 <div class='row'>
                     <div class='col-12'>
                         <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
-                            <h4 class='mb-sm-0 font-size-18'>Dashboard</h4>
+                            <h4 class='mb-sm-0 font-size-18'>Faturas Cartão de Crédito</h4>
                             <div class='page-title-right'>
                                 <ol class='breadcrumb m-0'>
                                     <li class='breadcrumb-item'>Menu</li>
-                                    <li class='breadcrumb-item active'>Dashboard</li>
+                                    <li class='breadcrumb-item active'>Faturas de Cartão</li>
                                 </ol>
                             </div>
                         </div>
                     </div>
                 </div>
                 <!-- end page title -->
-
-                <div class='col-xl'>
-                    <div class='row'>
-                        <div class='col-md-3'>
-                            <div class='card mini-stats-wid'>
-                                <div class='card-body'>
-                                    <div class='d-flex'>
-                                        <div class='flex-grow-1'>
-                                            <p class='text-muted fw-medium'>Entradas</p>
-                                            <h4 class='mb-0 text-success'>
-                                                R$ {% if context.analytic %}{{ context.analytic.incomes|format_currency
-                                                }}{%
-                                                else %}0,00{% endif %}
-                                            </h4>
-                                        </div>
-                                        <div class='flex-shrink-0 align-self-center'>
-                                            <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
-                          <span class='avatar-title rounded-circle bg-primary'>
-                            <i class='mdi mdi-call-received font-size-24'></i>
-                          </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='col-md-3'>
-                            <div class='card mini-stats-wid'>
-                                <div class='card-body'>
-                                    <div class='d-flex'>
-                                        <div class='flex-grow-1'>
-                                            <p class='text-muted fw-medium'>Saídas</p>
-                                            <h4 class='mb-0 text-danger'>
-                                                R$ {% if context.analytic %}{{ context.analytic.expenses|format_currency
-                                                }}{%
-                                                else %}0,00{% endif %}
-                                            </h4>
-                                        </div>
-                                        <div class='flex-shrink-0 align-self-center'>
-                                            <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
-                          <span class='avatar-title rounded-circle bg-primary'>
-                            <i class='mdi mdi-call-made font-size-24'></i>
-                          </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='col-md-3'>
-                            <div class='card mini-stats-wid'>
-                                <div class='card-body'>
-                                    <div class='d-flex'>
-                                        <div class='flex-grow-1'>
-                                            <p class='text-muted fw-medium'>Balanço Mensal</p>
-
-                                            {% if context.analytic %}
-                                            {% if context.analytic.balance < 0 %}
-                                            <h4 class='mb-0 text-danger'>
-                                                R$ {{ context.analytic.balance|format_currency }}
-                                            </h4>
-                                            {% else %}
-                                            <h4 class='mb-0 text-success'>
-                                                R$ {{ context.analytic.balance|format_currency }}
-                                            </h4>
-                                            {% endif %}
-                                            {% else %}
-                                            <h4 class='mb-0'>
-                                                R$ 0,00
-                                            </h4>
-                                            {% endif %}
-                                        </div>
-                                        <div class='flex-shrink-0 align-self-center'>
-                                            <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
-                          <span class='avatar-title rounded-circle bg-primary'>
-                            <i class='mdi mdi-cached font-size-24'></i>
-                          </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='col-md-3'>
-                            <div class='card mini-stats-wid'>
-                                <div class='card-body'>
-                                    <div class='d-flex'>
-                                        <div class='flex-grow-1'>
-                                            <p class='text-muted fw-medium'>Saldo Atual</p>
-                                            {% if context.analytic %}
-                                            {% if context.analytic.overall < 0 %}
-                                            <h4 class='mb-0 text-danger'>
-                                                R$ {{ context.analytic.overall|format_currency }}
-                                            </h4>
-                                            {% else %}
-                                            <h4 class='mb-0 text-success'>
-                                                R$ {{ context.analytic.overall|format_currency }}
-                                            </h4>
-                                            {% endif %}
-                                            {% else %}
-                                            <h4 class='mb-0'>
-                                                R$ 0,00
-                                            </h4>
-                                            {% endif %}
-                                        </div>
-                                        <div class='flex-shrink-0 align-self-center'>
-                                            <div class='avatar-sm rounded-circle bg-primary mini-stat-icon'>
-                          <span class='avatar-title rounded-circle bg-primary'>
-                            <i class='mdi mdi-contrast font-size-24'></i>
-                          </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- end row -->
-                </div>
 
                 {% if success %}
                 <div class='alert alert-success mb-4 text-center' role='alert'>{{ success }}</div>
@@ -217,14 +98,12 @@
                                             <th class='align-middle'>Descrição</th>
                                             <th class='align-middle'>Categorias</th>
                                             <th style='text-align: right;'>Valor</th>
-                                            <th style='text-align: right;'>Saldo no Dia</th>
-                                            <th class='align-middle'>Status</th>
                                             <th class='align-middle'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in context.entries %}
-                                            {% include 'board/pages/index_entries.html' %}
+                                            {% include 'board/pages/credit_card_entries.html' %}
                                         {% endfor %}
                                         </tbody>
                                     </table>

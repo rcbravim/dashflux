@@ -17,6 +17,11 @@ def index():
     return index_controller()
 
 
+@bp.route('/credit_card', methods=['GET', 'POST'])
+def credit_card():
+    return credit_card_controller()
+
+
 @bp.route('/profile', methods=['GET', 'POST'])
 def profile():
     return profile_controller()
@@ -80,6 +85,21 @@ def account_return_id_by_name():
 @bp.route('/index_edit', methods=['GET', 'POST', 'PUT'])
 def index_edit():
     return index_edit_controller()
+
+
+@bp.route('/credit_cards', methods=['GET', 'POST'])
+def credit_cards():
+    return credit_cards_controller()
+
+
+@bp.route('/credit_cards_edit', methods=['GET', 'POST', 'PUT'])
+def credit_cards_edit():
+    return credit_cards_edit_controller()
+
+
+@bp.route('/credit_card_return_id_by_name', methods=['GET', 'POST'])
+def credit_card_return_id_by_name():
+    return credit_card_return_id_by_name_controller()
 
 
 @bp.route('/upload', methods=['GET', 'POST'])

@@ -1,4 +1,5 @@
 from .index import index_controller
+from .credit_card_dashboard import credit_card_controller
 from .profile import profile_controller
 from .establishments import establishments_controller
 from .establishments_edit import establishments_edit_controller
@@ -9,6 +10,9 @@ from .category_return_id_by_name import category_return_id_by_name_controller
 from .accounts import accounts_controller
 from .accounts_edit import accounts_edit_controller
 from .account_return_id_by_name import account_return_id_by_name_controller
+from .credit_cards import credit_cards_controller
+from .credit_cards_edit import credit_cards_edit_controller
+from .credit_card_return_id_by_name import credit_card_return_id_by_name_controller
 from .index_edit import index_edit_controller
 from .logout import logout_controller
 from .support import support_controller

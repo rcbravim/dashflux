@@ -5,7 +5,7 @@ from flask import render_template, request, url_for, redirect
 from werkzeug.security import generate_password_hash
 
 from app.database.database import db
-from app.database.models import User, Establishment, Category, Account
+from app.database.models import User, Establishment, Category, Account, CreditCardReceipt
 
 
 def auth_config(login_manager):
@@ -44,7 +44,7 @@ def insert_default_records(app):
         )
         db.session.add(dev_user)
 
-        # insert establishment
+        # insert system establishment
         default_establishment = Establishment(
             est_name='Não Informado',
             est_description='Registros sem informação do estabelecimento',
@@ -52,7 +52,7 @@ def insert_default_records(app):
         )
         db.session.add(default_establishment)
 
-        # insert categories
+        # insert system categories
         default_category_1 = Category(
             cat_name='Sem Categoria (Entradas)',
             cat_type=1,
@@ -66,7 +66,7 @@ def insert_default_records(app):
         )
         db.session.add(default_category_2)
 
-        # insert account
+        # insert system account
         default_account = Account(
             acc_name='Conta Padrão',
             acc_description='Conta Padrão do Sistema',
@@ -75,7 +75,18 @@ def insert_default_records(app):
         )
         db.session.add(default_account)
 
+        # insert system credit card
+        default_account = CreditCardReceipt(
+            ccr_name='Sem Fatura',
+            ccr_description='Fatura Padrão do Sistema, quando não há vinculo com cartão de crédito',
+            ccr_flag='Outro',
+            ccr_last_digits=None,
+            ccr_due_date=1,
+            user_id=1
+        )
+        db.session.add(default_account)
+
         db.session.commit()
         click.echo('Admin user inserted.')
         click.echo('Dev user inserted.')
-        click.echo('Default records inserted.')
+        click.echo('System records inserted.')

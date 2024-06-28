@@ -95,7 +95,7 @@ def establishments_controller():
             db.session.merge(establishment)
             db.session.commit()
 
-            session['success'] = 'Estabelecimento Removido com Sucesso!'
+            session['success'] = 'Estabelecimento Atualizado com Sucesso!'
             return redirect(url_for('board.establishments'))
 
         # delete establishment
