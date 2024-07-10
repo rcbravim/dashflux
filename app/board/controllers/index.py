@@ -197,7 +197,7 @@ def index_controller():
             entry_date = request.form.get('modal_entry_date')
             category_ids = ','.join(request.form.get('modal_category[]').split(','))
             repetitions = ','.join(request.form.get('selected_repetitions').split(',')).split(',')
-            action = request.form.get('action')
+            action = request.form.get('action_edit')
 
             transaction = Transaction.query.filter_by(id=request.form.get('edit_index')).first()
 
@@ -317,7 +317,7 @@ def index_controller():
         # delete transaction
         elif request.form.get('_method') == 'DELETE':
             entry_date = request.form.get('modal_entry_date_delete')
-            action = request.form.get('action')
+            action = request.form.get('action_remove')
 
             transaction = Transaction.query.filter_by(id=request.form.get('del_index')).first()
             if transaction.tra_bound_hash is None or action == 'single':

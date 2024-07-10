@@ -1,5 +1,6 @@
 from .index import index_controller
-from .credit_card_dashboard import credit_card_controller
+from .credit_card_dashboard import credit_card_dashboard_controller
+from .credit_card_dashboard_edit import credit_card_dashboard_edit_controller
 from .profile import profile_controller
 from .establishments import establishments_controller
 from .establishments_edit import establishments_edit_controller

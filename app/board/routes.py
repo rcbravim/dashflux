@@ -17,9 +17,14 @@ def index():
     return index_controller()
 
 
-@bp.route('/credit_card', methods=['GET', 'POST'])
-def credit_card():
-    return credit_card_controller()
+@bp.route('/credit_card_dashboard', methods=['GET', 'POST'])
+def credit_card_dashboard():
+    return credit_card_dashboard_controller()
+
+
+@bp.route('/credit_card_dashboard_edit', methods=['GET', 'POST', 'PUT'])
+def credit_card_dashboard_edit():
+    return credit_card_dashboard_edit_controller()
 
 
 @bp.route('/profile', methods=['GET', 'POST'])

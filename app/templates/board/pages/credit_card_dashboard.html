@@ -88,59 +88,53 @@
                                         </span>
                                     </div>
                                 </div>
-                                {% if context.entries %}
-                                <div class='table-responsive'>
-                                    <table class='table align-middle table-nowrap mb-0'>
-                                        <thead class='table-light'>
-                                        <tr>
-                                            <th class='align-middle'>Data</th>
-                                            <th class='align-middle'>Estabelecimento</th>
-                                            <th class='align-middle'>Descrição</th>
-                                            <th class='align-middle'>Categorias</th>
-                                            <th style='text-align: right;'>Valor</th>
-                                            <th class='align-middle'></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        {% for row in context.entries %}
-                                            {% include 'board/pages/credit_card_entries.html' %}
-                                        {% endfor %}
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <!-- end table-responsive -->
-                                <form action="{{ url_for('board.index') }}" method='get'>
-                                    <input type='hidden' name='m' value='{{ context.filter.month }}'/>
-                                    <input type='hidden' name='y' value='{{ context.filter.year }}'/>
-                                    <ul class='pagination pagination-rounded justify-content-end mb-2'>
-                                        <li class='page-item {% if context.pages.pg == 1 %}disabled{% endif %}'>
-                                            <button class='page-link' type='submit' name='pg' value='1'
-                                                    aria-label='First'>
-                                                <i class='mdi mdi-chevron-double-left'></i>
-                                            </button>
-                                        </li>
-                                        {% for item in context.pages.pg_range %}
-                                        <li class='page-item {% if context.pages.pg == item %}active{% endif %}'>
-                                            <button class='page-link' type='submit' name='pg' value='{{ item }}'>{{ item
-                                                }}
-                                            </button>
-                                        </li>
-                                        {% endfor %}
-                                        <li class='page-item {% if context.pages.pg == context.pages.total_pg %}disabled{% endif %}'>
-                                            <button class='page-link' type='submit' name='pg'
-                                                    value='{{ context.pages.total_pg }}' aria-label='Last'>
-                                                <i class='mdi mdi-chevron-double-right'></i>
-                                            </button>
-                                        </li>
-                                    </ul>
-                                </form>
-                                <!-- end page footer -->
-                                {% else %}
-                                <div class='table-responsive'>
-                                    <div class='card-body'>Nenhuma entrada registrada para o período de tempo
-                                        selecionado.
-                                    </div>
-                                </div>
+                                {% if context.receipts %}
+                                    {% for receipt in context.receipts %}
+                                        <button class="btn btn-primary w-100 text-start mt-2" type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseIndex_{{ receipt.id }}" aria-expanded="false"
+                                                aria-controls="collapseIndex_{{ receipt.id }}">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span style="margin-right: 100px;">{{ receipt.ccr_name|upper }}</span>
+                                                <span style="margin-right: 100px;">{{ receipt.ccr_description|upper }}</span>
+                                                <span style="margin-right: 100px;">{{ receipt.ccr_last_digits }}</span>
+                                                <span style="margin-right: 100px;">Venc: {{ receipt.ccr_due_date }}</span>
+                                                <span style="margin-right: 100px;">Total da Fatura: R$ {{
+                                                    receipt.overall|format_currency }}</span>
+                                            </div>
+                                        </button>
+                                        <!-- Contêiner de colapso -->
+                                        <div class="collapse" id="collapseIndex_{{ receipt.id }}">
+                                            {% if receipt.entries %}
+                                                <div class="card card-body">
+                                                    <div class='table-responsive'>
+                                                        <table class='table align-middle table-nowrap mb-0'>
+                                                            <thead class='table-light'>
+                                                            <tr>
+                                                                <th class='align-middle'>Data</th>
+                                                                <th class='align-middle'>Estabelecimento</th>
+                                                                <th class='align-middle'>Descrição</th>
+                                                                <th class='align-middle'>Categorias</th>
+                                                                <th style='text-align: right;'>Valor</th>
+                                                                <th class='align-middle'></th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for row in receipt.entries %}
+                                                                {% include 'board/pages/credit_card_entries.html' %}
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class='table-responsive'>
+                                                    <div class='card-body'>Nenhuma entrada registrada nesta fatura.
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
                                 {% endif %}
                             </div>
                         </div>
@@ -159,13 +153,13 @@
 {% include 'board/partials/footer.html' %}
 
 <!-- newEntryModal Modal -->
-{% include 'board/pages/index_modal_new_transaction.html' %}
+{% include 'board/pages/credit_card_dashboard_modal_new_transaction.html' %}
 <!-- end newEntryModal -->
 
 <!-- labelEditModal Modal -->
-{% include 'board/pages/index_modal_edit_transaction.html' %}
+{% include 'board/pages/credit_card_dashboard_modal_edit_transaction.html' %}
 <!-- end labelEditModal -->
 
 <!-- labelEditModal Modal -->
-{% include 'board/pages/index_modal_remove_transaction.html' %}
+{% include 'board/pages/credit_card_dashboard_modal_remove_transaction.html' %}
 <!-- end labelEditModal -->

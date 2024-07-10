@@ -1,11 +1,13 @@
-<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog' aria-hidden='true'>
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog'
+     aria-hidden='true'>
     <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
         <div class='modal-content'>
             <div class='modal-header'>
                 <h5 class='modal-title'>Editar Entrada</h5>
                 <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
             </div>
-            <form class='needs-validation' id='editForm' method='post' action="{{ url_for('board.index') }}" novalidate>
+            <form class='needs-validation' id='editFormCreditCardTransaction' method='post'
+                  action="{{ url_for('board.credit_card_dashboard') }}" novalidate>
                 <input type='hidden' name='_method' value='PUT'/>
                 {{ csrf_token }}
                 <input type='hidden' name='m' value='{{ context.filter.month }}'/>
@@ -60,56 +62,76 @@
                             </div>
                             <div class='col-lg-6'>
                                 <div class='mb-3'>
-                                    <label for='modal_account' class='form-label'>Conta<span
+                                    <label for='credit_card' class='form-label'>Cartão de Crédito<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select' id='modal_account' name='modal_account' required>
-                                        {% for row in context.accounts %}
-                                        <option value='{{ row.id }}'>
-                                            {% if row.acc_is_bank %}
-                                            {{ row.acc_bank_name|upper }} | {{ row.acc_bank_branch }} |
-                                            {{ row.acc_bank_account }} | ({{ row.acc_name|upper }})
-                                            {% else %}
-                                            {{ row.acc_name|upper }} | {{ row.acc_description|upper }}
-                                            {% endif %}
-                                        </option>
-                                        {% endfor %}
+                                    <select class='form-select' id='credit_card' name='credit_card' required>
+                                        {% if context.credit_cards %}
+                                            {% for row in context.credit_cards %}
+                                                {% if row.id == 1 %}
+                                                    <option value='{{ row.id }}' selected>{{ row.ccr_name }} | {{
+                                                        row.ccr_last_digits }} | {{ row.ccr_due_date }}</option>
+                                                {% else %}
+                                                    <option value='{{ row.id }}'>{{ row.ccr_name }} | {{
+                                                        row.ccr_last_digits }} | {{ row.ccr_due_date }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <option value='' selected disabled>Nenhum cartão de crédito cadastrado</option>
+                                        {% endif %}
                                     </select>
-                                    <div class='invalid-feedback'>Selecione uma conta, mesmo que seja em dinheiro</div>
+                                    <div class='invalid-feedback'>Selecione um cartão de crédito</div>
                                 </div>
                             </div>
                         </div>
                         <div class='row'>
-                            <div class='col-lg'>
+                            <div class='col-lg-3'>
                                 <div class='mb-3'>
                                     <label for='type_transaction' class='form-label'>Tipo<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select modal_transaction_type_edit' id='type_transaction'
-                                            name='type_transaction'>
+                                    <select class='form-select' id='type_transaction' name='type_transaction'>
                                         <option value='1'>Entrada</option>
-                                        <option value='2'>Saída</option>
+                                        <option value='2' selected>Saída</option>
                                     </select>
                                 </div>
                             </div>
-                            <div class='col-lg'>
+                            <div class='col-lg-3'>
                                 <div class='mb-3'>
-                                    <label for='situation' class='form-label'>Estado<span
+                                    <label for='due_month' class='form-label'>Mês de Vencimento<span
                                             class='text-danger'>*</span></label>
-                                    <select class='form-select situation_modal' id='situation' name='situation'>
-                                        <option value='1' selected>Pago</option>
-                                        <option value='2'>Aberto</option>
-                                        <option value='3'>Em Negociação</option>
-                                        <option value='4'>Recebido</option>
-                                        <option value='5'>Agendado</option>
+                                    <select class='form-select' id='due_month' name='due_month'>
+                                        {% for i in range(1, 13) %}
+                                            {% if i == context.filter.month %}
+                                                <option value="{{ i }}" selected>{{ i }}</option>
+                                            {% else %}
+                                                <option value="{{ i }}">{{ i }}</option>
+                                            {% endif %}
+                                        {% endfor %}
                                     </select>
                                 </div>
                             </div>
-                            <div class='col-lg'>
+                            <div class='col-lg-3'>
                                 <div class='mb-3'>
-                                    <label for='modal_amount' class='form-label'>Quantia<span
+                                    <label for='due_year' class='form-label'>Ano de Vencimento<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-select' id='due_year' name='due_year'>
+                                        {% for i in range(2021, 2031) %}
+                                            {% if i == context.filter.year %}
+                                                <option value="{{ i }}" selected>{{ i }}</option>
+                                            {% else %}
+                                                <option value="{{ i }}">{{ i }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class='col-lg-3'>
+                                <div class='mb-3'>
+                                    <label for='modal_amount' class='form-label'>Valor<span
                                             class='text-danger'>*</span></label>
                                     <input type='text' class='form-control mask_money modal_amount' id='modal_amount'
-                                           name='modal_amount' placeholder='Insira o valor da entrada' required>
-                                    <div class='invalid-feedback'>Insira o valor da entrada</div>
+                                           name='modal_amount'
+                                           placeholder='Digite o valor da entrada' required>
+                                    <div class='invalid-feedback'>Digite o valor da entrada</div>
                                 </div>
                             </div>
                         </div>
@@ -141,12 +163,12 @@
                 <div class='modal-footer'>
                     <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
                         Cancelar</button>
-                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='editSingle'
+                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='editSingleCreditCardTransaction'
                             data-action='single'>Editar Este Registro</button>
-                    <button type='submit' class='btn btn-danger waves-effect waves-light d-none' id='editAll'
+                    <button type='submit' class='btn btn-danger waves-effect waves-light d-none' id='editAllCreditCardTransaction'
                             data-action='all'>Editar Todos Registros Selecionados</button>
                 </div>
-                <input type="hidden" id="action_edit" name="action_edit" value="">
+                <input type="hidden" id="action_edit_cct" name="action_edit_cct" value="">
             </form>
         </div>
     </div>

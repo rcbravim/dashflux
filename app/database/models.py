@@ -161,7 +161,8 @@ class CreditCardTransaction(db.Model):
     cct_description = db.Column(db.String(250), nullable=True)
     cct_amount = db.Column(db.Numeric(15, 3), nullable=False)
     cct_entry_date = db.Column(db.Date, nullable=False)
-    # tra_bound_hash = db.Column(db.String, nullable=True)
+    cct_due_date = db.Column(db.Date, nullable=False)
+    cct_bound_hash = db.Column(db.String, nullable=True)
 
     cct_status = db.Column(db.Boolean, default=True, nullable=False)
     cct_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
