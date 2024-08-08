@@ -42,7 +42,7 @@ jobs:
           echo "$EC2_PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} "
         
-            mkdir -p /$WORKDIR/$CONTAINER_NAME
+            sudo mkdir -p /$WORKDIR/$CONTAINER_NAME
             cd /$WORKDIR/$CONTAINER_NAME
           
             echo git checkout/fetch/reset/pull
