@@ -5,7 +5,8 @@ from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract, or_, and_
 
-from app.database.models import Category, Establishment, Account, Transaction, Analytic
+from app.database.models import Category, Establishment, Account, Transaction, Analytic, CreditCardReceipt, \
+    CreditCardTransaction
 from app.database.database import db
 from app.library.helper import paginator, generate_hash
 
@@ -33,6 +34,8 @@ def index_controller():
         category = Category
         establishment = Establishment
         account = Account
+        credit_card_receipt = CreditCardReceipt
+        credit_card_transaction = CreditCardTransaction
 
         entries_all = db.session.query(
             establishment.est_name,
@@ -62,30 +65,111 @@ def index_controller():
 
         cumulative_balance = float(last_month_balance) if last_month_balance else 0
 
-        entries_with_flow = []
-        for row in entries_all:
+        # credit card receipts
+        receipts_this_month = db.session.query(
+            credit_card_receipt,
+        ).filter(
+            credit_card_receipt.ccr_status == True,
+            credit_card_receipt.user_id == user_id,
+            extract('month', credit_card_receipt.ccr_due_date == month),
+            extract('year', credit_card_receipt.ccr_due_date == year)
+        ).all()
 
-            # get category names from category ids
-            categories_entry = []
-            for _id in list(filter(bool, row.category_ids.split(','))):  # simples -> row.category_ids.split(','):
-                d = {
-                    'cat_id': _id,
-                    'cat_name':  Category.query.get(_id).cat_name,
-                }
-                categories_entry.append(d)
+        entries_credit_card_all = db.session.query(
+            establishment.est_name,
+            credit_card_transaction.id,
+            credit_card_transaction.cct_amount,
+            credit_card_transaction.cct_entry_date,
+            credit_card_transaction.cct_description,
+            credit_card_transaction.category_ids,
+            credit_card_transaction.credit_card_receipt_id,
+        ).join(
+            establishment, credit_card_transaction.establishment_id == establishment.id
+        ).join(
+            credit_card_receipt, credit_card_transaction.credit_card_receipt_id == credit_card_receipt.id
+        ).filter(
+            credit_card_transaction.cct_status == True,
+            credit_card_transaction.user_id == user_id,
+            extract('month', credit_card_transaction.cct_due_date) == month,
+            extract('year', credit_card_transaction.cct_due_date) == year,
+        ).order_by(
+            credit_card_transaction.cct_entry_date.asc()
+        ).all()
 
-            cumulative_balance += float(row.tra_amount)
-            entry = {
-                'id': row.id,
-                'tra_entry_date': row.tra_entry_date,
-                'categories_entry': categories_entry,  #  [{'cat_name': cat_name, 'cat_id': cat_id} for cat_name, cat_id in zip(row.category_names.split(','), row.category_ids.split(','))],
-                'est_name': row.est_name,
-                'tra_situation': row.tra_situation,
-                'tra_amount': row.tra_amount,
-                'tra_description': row.tra_description,
-                'cumulative_balance': cumulative_balance
+        receipts = []
+        for receipt_row in receipts_this_month:
+            overall = 0
+            receipt = {
+                'id': receipt_row.id,
+                'ccr_name': receipt_row.ccr_name,
+                'ccr_description': receipt_row.ccr_description,
+                'ccr_flag': receipt_row.ccr_flag,
+                'ccr_last_digits': receipt_row.ccr_last_digits,
+                'ccr_due_date': receipt_row.ccr_due_date,
+                'entries': []
             }
+            for entry in entries_credit_card_all:
+                if receipt_row.id == entry.credit_card_receipt_id:
+                    categories_entry = []
+                    for _id in list(filter(bool, entry.category_ids.split(','))):
+                        categories_entry.append({
+                            'cat_id': _id,
+                            'cat_name': Category.query.get(_id).cat_name,
+                        })
+                    receipt['entries'].append({
+                        'id': entry.id,
+                        'cct_description': entry.cct_description,
+                        'cct_amount': entry.cct_amount,
+                        'cct_entry_date': entry.cct_entry_date,
+                        'est_name': entry.est_name,
+                        'tra_entry_date': categories_entry
+                    })
+                    overall += entry.cct_amount
+            receipt['overall'] = abs(overall)
+            receipts.append(receipt)
+
+        entries_with_flow = []
+        for row in entries_all + receipts:
+
+            # differentiate credit card transactions from regular transactions
+            if not hasattr(row, 'tra_amount'):
+                cumulative_balance += float(row['overall']) * -1
+                entry = {
+                    'id': row['id'],
+                    'tra_entry_date': datetime.strptime(f'{row["ccr_due_date"]}-{now.month}-{now.year}', '%d-%m-%Y'),
+                    # 'categories_entry': categories_entry,
+                    # 'est_name': row.est_name,
+                    'tra_situation': 6,
+                    'tra_amount': row['overall'] * -1,
+                    'tra_description': row['ccr_name'],
+                    'cumulative_balance': cumulative_balance,
+                    'is_receipt': True,
+                }
+            else:
+                # get category names from category ids
+                categories_entry = []
+                for _id in list(filter(bool, row.category_ids.split(','))):  # simples -> row.category_ids.split(','):
+                    d = {
+                        'cat_id': _id,
+                        'cat_name':  Category.query.get(_id).cat_name,
+                    }
+                    categories_entry.append(d)
+
+                cumulative_balance += float(row.tra_amount)
+                entry = {
+                    'id': row.id,
+                    'tra_entry_date': row.tra_entry_date,
+                    'categories_entry': categories_entry,  # [{'cat_name': cat_name, 'cat_id': cat_id} for cat_name, cat_id in zip(row.category_names.split(','), row.category_ids.split(','))],
+                    'est_name': row.est_name,
+                    'tra_situation': row.tra_situation,
+                    'tra_amount': row.tra_amount,
+                    'tra_description': row.tra_description,
+                    'cumulative_balance': cumulative_balance
+                }
+
             entries_with_flow.append(entry)
+
+        entries_with_flow = sorted(entries_with_flow, key=lambda x: x['tra_entry_date'].day)
 
         entries = entries_with_flow[pg_offset:(pg_offset + PG_LIMIT)]
 
@@ -197,7 +281,7 @@ def index_controller():
             entry_date = request.form.get('modal_entry_date')
             category_ids = ','.join(request.form.get('modal_category[]').split(','))
             repetitions = ','.join(request.form.get('selected_repetitions').split(',')).split(',')
-            action = request.form.get('action')
+            action = request.form.get('action_edit')
 
             transaction = Transaction.query.filter_by(id=request.form.get('edit_index')).first()
 
@@ -317,7 +401,7 @@ def index_controller():
         # delete transaction
         elif request.form.get('_method') == 'DELETE':
             entry_date = request.form.get('modal_entry_date_delete')
-            action = request.form.get('action')
+            action = request.form.get('action_remove')
 
             transaction = Transaction.query.filter_by(id=request.form.get('del_index')).first()
             if transaction.tra_bound_hash is None or action == 'single':

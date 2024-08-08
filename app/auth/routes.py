@@ -1,8 +1,11 @@
+import os
+
 from flask import Blueprint, redirect, url_for
 from .controllers import *
 
 
-bp = Blueprint('auth', __name__, url_prefix='/')
+bp = Blueprint('auth', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}')
+
 
 
 @bp.route('/', methods=['GET'])

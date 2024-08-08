@@ -1,4 +1,4 @@
-name: Deploy to AWS EC2 PRD
+name: Deploy to AWS EC2 DEV
 
 env:
   # deploy envs
@@ -6,8 +6,9 @@ env:
   HOSTNAME: ${{ secrets.HOSTNAME }}                         # ${{ secrets.HOSTNAME }}
   USER_NAME: ${{ secrets.USER_NAME }}                       # ${{ secrets.USER_NAME }}
   AWS_REGION: ${{ secrets.AWS_REGION }}                     # ${{ secrets.AWS_REGION }}
-  CONTAINER_NAME: dashflux                                  # ${{ secrets.CONTAINER_NAME }}
-  BRANCH: main
+  ENVIRONMENT: dev
+  CONTAINER_NAME: dashflux-dev
+  BRANCH: dev
   WORKDIR: app-dashflux
 
   # app envs
@@ -26,7 +27,7 @@ env:
 on:
   push:
     branches:
-      - main
+      - dev
 
 jobs:
   deploy:
@@ -36,7 +37,7 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
 
-      - name: Deploy in EC2
+      - name: Deploy in EC2 DEV
 
         run: |
           echo "$EC2_PRIVATE_KEY" > private_key && chmod 600 private_key
@@ -59,7 +60,7 @@ jobs:
             
             echo Copy database if not exists
             if [ ! -e /instance/database.db ]; then
-              sudo docker cp dashflux:/app/instance/database.db $(pwd)/instance/database.db
+              sudo docker cp $CONTAINER_NAME:/app/instance/database.db $(pwd)/instance/database.db
             fi
             
             echo Stop, remove the existing container and cleaning with docker prune
@@ -71,7 +72,7 @@ jobs:
             sudo docker build -t $CONTAINER_NAME .
             
             echo Run the new container with the data volume mounted
-            sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 -v $(pwd)/instance:/app/instance \
+            sudo docker run -d --name $CONTAINER_NAME -p 5001:5000 -v $(pwd)/instance:/app/instance \
               -e MAIL_USERNAME=$MAIL_USERNAME \
               -e MAIL_PASSWORD=$MAIL_PASSWORD \
               -e MAIL_DEFAULT_SENDER=$MAIL_DEFAULT_SENDER \
@@ -83,5 +84,6 @@ jobs:
               -e ADMIN_PASS=$ADMIN_PASS \
               -e DEV_USER=$DEV_USER \
               -e DEV_PASS=$DEV_PASS \
+              -e ENVIRONMENT=$ENVIRONMENT \
               --restart always $CONTAINER_NAME
             "

@@ -1,9 +1,11 @@
+import os
+
 from flask import Blueprint
 from flask_login import login_required
 
 from .controllers import *
 
-bp = Blueprint('board', __name__, url_prefix='/board')
+bp = Blueprint('board', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}/board')
 
 
 @bp.before_request
@@ -16,6 +18,20 @@ def require_login():
 def index():
     return index_controller()
 
+
+@bp.route('/credit_card_dashboard', methods=['GET', 'POST'])
+def credit_card_dashboard():
+    return credit_card_dashboard_controller()
+
+
+@bp.route('/credit_card_dashboard_edit', methods=['GET', 'POST', 'PUT'])
+def credit_card_dashboard_edit():
+    return credit_card_dashboard_edit_controller()
+
+
+@bp.route('/credit_card_dashboard_upload_csv', methods=['POST'])
+def credit_card_dashboard_upload_csv():
+    return credit_card_dashboard_upload_csv_controller()
 
 @bp.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -80,6 +96,21 @@ def account_return_id_by_name():
 @bp.route('/index_edit', methods=['GET', 'POST', 'PUT'])
 def index_edit():
     return index_edit_controller()
+
+
+@bp.route('/credit_cards', methods=['GET', 'POST'])
+def credit_cards():
+    return credit_cards_controller()
+
+
+@bp.route('/credit_cards_edit', methods=['GET', 'POST', 'PUT'])
+def credit_cards_edit():
+    return credit_cards_edit_controller()
+
+
+@bp.route('/credit_card_return_id_by_name', methods=['GET', 'POST'])
+def credit_card_return_id_by_name():
+    return credit_card_return_id_by_name_controller()
 
 
 @bp.route('/upload', methods=['GET', 'POST'])

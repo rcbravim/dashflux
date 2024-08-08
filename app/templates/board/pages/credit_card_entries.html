@@ -1,0 +1,29 @@
+<tr class={% if row.cct_amount < 0 %} "text-danger" {% else %} "text-success" {% endif %}>
+    <td>{{ row.cct_entry_date|format_date }}</td>
+    <td>{{ row.est_name|upper }}</td>
+    <td>{{ row.cct_description|upper }}</td>
+    <td>
+        {% for category in row.categories_entry %}
+            {% if row.cct_amount > 0 %}
+                <span class='badge badge-pill badge-soft-success font-size-12'>
+                {{ category.cat_name|lower }}</span>
+            {% else %}
+                <span class='badge badge-pill badge-soft-danger font-size-12'>
+                {{ category.cat_name|lower }}</span>
+            {% endif %}
+        {% endfor %}
+    </td>
+    
+    <td style='text-align: right;'>{{ (row.cct_amount * -1)|format_currency }}</td>
+    <td>
+        <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
+           class='text-success credit_card_transaction_edit' style='cursor:pointer;'
+           data-value='{{ row.id }}'><i
+                class='mdi mdi-pencil font-size-18'></i></a>
+    
+        <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
+           class='text-danger credit_card_transaction_del' style='cursor:pointer;'
+           data-value='{{ row.id }}'><i
+                class='mdi mdi-delete font-size-18'></i></a>
+    </td>
+</tr>
