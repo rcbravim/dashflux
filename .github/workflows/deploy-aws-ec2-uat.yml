@@ -6,7 +6,8 @@ env:
   HOSTNAME: ${{ secrets.HOSTNAME }}                         # ${{ secrets.HOSTNAME }}
   USER_NAME: ${{ secrets.USER_NAME }}                       # ${{ secrets.USER_NAME }}
   AWS_REGION: ${{ secrets.AWS_REGION }}                     # ${{ secrets.AWS_REGION }}
-  CONTAINER_NAME: dashflux-uat                              # ${{ secrets.CONTAINER_NAME }}
+  ENVIRONMENT: uat
+  CONTAINER_NAME: dashflux-uat
   BRANCH: uat
   WORKDIR: app-dashflux
 
@@ -83,5 +84,6 @@ jobs:
               -e ADMIN_PASS=$ADMIN_PASS \
               -e DEV_USER=$DEV_USER \
               -e DEV_PASS=$DEV_PASS \
+              -e ENVIRONMENT=$ENVIRONMENT \
               --restart always $CONTAINER_NAME
             "
