@@ -45,11 +45,16 @@ jobs:
             sudo mkdir -p /$WORKDIR/$CONTAINER_NAME
             cd /$WORKDIR/$CONTAINER_NAME
           
-            echo git checkout/fetch/reset/pull
-            git checkout $BRANCH
-            git fetch --all
-            git reset --hard origin/$BRANCH
-            git pull origin $BRANCH
+            if [ ! -d .git ]; then
+              echo 'Cloning the repository for the first time'
+              git clone https://github.com/rcbravim/dashflux.git .
+              git checkout $BRANCH
+            else
+              echo 'Fetching the latest code from $BRANCH branch'
+              git fetch --all
+              git reset --hard origin/$BRANCH
+              git pull origin $BRANCH
+            fi
             
             echo Copy database if not exists
             if [ ! -e /instance/database.db ]; then
