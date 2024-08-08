@@ -27,6 +27,10 @@ def credit_card_dashboard_edit():
     return credit_card_dashboard_edit_controller()
 
 
+@bp.route('/credit_card_dashboard_upload_csv', methods=['POST'])
+def credit_card_dashboard_upload_csv():
+    return credit_card_dashboard_upload_csv_controller()
+
 @bp.route('/profile', methods=['GET', 'POST'])
 def profile():
     return profile_controller()

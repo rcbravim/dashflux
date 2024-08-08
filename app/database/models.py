@@ -6,7 +6,7 @@ from app.database.database import db
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
-    use_login = db.Column(db.String(250), nullable=False)
+    use_login = db.Column(db.String(250), nullable=False, unique=True)
     use_password = db.Column(db.String(128), nullable=False)
     use_status = db.Column(db.Boolean, nullable=False, default=True)
     use_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -44,6 +44,10 @@ class UserLog(db.Model):
 
 
 class Category(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('id', 'cat_name', 'cat_type', 'user_id'),
+    )
+
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
     cat_type = db.Column(db.SmallInteger, nullable=False, comment="1 -> Entradas; 2 -> Saídas")
@@ -59,6 +63,10 @@ class Category(db.Model):
 
 
 class Account(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('id', 'acc_name', 'user_id'),
+    )
+    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     acc_name = db.Column(db.String(250), nullable=False)
     acc_description = db.Column(db.String(250), default=None)
@@ -77,6 +85,10 @@ class Account(db.Model):
 
 
 class Establishment(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('id', 'est_name', 'user_id'),
+    )
+    
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     est_name = db.Column(db.String(250), nullable=False)
     est_description = db.Column(db.String(250), default=None)
@@ -91,6 +103,10 @@ class Establishment(db.Model):
 
 
 class CreditCardReceipt(db.Model):
+    __table_args__ = (
+        db.UniqueConstraint('id', 'ccr_name', 'user_id'),
+    )
+
     id = db.Column(db.Integer, primary_key=True)
     ccr_name = db.Column(db.String(250), nullable=False)
     ccr_description = db.Column(db.String(250), nullable=True)
@@ -112,21 +128,21 @@ class CreditCardReceipt(db.Model):
 
 
 class Analytic(db.Model):
-    ana_month = db.Column(db.Integer, db.CheckConstraint('ana_month BETWEEN 1 AND 12'), nullable=False)
-    ana_year = db.Column(db.Integer, nullable=False)
+    __table_args__ = (
+        db.PrimaryKeyConstraint('ana_month', 'ana_year', 'user_id'),
+    )
+
+    ana_month = db.Column(db.Integer, db.CheckConstraint('ana_month BETWEEN 1 AND 12'), nullable=False, primary_key=True)
+    ana_year = db.Column(db.Integer, nullable=False, primary_key=True)
     ana_incomes = db.Column(db.Numeric(15, 3), nullable=False)
     ana_expenses = db.Column(db.Numeric(15, 3), nullable=False)
     ana_status = db.Column(db.Boolean, nullable=False, default=True)
     ana_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     ana_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     ana_date_deleted = db.Column(db.DateTime, default=None)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True)
 
     user = db.relationship('User', backref=db.backref('analytics'))
-
-    __table_args__ = (
-        db.PrimaryKeyConstraint('ana_month', 'ana_year', 'user_id'),
-    )
 
     def __repr__(self):
         return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"

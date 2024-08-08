@@ -297,8 +297,6 @@ def credit_card_dashboard_controller():
                     cct_amount=amount * multiply,
                     cct_entry_date=entry_date.date(),
                     cct_due_date=due_date.date(),
-                    # cct_due_month=due_month,
-                    # cct_due_year=due_year,
                     establishment_id=establishment,
                     category_ids=','.join(category_list),
                     credit_card_receipt_id=credit_card

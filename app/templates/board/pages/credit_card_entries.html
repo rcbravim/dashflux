@@ -14,7 +14,7 @@
         {% endfor %}
     </td>
     
-    <td style='text-align: right;'>{{ row.cct_amount|format_currency }}</td>
+    <td style='text-align: right;'>{{ (row.cct_amount * -1)|format_currency }}</td>
     <td>
         <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
            class='text-success credit_card_transaction_edit' style='cursor:pointer;'

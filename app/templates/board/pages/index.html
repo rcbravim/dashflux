@@ -58,8 +58,7 @@
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Saídas</p>
                                             <h4 class='mb-0 text-danger'>
-                                                R$ {% if context.analytic %}{{ context.analytic.expenses|format_currency
-                                                }}{%
+                                                R$ {% if context.analytic %}{{ (context.analytic.expenses * -1)|format_currency                                                }}{%
                                                 else %}0,00{% endif %}
                                             </h4>
                                         </div>

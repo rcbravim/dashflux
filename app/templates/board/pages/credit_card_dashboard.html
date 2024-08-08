@@ -84,6 +84,11 @@
                                                         data-bs-target='.newEntryModal'>
                                                     <i class='mdi mdi-plus'></i> Adicionar Entrada
                                                 </button>
+                                                <button class='btn btn-success dropdown-toggle' type='button'
+                                                        data-bs-toggle='modal'
+                                                        data-bs-target='.labelUploadCsvModal'>
+                                                    <i class='mdi mdi-table'></i> Adicionar CSV
+                                                </button>
                                             </div>
                                         </span>
                                     </div>
@@ -162,4 +167,8 @@
 
 <!-- labelEditModal Modal -->
 {% include 'board/pages/credit_card_dashboard_modal_remove_transaction.html' %}
+<!-- end labelEditModal -->
+
+<!-- labelUploadCsvModal Modal -->
+{% include 'board/pages/credit_card_dashboard_modal_upload_csv.html' %}
 <!-- end labelEditModal -->
