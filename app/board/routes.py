@@ -1,9 +1,11 @@
+import os
+
 from flask import Blueprint
 from flask_login import login_required
 
 from .controllers import *
 
-bp = Blueprint('board', __name__, url_prefix='/board')
+bp = Blueprint('board', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}/board')
 
 
 @bp.before_request
