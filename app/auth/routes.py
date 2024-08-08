@@ -7,7 +7,6 @@ from .controllers import *
 bp = Blueprint('auth', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}')
 
 
-
 @bp.route('/', methods=['GET'])
 def redirection():
     return redirect(url_for('auth.login'))

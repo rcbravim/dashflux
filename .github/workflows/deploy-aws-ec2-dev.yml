@@ -6,8 +6,7 @@ env:
   HOSTNAME: ${{ secrets.HOSTNAME }}                         # ${{ secrets.HOSTNAME }}
   USER_NAME: ${{ secrets.USER_NAME }}                       # ${{ secrets.USER_NAME }}
   AWS_REGION: ${{ secrets.AWS_REGION }}                     # ${{ secrets.AWS_REGION }}
-  ENVIRONMENT: dev
-  CONTAINER_NAME: dashflux-dev
+  CONTAINER_NAME: dashflux-dev                              # ${{ secrets.CONTAINER_NAME }}
   BRANCH: dev
   WORKDIR: app-dashflux
 
@@ -23,6 +22,7 @@ env:
   ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
   DEV_USER: ${{ secrets.DEV_USER }}
   DEV_PASS: ${{ secrets.DEV_PASS }}
+  ENVIRONMENT: dev
 
 on:
   push:
@@ -59,8 +59,8 @@ jobs:
             fi
             
             echo Copy database if not exists
-            if [ ! -e /instance/database.db ]; then
-              sudo docker cp $CONTAINER_NAME:/app/instance/database.db $(pwd)/instance/database.db
+            if [ ! -e /instance/database-$ENVIRONMENT.db ]; then
+              sudo docker cp $CONTAINER_NAME:/app/instance/database-$ENVIRONMENT.db $(pwd)/instance/database-$ENVIRONMENT.db
             fi
             
             echo Stop, remove the existing container and cleaning with docker prune
@@ -72,7 +72,7 @@ jobs:
             sudo docker build -t $CONTAINER_NAME .
             
             echo Run the new container with the data volume mounted
-            sudo docker run -d --name $CONTAINER_NAME -p 5001:5000 -v $(pwd)/instance:/app/instance \
+            sudo docker run -d --name $CONTAINER_NAME -p 5002:5000 -v $(pwd)/instance:/app/instance \
               -e MAIL_USERNAME=$MAIL_USERNAME \
               -e MAIL_PASSWORD=$MAIL_PASSWORD \
               -e MAIL_DEFAULT_SENDER=$MAIL_DEFAULT_SENDER \
