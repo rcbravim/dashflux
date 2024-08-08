@@ -44,6 +44,7 @@ jobs:
         
             sudo mkdir -p /$WORKDIR/$CONTAINER_NAME
             cd /$WORKDIR/$CONTAINER_NAME
+            sudo chown -R ${USER_NAME}:${USER_NAME} /$WORKDIR/$CONTAINER_NAME
           
             if [ ! -d .git ]; then
               echo 'Cloning the repository for the first time'
