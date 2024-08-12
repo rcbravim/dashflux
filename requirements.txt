@@ -18,3 +18,4 @@ livereload==2.6.3
 Werkzeug==3.0.3
 chardet~=5.1.0
 python-dateutil~=2.8.2
+openpyxl

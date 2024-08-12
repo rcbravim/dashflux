@@ -128,7 +128,7 @@ def insert_transactions(df):
     print(f"{len(df)} transações inseridas no banco de dados.")
 
 
-def insert_analytics(df):
+def update_analytics(df):
     user_id = session.get('user_id')
     months_years = set(df[columns[0]].apply(lambda x: datetime.strptime(x, '%d/%m/%Y').strftime("%m-%Y")))
 
@@ -152,6 +152,46 @@ def insert_analytics(df):
             Transaction.user_id == user_id,
             extract('month', Transaction.tra_entry_date) == month,
             extract('year', Transaction.tra_entry_date) == year
+        ).scalar()
+
+        new_analytic = Analytic(
+            ana_month=month,
+            ana_year=year,
+            ana_incomes=incomes,
+            ana_expenses=expenses,
+            user_id=user_id
+        )
+        db.session.merge(new_analytic)
+        count += 1
+
+    print(f"{count} Relatórios mensais cadastrados/atualizados.")
+    db.session.commit()
+
+
+def update_analytics_credit_card(df):
+    user_id = session.get('user_id')
+    months_years = set(df[cct_columns[6]].apply(lambda x: x.strftime("%m-%Y")))
+
+    count = 0
+    for month_year in months_years:
+        month, year = month_year.split('-')
+
+        incomes = db.session.query(
+            func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
+        ).filter(
+            CreditCardTransaction.cct_amount > 0,
+            CreditCardTransaction.user_id == user_id,
+            extract('month', CreditCardTransaction.cct_due_date) == month,
+            extract('year', CreditCardTransaction.cct_due_date) == year
+        ).scalar()
+
+        expenses = db.session.query(
+            func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
+        ).filter(
+            CreditCardTransaction.cct_amount < 0,
+            CreditCardTransaction.user_id == user_id,
+            extract('month', CreditCardTransaction.cct_due_date) == month,
+            extract('year', CreditCardTransaction.cct_due_date) == year
         ).scalar()
 
         new_analytic = Analytic(
@@ -204,7 +244,7 @@ def upload_records(csv_file):
         insert_categories(df)
         insert_accounts(df)
         insert_transactions(df)
-        insert_analytics(df)
+        update_analytics(df)
 
         print("Processo de Importação Finalizado")
 
@@ -260,6 +300,7 @@ def upload_credit_card_records(csv_file):
         insert_categories(df)
         insert_credit_cards(df)
         insert_credit_card_transactions(df)
+        update_analytics_credit_card(df)
 
         print("Processo de Importação Finalizado")
 
