@@ -5,7 +5,7 @@ from flask import request, render_template, session, send_file, current_app
 from sqlalchemy import or_
 
 from app.database.database import db
-from app.database.models import Transaction, Establishment, Account, Category
+from app.database.models import Transaction, Establishment, Account, Category, CreditCardTransaction, CreditCardReceipt
 
 
 def backup_controller():
@@ -37,7 +37,7 @@ def backup_controller():
         ).all()
 
         columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'situação', 'valor', 'conta']
-        df = pd.DataFrame.from_records(transactions, columns=columns)
+        df_transaction = pd.DataFrame.from_records(transactions, columns=columns)
 
         categories = db.session.query(
             Category.id,
@@ -48,25 +48,54 @@ def backup_controller():
                 Category.user_id == user_id
             )
         ).all()
-
         categories_dict = {cat.id: cat.cat_name for cat in categories}
-        df['categorias'] = df['categorias'].apply(lambda x: replace_categories(x, categories_dict))
-        df['situação'] = df['situação'].apply(replace_situation)
 
-        path_file = os.path.join(current_app.static_folder, f'{user_id}_backup.csv')
-        df.to_csv(path_file, sep=';', index=False, encoding='iso-8859-1')
+        df_transaction['categorias'] = df_transaction['categorias'].apply(lambda x: replace_categories(x, categories_dict))
+        df_transaction['situação'] = df_transaction['situação'].apply(replace_situation)
+
+        # df credit card transactions
+        credit_card_transactions = db.session.query(
+            CreditCardTransaction.cct_entry_date,
+            Establishment.est_name,
+            CreditCardTransaction.cct_description,
+            CreditCardTransaction.category_ids,
+            CreditCardTransaction.cct_amount,
+            CreditCardReceipt.ccr_name,
+            CreditCardTransaction.cct_due_date,
+        ).join(
+            Establishment, CreditCardTransaction.establishment_id == Establishment.id
+        ).join(
+            CreditCardReceipt, CreditCardTransaction.credit_card_receipt_id == CreditCardReceipt.id
+        ).filter(
+            CreditCardTransaction.user_id == user_id
+        ).all()
+
+        credit_card_columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'cartao', 'data_cobranca']
+        df_credit_card = pd.DataFrame.from_records(credit_card_transactions, columns=credit_card_columns)
+
+        df_credit_card['categorias'] = df_credit_card['categorias'].apply(
+            lambda x: replace_categories(x, categories_dict))
+
+        path_file = os.path.join(current_app.static_folder, f'{user_id}_backup.xlsx')
+        with pd.ExcelWriter(path_file, engine='openpyxl') as writer:
+            df_transaction.to_excel(writer, sheet_name='conta_corrente', index=False)
+            df_credit_card.to_excel(writer, sheet_name='cartao_credito', index=False)
+
+        # df.to_csv(path_file, sep=';', index=False, encoding='iso-8859-1')
 
         return send_file(
             path_file,
-            mimetype='text/csv',
+            mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             as_attachment=True,
-            download_name='backup.csv'
+            download_name='backup.xlsx'
         )
+
 
 def replace_categories(cat_ids, categories_dict):
     list_ids = cat_ids.split(',')
     nomes = [categories_dict[int(id)] for id in list_ids]
     return ', '.join(nomes)
+
 
 def replace_situation(id):
     situation_dict = {

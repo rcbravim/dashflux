@@ -2,11 +2,11 @@ import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
-from sqlalchemy import extract, or_
+from sqlalchemy import extract, or_, func
 
-from app.database.models import Category, Establishment, CreditCardTransaction, CreditCardReceipt
+from app.database.models import Category, Establishment, CreditCardTransaction, CreditCardReceipt, Analytic, Transaction
 from app.database.database import db
-from app.library.helper import generate_hash
+from app.library.helper import generate_hash, update_analytic
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 50))
 
@@ -147,14 +147,13 @@ def credit_card_dashboard_controller():
 
         return render_template('board/pages/credit_card_dashboard.html', context=context, success=success)
 
-    # todo: refactor this
     elif request.method == 'POST':
 
         # edit credit_card_transaction
         if request.form.get('_method') == 'PUT':
             multiply = 1 if request.form.get('type_transaction') == '1' else -1
             amount = float(request.form.get('modal_amount').replace('.', '').replace(',', '.'))
-            entry_date = request.form.get('modal_entry_date')
+            entry_date = datetime.strptime(request.form.get('modal_entry_date'), "%Y-%m-%d")
             category_ids = ','.join(request.form.get('modal_category[]').split(','))
             establishment_id = request.form.get('modal_establishment')
             credit_card_receipt_id = request.form.get('credit_card')
@@ -167,7 +166,7 @@ def credit_card_dashboard_controller():
             credit_card_transaction = CreditCardTransaction.query.filter_by(id=request.form.get('edit_index')).first()
 
             # update fields
-            credit_card_transaction.cct_entry_date = datetime.strptime(entry_date, '%Y-%m-%d').date()
+            credit_card_transaction.cct_entry_date = entry_date.date()
             credit_card_transaction.cct_description = description
             credit_card_transaction.cct_due_date = datetime.strptime(f'1-{due_month}-{due_year}', '%d-%m-%Y').date()
             credit_card_transaction.credit_card_receipt_id = int(credit_card_receipt_id)
@@ -227,7 +226,7 @@ def credit_card_dashboard_controller():
                         CreditCardTransaction.cct_due_date == repetition_due_date,
                     ).first()
 
-                    bound_credit_card_transaction.cct_entry_date = datetime.strptime(entry_date, '%Y-%m-%d').date()
+                    bound_credit_card_transaction.cct_entry_date = entry_date.date()
                     bound_credit_card_transaction.cct_description = description
                     bound_credit_card_transaction.credit_card_receipt_id = int(credit_card_receipt_id)
                     bound_credit_card_transaction.establishment_id = int(establishment_id)
@@ -237,6 +236,42 @@ def credit_card_dashboard_controller():
 
                     db.session.merge(bound_credit_card_transaction)
                     db.session.commit()
+
+                # update analytic
+                cycle_date = entry_date
+                update_analytic(user_id, cycle_date)
+
+                # user_id = session.get('user_id')
+                # entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
+                # month = entry_date_datetime.month
+                # year = entry_date_datetime.year
+                # incomes = db.session.query(
+                #     func.coalesce(func.sum(CreditCardTransaction.tra_amount), 0)
+                # ).filter(
+                #     CreditCardTransaction.tra_amount > 0,
+                #     CreditCardTransaction.user_id == user_id,
+                #     extract('month', CreditCardTransaction.tra_entry_date) == month,
+                #     extract('year', CreditCardTransaction.tra_entry_date) == year
+                # ).scalar()
+                #
+                # expenses = db.session.query(
+                #     func.coalesce(func.sum(CreditCardTransaction.tra_amount), 0)
+                # ).filter(
+                #     CreditCardTransaction.tra_amount < 0,
+                #     CreditCardTransaction.user_id == user_id,
+                #     extract('month', CreditCardTransaction.tra_entry_date) == month,
+                #     extract('year', CreditCardTransaction.tra_entry_date) == year
+                # ).scalar()
+                #
+                # new_analytic = Analytic(
+                #     ana_month=month,
+                #     ana_year=year,
+                #     ana_incomes=incomes,
+                #     ana_expenses=expenses,
+                #     user_id=user_id
+                # )
+                # db.session.merge(new_analytic)
+                # db.session.commit()
 
             session['success'] = 'Lançamento(s) Alterado(s)!'
             return redirect(
@@ -252,18 +287,24 @@ def credit_card_dashboard_controller():
             action = request.form.get('action_remove_cct')
 
             transaction = CreditCardTransaction.query.filter_by(id=request.form.get('del_index')).first()
-            if transaction.cct_bound_hash is None or action == 'single':
-                transactions = [transaction]
-            else:
-                transactions = CreditCardTransaction.query.filter_by(
-                    cct_bound_hash=transaction.cct_bound_hash
-                ).filter(
-                    CreditCardTransaction.cct_due_date >= transaction.cct_due_date
-                ).all()
 
-            for transaction in transactions:
-                db.session.delete(transaction)
-                db.session.commit()
+            # single/multiple transactions: not implemented yet
+            # if transaction.cct_bound_hash is None or action == 'single':
+            #     transactions = [transaction]
+            # else:
+            #     transactions = CreditCardTransaction.query.filter_by(
+            #         cct_bound_hash=transaction.cct_bound_hash
+            #     ).filter(
+            #         CreditCardTransaction.cct_due_date >= transaction.cct_due_date
+            #     ).all()
+            # end
+
+            db.session.delete(transaction)
+            db.session.commit()
+
+            # update analytic
+            cycle_date = transaction.cct_due_date
+            update_analytic(user_id, cycle_date)
 
             session['success'] = 'Lançamento(s) Removido(s)'
             return redirect(
@@ -309,6 +350,39 @@ def credit_card_dashboard_controller():
                 db.session.commit()
 
                 due_date += relativedelta(months=1)
+
+            # update analytic
+            cycle_date = entry_date
+            update_analytic(user_id, cycle_date)
+
+            # ref_month = entry_date.month
+            # ref_year = entry_date.year
+            #
+            # incomes = db.session.query(
+            #     func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
+            # ).filter(
+            #     CreditCardTransaction.cct_amount > 0,
+            #     CreditCardTransaction.user_id == user_id,
+            #     extract('month', CreditCardTransaction.cct_due_date) == ref_month
+            # ).scalar()
+            #
+            # expenses = db.session.query(
+            #     func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
+            # ).filter(
+            #     CreditCardTransaction.cct_amount < 0,
+            #     CreditCardTransaction.user_id == user_id,
+            #     extract('month', CreditCardTransaction.cct_due_date) == ref_month
+            # ).scalar()
+            #
+            # new_analytic = Analytic(
+            #     ana_month=ref_month,
+            #     ana_year=ref_year,
+            #     ana_incomes=incomes,
+            #     ana_expenses=expenses,
+            #     user_id=user_id
+            # )
+            # db.session.merge(new_analytic)
+            # db.session.commit()
 
             session['success'] = 'Lançamento Cadastrado!'
             return redirect(
