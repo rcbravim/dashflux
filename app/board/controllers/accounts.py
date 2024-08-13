@@ -123,10 +123,10 @@ def accounts_controller():
 
             account = Account(
                 id=account_id,
-                acc_name=acc_name,
+                acc_name=acc_name.upper(),
                 acc_is_bank=acc_is_bank,
                 acc_description=acc_description,
-                acc_bank_name=acc_bank_name,
+                acc_bank_name=acc_bank_name.upper(),
                 acc_bank_branch=acc_bank_branch,
                 acc_bank_account=acc_bank_account,
                 acc_date_updated=datetime.utcnow(),
@@ -176,7 +176,7 @@ def accounts_controller():
 
         # bank related
         account_name = request.form.get('is_bank_acc_name', request.form.get('is_not_bank_acc_name'))
-        bank = request.form.get('acc_bank_name', None)
+        bank = request.form.get('acc_bank_name', '')
         branch = request.form.get('acc_bank_branch', None)
         account = request.form.get('acc_bank_account', None)
 
@@ -184,10 +184,10 @@ def accounts_controller():
         description = request.form.get('acc_description', None)
 
         new_account = Account(
-            acc_name=account_name,
+            acc_name=account_name.upper(),
             acc_description=description,
             acc_is_bank=is_bank,
-            acc_bank_name=bank,
+            acc_bank_name=bank.upper(),
             acc_bank_branch=branch,
             acc_bank_account=account,
             user_id=user_id

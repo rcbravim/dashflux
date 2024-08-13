@@ -1,12 +1,107 @@
 import pandas as pd
 from flask import session
-from sqlalchemy import func, extract
+from sqlalchemy import func
 
 from app.database.models import *
-from app.library.helper import normalize_for_match
+from app.library.helper import normalize_for_match, update_analytic
 
 columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
 cct_columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'cartao', 'data_cobranca']
+
+
+def upload_transactions(csv_file):
+    try:
+        print("Processo de Importação Inicializado")
+
+        df = pd.read_csv(csv_file, encoding='ISO-8859-1', delimiter=';')
+        df = df.dropna(how='all')
+        df = df.query('valor not in ["0", 0]')
+        df = df.fillna('')
+
+        # validação de colunas
+        if columns != df.columns.to_list():
+            error = 'colunas inválidas'
+            print(error)
+            return False, error
+
+        # validação da coluna data
+        try:
+            df['data'] = df['data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
+        except Exception as e:
+            error = 'data da transação inválida'
+            print(error, e)
+            return False, error
+
+        # validação da coluna valor
+        try:
+            if df['valor'].dtype == str:
+                df['valor'] = df['valor'].apply(lambda x: x.replace('.', '').replace(',', '.')).apply(float)
+        except Exception as e:
+            error = 'data da transação inválida'
+            print(error, e)
+            return False, error
+
+        insert_establishments(df)
+        insert_categories(df)
+        insert_accounts(df)
+        insert_transactions(df)
+        update_analytics(df)
+
+        print("Processo de Importação Finalizado")
+
+        return True, None
+
+    except Exception as e:
+        print("Erro: ", e)
+        return False, e
+
+
+def upload_credit_card_transactions(csv_file):
+    try:
+        print("Processo de Importação Inicializado")
+
+        df = pd.read_csv(csv_file, encoding='ISO-8859-1', delimiter=';')
+        df = df.dropna(how='all')
+        df = df.query('valor not in ["0", 0]')
+        df = df.fillna('')
+
+        # validação de colunas
+        if cct_columns != df.columns.to_list():
+            error = 'colunas inválidas'
+            print(error)
+            return False, error
+
+        # validação das colunas datas
+        try:
+            df['data'] = df['data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
+            df['data_cobranca'] = df['data_cobranca'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
+        except Exception as e:
+            error = 'data da transação inválida'
+            print(error, e)
+            return False, error
+
+        # validação da coluna valor
+        try:
+            if df['valor'].dtype == str:
+                df['valor'] = df['valor'].apply(lambda x: x.replace('.', '').replace(',', '.')).apply(float)
+        except Exception as e:
+            error = 'erro ao validar coluna de valores, ajustar'
+            print(error, e)
+            return False, error
+
+        insert_establishments(df)
+        insert_categories(df)
+        insert_credit_cards(df)
+        insert_credit_card_transactions(df)
+        update_analytics(df)
+
+        print("Processo de Importação Finalizado")
+
+        return True, None
+
+    except Exception as e:
+        print("Erro: ", e)
+        return False, e
 
 
 def insert_establishments(df):
@@ -128,189 +223,6 @@ def insert_transactions(df):
     print(f"{len(df)} transações inseridas no banco de dados.")
 
 
-def update_analytics(df):
-    user_id = session.get('user_id')
-    months_years = set(df[columns[0]].apply(lambda x: datetime.strptime(x, '%d/%m/%Y').strftime("%m-%Y")))
-
-    count = 0
-    for month_year in months_years:
-        month, year = month_year.split('-')
-
-        incomes = db.session.query(
-            func.coalesce(func.sum(Transaction.tra_amount), 0)
-        ).filter(
-            Transaction.tra_amount > 0,
-            Transaction.user_id == user_id,
-            extract('month', Transaction.tra_entry_date) == month,
-            extract('year', Transaction.tra_entry_date) == year
-        ).scalar()
-
-        expenses = db.session.query(
-            func.coalesce(func.sum(Transaction.tra_amount), 0)
-        ).filter(
-            Transaction.tra_amount < 0,
-            Transaction.user_id == user_id,
-            extract('month', Transaction.tra_entry_date) == month,
-            extract('year', Transaction.tra_entry_date) == year
-        ).scalar()
-
-        new_analytic = Analytic(
-            ana_month=month,
-            ana_year=year,
-            ana_incomes=incomes,
-            ana_expenses=expenses,
-            user_id=user_id
-        )
-        db.session.merge(new_analytic)
-        count += 1
-
-    print(f"{count} Relatórios mensais cadastrados/atualizados.")
-    db.session.commit()
-
-
-def update_analytics_credit_card(df):
-    user_id = session.get('user_id')
-    months_years = set(df[cct_columns[6]].apply(lambda x: x.strftime("%m-%Y")))
-
-    count = 0
-    for month_year in months_years:
-        month, year = month_year.split('-')
-
-        incomes = db.session.query(
-            func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
-        ).filter(
-            CreditCardTransaction.cct_amount > 0,
-            CreditCardTransaction.user_id == user_id,
-            extract('month', CreditCardTransaction.cct_due_date) == month,
-            extract('year', CreditCardTransaction.cct_due_date) == year
-        ).scalar()
-
-        expenses = db.session.query(
-            func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
-        ).filter(
-            CreditCardTransaction.cct_amount < 0,
-            CreditCardTransaction.user_id == user_id,
-            extract('month', CreditCardTransaction.cct_due_date) == month,
-            extract('year', CreditCardTransaction.cct_due_date) == year
-        ).scalar()
-
-        new_analytic = Analytic(
-            ana_month=month,
-            ana_year=year,
-            ana_incomes=incomes,
-            ana_expenses=expenses,
-            user_id=user_id
-        )
-        db.session.merge(new_analytic)
-        count += 1
-
-    print(f"{count} Relatórios mensais cadastrados/atualizados.")
-    db.session.commit()
-
-
-def upload_records(csv_file):
-    try:
-        print("Processo de Importação Inicializado")
-
-        df = pd.read_csv(csv_file, encoding='ISO-8859-1', delimiter=';')
-        df = df.dropna(how='all')
-        df = df.query('valor not in ["0", 0]')
-        df = df.fillna('')
-
-        # validação de colunas
-        if columns != df.columns.to_list():
-            error = 'colunas inválidas'
-            print(error)
-            return False, error
-
-        # validação da coluna data
-        try:
-            df['data'] = df['data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
-        except Exception as e:
-            error = 'data da transação inválida'
-            print(error, e)
-            return False, error
-
-        # validação da coluna valor
-        try:
-            if df['valor'].dtype == str:
-                df['valor'] = df['valor'].apply(lambda x: x.replace('.', '').replace(',', '.')).apply(float)
-        except Exception as e:
-            error = 'data da transação inválida'
-            print(error, e)
-            return False, error
-
-        insert_establishments(df)
-        insert_categories(df)
-        insert_accounts(df)
-        insert_transactions(df)
-        update_analytics(df)
-
-        print("Processo de Importação Finalizado")
-
-        return True, None
-
-    except Exception as e:
-        print("Erro: ", e)
-        return False, e
-
-
-def is_valid_date(date):
-    try:
-        datetime.strptime(date, "%d/%m/%Y")
-        return True
-    except ValueError:
-        return False
-
-
-def upload_credit_card_records(csv_file):
-    try:
-        print("Processo de Importação Inicializado")
-
-        df = pd.read_csv(csv_file, encoding='ISO-8859-1', delimiter=';')
-        df = df.dropna(how='all')
-        df = df.query('valor not in ["0", 0]')
-        df = df.fillna('')
-
-        # validação de colunas
-        if cct_columns != df.columns.to_list():
-            error = 'colunas inválidas'
-            print(error)
-            return False, error
-
-        # validação das colunas datas
-        try:
-            df['data'] = df['data'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
-            df['data_cobranca'] = df['data_cobranca'].apply(lambda x: datetime.strptime(x, "%d/%m/%Y"))
-        except Exception as e:
-            error = 'data da transação inválida'
-            print(error, e)
-            return False, error
-
-        # validação da coluna valor
-        try:
-            if df['valor'].dtype == str:
-                df['valor'] = df['valor'].apply(lambda x: x.replace('.', '').replace(',', '.')).apply(float)
-        except Exception as e:
-            error = 'erro ao validar coluna de valores, ajustar'
-            print(error, e)
-            return False, error
-
-        insert_establishments(df)
-        insert_categories(df)
-        insert_credit_cards(df)
-        insert_credit_card_transactions(df)
-        update_analytics_credit_card(df)
-
-        print("Processo de Importação Finalizado")
-
-        return True, None
-
-    except Exception as e:
-        print("Erro: ", e)
-        return False, e
-
-
 def insert_credit_cards(df):
     count = 0
     user_id = session.get('user_id')
@@ -379,3 +291,70 @@ def insert_credit_card_transactions(df):
 
     db.session.commit()
     print(f"{len(df)} transações inseridas no banco de dados.")
+
+
+# depreciated
+# def update_analytics(df):
+#     user_id = session.get('user_id')
+#     months_years = set(df[columns[0]].apply(lambda x: datetime.strptime(x, '%d/%m/%Y').strftime("%m-%Y")))
+#
+#     count = 0
+#     for month_year in months_years:
+#         month, year = month_year.split('-')
+#
+#         incomes = db.session.query(
+#             func.coalesce(func.sum(Transaction.tra_amount), 0)
+#         ).filter(
+#             Transaction.tra_amount > 0,
+#             Transaction.user_id == user_id,
+#             extract('month', Transaction.tra_entry_date) == month,
+#             extract('year', Transaction.tra_entry_date) == year
+#         ).scalar()
+#
+#         expenses = db.session.query(
+#             func.coalesce(func.sum(Transaction.tra_amount), 0)
+#         ).filter(
+#             Transaction.tra_amount < 0,
+#             Transaction.user_id == user_id,
+#             extract('month', Transaction.tra_entry_date) == month,
+#             extract('year', Transaction.tra_entry_date) == year
+#         ).scalar()
+#
+#         new_analytic = Analytic(
+#             ana_month=month,
+#             ana_year=year,
+#             ana_incomes=incomes,
+#             ana_expenses=expenses,
+#             user_id=user_id
+#         )
+#         db.session.merge(new_analytic)
+#         count += 1
+#
+#     print(f"{count} Relatórios mensais cadastrados/atualizados.")
+#     db.session.commit()
+
+
+def update_analytics(df):
+    user_id = session.get('user_id')
+    if 'data_cobranca' in df.columns:
+        months_years = set(df[cct_columns[6]].apply(lambda x: x.strftime("%m-%Y")))
+    else:
+        months_years = set(df[columns[0]].apply(lambda x: x.strftime("%m-%Y")))
+
+    count = 0
+    for month_year in months_years:
+        cycle_date = datetime.strptime(month_year, "%m-%Y")
+
+        update_analytic(user_id, cycle_date)
+        count += 1
+
+    print(f"{count} Relatórios mensais cadastrados/atualizados.")
+    db.session.commit()
+
+
+def is_valid_date(date):
+    try:
+        datetime.strptime(date, "%d/%m/%Y")
+        return True
+    except ValueError:
+        return False

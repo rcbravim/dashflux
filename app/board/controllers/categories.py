@@ -92,7 +92,7 @@ def categories_controller():
 
             category = Category(
                 id=category_id,
-                cat_name=cat_name,
+                cat_name=cat_name.upper(),
                 cat_type=cat_type,
                 cat_date_updated=datetime.utcnow(),
                 user_id=user_id
@@ -141,7 +141,7 @@ def categories_controller():
         user_id = session.get('user_id')
 
         new_category = Category(
-            cat_name=cat_name,
+            cat_name=cat_name.upper(),
             cat_type=cat_type,
             user_id=user_id
         )
