@@ -12,7 +12,7 @@ def backup_controller():
     user_id = session.get('user_id')
 
     # todo: encontrar outra forma de remover o arquivo temporario
-    path_file = os.path.join(current_app.static_folder, f'{user_id}_backup.csv')
+    path_file = os.path.join(current_app.static_folder, f'{user_id}_backup.xlsx')
     if os.path.exists(path_file):
         os.remove(path_file)
 
@@ -25,9 +25,9 @@ def backup_controller():
             Establishment.est_name,
             Transaction.tra_description,
             Transaction.category_ids,
-            Transaction.tra_situation,
             Transaction.tra_amount,
-            Account.acc_name
+            Account.acc_name,
+            Account.acc_is_bank,
         ).join(
             Establishment, Transaction.establishment_id == Establishment.id
         ).join(
@@ -36,8 +36,9 @@ def backup_controller():
             Transaction.user_id == user_id
         ).all()
 
-        columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'situação', 'valor', 'conta']
+        columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
         df_transaction = pd.DataFrame.from_records(transactions, columns=columns)
+        df_transaction['tipo'] = df_transaction['tipo'].apply(lambda x: 'Banco' if x else 'Outro')
 
         categories = db.session.query(
             Category.id,
@@ -51,7 +52,6 @@ def backup_controller():
         categories_dict = {cat.id: cat.cat_name for cat in categories}
 
         df_transaction['categorias'] = df_transaction['categorias'].apply(lambda x: replace_categories(x, categories_dict))
-        df_transaction['situação'] = df_transaction['situação'].apply(replace_situation)
 
         # df credit card transactions
         credit_card_transactions = db.session.query(
@@ -76,12 +76,13 @@ def backup_controller():
         df_credit_card['categorias'] = df_credit_card['categorias'].apply(
             lambda x: replace_categories(x, categories_dict))
 
+        for df in [df_transaction, df_credit_card]:
+            df['valor'] = df['valor'].apply(lambda x: str(x * -1).replace('.', ','))
+
         path_file = os.path.join(current_app.static_folder, f'{user_id}_backup.xlsx')
         with pd.ExcelWriter(path_file, engine='openpyxl') as writer:
             df_transaction.to_excel(writer, sheet_name='conta_corrente', index=False)
             df_credit_card.to_excel(writer, sheet_name='cartao_credito', index=False)
-
-        # df.to_csv(path_file, sep=';', index=False, encoding='iso-8859-1')
 
         return send_file(
             path_file,
@@ -97,6 +98,7 @@ def replace_categories(cat_ids, categories_dict):
     return ', '.join(nomes)
 
 
+# deprecated
 def replace_situation(id):
     situation_dict = {
         1: 'Pago',

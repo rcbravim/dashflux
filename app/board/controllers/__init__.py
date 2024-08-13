@@ -1,4 +1,5 @@
 from .index import index_controller
+from .index_dashboard_upload_csv import index_dashboard_upload_csv_controller
 from .credit_card_dashboard import credit_card_dashboard_controller
 from .credit_card_dashboard_edit import credit_card_dashboard_edit_controller
 from .credit_card_dashboard_upload_csv import credit_card_dashboard_upload_csv_controller
@@ -18,6 +19,6 @@ from .credit_card_return_id_by_name import credit_card_return_id_by_name_control
 from .index_edit import index_edit_controller
 from .logout import logout_controller
 from .support import support_controller
-from .upload import upload_controller
+from .restore import restore_controller
 from .clean import clean_controller
 from .backup import backup_controller

@@ -29,9 +29,15 @@ def credit_card_dashboard_edit():
     return credit_card_dashboard_edit_controller()
 
 
+@bp.route('/index_dashboard_upload_csv', methods=['POST'])
+def index_dashboard_upload_csv():
+    return index_dashboard_upload_csv_controller()
+
+
 @bp.route('/credit_card_dashboard_upload_csv', methods=['POST'])
 def credit_card_dashboard_upload_csv():
     return credit_card_dashboard_upload_csv_controller()
+
 
 @bp.route('/profile', methods=['GET', 'POST'])
 def profile():
@@ -113,9 +119,9 @@ def credit_card_return_id_by_name():
     return credit_card_return_id_by_name_controller()
 
 
-@bp.route('/upload', methods=['GET', 'POST'])
-def upload():
-    return upload_controller()
+@bp.route('/restore', methods=['GET', 'POST'])
+def restore():
+    return restore_controller()
 
 
 @bp.route('/clean', methods=['GET', 'POST'])

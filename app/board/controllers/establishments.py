@@ -87,7 +87,7 @@ def establishments_controller():
 
             establishment = Establishment(
                 id=establishment_id,
-                est_name=est_name,
+                est_name=est_name.upper(),
                 est_description=est_description,
                 est_date_updated=datetime.utcnow(),
                 user_id=user_id
@@ -133,7 +133,7 @@ def establishments_controller():
         user_id = session.get('user_id')
 
         new_establishment = Establishment(
-            est_name=est_name,
+            est_name=est_name.upper(),
             est_description=est_description,
             user_id=user_id
         )
