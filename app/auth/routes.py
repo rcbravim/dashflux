@@ -4,7 +4,8 @@ from flask import Blueprint, redirect, url_for
 from .controllers import *
 
 
-bp = Blueprint('auth', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}')
+env = os.getenv('ENVIRONMENT', '')
+bp = Blueprint('auth', __name__, url_prefix=f'/{env}', static_folder='static', static_url_path=f'/{env}/static')
 
 
 @bp.route('/', methods=['GET'])
