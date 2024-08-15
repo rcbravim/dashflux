@@ -5,8 +5,7 @@ from flask_login import login_required
 
 from .controllers import *
 
-env = os.getenv('ENVIRONMENT', '')
-bp = Blueprint('board', __name__, url_prefix=f'/{env}/board', static_folder='static', static_url_path=f'/{env}/static')
+bp = Blueprint('board', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}/board')
 
 
 @bp.before_request
