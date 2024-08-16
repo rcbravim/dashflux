@@ -1,6 +1,6 @@
 from flask import request, session, redirect, url_for
 
-from app.library.upload_csv import upload_transactions
+from app.library.upload_csv import upload_credit_card_transactions
 
 
 def index_dashboard_upload_csv_controller():
@@ -8,9 +8,9 @@ def index_dashboard_upload_csv_controller():
 
     if not file:
         session['error'] = 'Erro ao importar arquivo'
-        return redirect(url_for('board.index'))
+        return redirect(url_for('board.index_dashboard'))
 
-    is_valid, error = upload_transactions(file)
+    is_valid, error = upload_credit_card_transactions(file)
 
     if is_valid:
         session['success'] = 'Transações do CSV cadastradas com sucesso!'
