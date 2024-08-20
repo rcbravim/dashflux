@@ -33,6 +33,11 @@
                 {% endif %}
 
                 <div class='row'>
+                    <div>
+                        <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                        <input type='hidden' name='y' value='{{ context.filter.year }}'/>
+                        {% include 'board/pages/charts/chart_categories.html' %}
+                    </div>
                     <div class='col-lg-12'>
                         <div class='card'>
                             <div class='card-body'>

@@ -52,6 +52,7 @@ class Category(db.Model):
     cat_name = db.Column(db.String(250), nullable=False)
     cat_type = db.Column(db.SmallInteger, nullable=False, comment="1 -> Entradas; 2 -> Saídas")
     cat_description = db.Column(db.String(250), default=None)
+    cat_goal = db.Column(db.Numeric(15, 3), default=None, nullable=True)
     cat_status = db.Column(db.Boolean, nullable=False, default=True)
     cat_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
