@@ -14,6 +14,7 @@ def chart_top_categories_controller():
     month = int(request.args.get('m', now.month))
     year = int(request.args.get('y', now.year))
     three_months_ago = (now - timedelta(days=90)).date()
+    quantity_categories = int(request.args.get('qnt_top_cat', 15))
 
     transactions = db.session.query(
         CreditCardTransaction
@@ -41,7 +42,7 @@ def chart_top_categories_controller():
         {
             "category": category_name,
             "amount": round(data['total_spent'] * -1, 2),
-            "goal": round(data['goal_amount'] * -1, 2),
+            "goal": data['goal_amount'],
             "avgLast3Months": round(sum(data['avg_last_3_months']) / len(data['avg_last_3_months']) * -1, 2) if data[
                 'avg_last_3_months'] else 0.0
         }
@@ -49,6 +50,6 @@ def chart_top_categories_controller():
     ]
 
     # Ordenando os resultados e limitando o número de categorias
-    results = sorted(results, key=lambda x: x['amount'], reverse=True)[:10]
+    results = sorted(results, key=lambda x: x['amount'], reverse=True)[:quantity_categories]
 
     return jsonify(results)

@@ -30,7 +30,7 @@
 
                                         {% if context.categories %}
                                             {% for row in context.categories %}
-                                                {% if row.id == 2 %}
+                                                {% if row.id == 1 %}
                                                     <option value='{{ row.id }}' selected>{{ row.cat_name|lower }}</option>
                                                 {% else %}
                                                     <option value='{{ row.id }}'>{{ row.cat_name|lower }}</option>

@@ -27,10 +27,24 @@ def insert_default_records(app):
     @app.cli.command('insert-default-records')
     def insert_default_records_command():
 
+        default_admin_use_login=os.getenv('ADMIN_USER')
+        default_admin_use_password=generate_password_hash(os.getenv('ADMIN_PASS'))
+        default_dev_use_login=os.getenv('DEV_USER')
+        default_dev_use_password=generate_password_hash(os.getenv('DEV_PASS'))
+        default_establishment_name='NÃO INFORMADO'
+        default_establishment_description='REGISTROS SEM INFORMAÇÃO DO ESTABELECIMENTO'
+        default_category_name='SEM CATEGORIA'
+        default_category_description='CATEGORIA PADRÃO DO SISTEMA, NÃO ESPECIFICADO PELO USUÁRIO'
+        default_account_name='CONTA PADRÃO'
+        default_account_description='CONTA PADRÃO DO SISTEMA'
+        default_credit_card_receipt_name='SEM FATURA'
+        default_credit_card_receipt_description='FATURA PADRÃO DO SISTEMA, QUANDO NÃO HÁ VINCULO COM CARTÃO DE CRÉDITO'
+        default_credit_card_receipt_flag='OUTRO'
+
         # insert admin user
         admin_user = User(
-            use_login=os.getenv('ADMIN_USER'),
-            use_password=generate_password_hash(os.getenv('ADMIN_PASS')),
+            use_login=default_admin_use_login,
+            use_password=default_admin_use_password,
             use_is_manager=True,
             use_is_valid=True
         )
@@ -38,38 +52,32 @@ def insert_default_records(app):
 
         # insert dev user
         dev_user = User(
-            use_login=os.getenv('DEV_USER'),
-            use_password=generate_password_hash(os.getenv('DEV_PASS')),
+            use_login=default_dev_use_login,
+            use_password=default_dev_use_password,
             use_is_valid=True
         )
         db.session.add(dev_user)
 
         # insert system establishment
         default_establishment = Establishment(
-            est_name='Não Informado',
-            est_description='Registros sem informação do estabelecimento',
+            est_name=default_establishment_name,
+            est_description=default_establishment_description,
             user_id=1
         )
         db.session.add(default_establishment)
 
         # insert system categories
         default_category_1 = Category(
-            cat_name='Sem Categoria (Entradas)',
-            cat_type=1,
+            cat_name=default_category_name,
+            cat_description=default_category_description,
             user_id=1
         )
         db.session.add(default_category_1)
-        default_category_2 = Category(
-            cat_name='Sem Categoria (Saídas)',
-            cat_type=2,
-            user_id=1
-        )
-        db.session.add(default_category_2)
 
         # insert system account
         default_account = Account(
-            acc_name='Conta Padrão',
-            acc_description='Conta Padrão do Sistema',
+            acc_name=default_account_name,
+            acc_description=default_account_description,
             acc_is_bank=False,
             user_id=1
         )
@@ -77,10 +85,10 @@ def insert_default_records(app):
 
         # insert system credit card
         default_account = CreditCardReceipt(
-            ccr_name='Sem Fatura',
-            ccr_description='Fatura Padrão do Sistema, quando não há vinculo com cartão de crédito',
-            ccr_flag='Outro',
-            ccr_last_digits=None,
+            ccr_name=default_credit_card_receipt_name,
+            ccr_description=default_credit_card_receipt_description,
+            ccr_flag=default_credit_card_receipt_flag,
+            ccr_last_digits='',
             ccr_due_date=1,
             user_id=1
         )

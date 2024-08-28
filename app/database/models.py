@@ -45,14 +45,13 @@ class UserLog(db.Model):
 
 class Category(db.Model):
     __table_args__ = (
-        db.UniqueConstraint('id', 'cat_name', 'cat_type', 'user_id'),
+        db.UniqueConstraint('id', 'cat_name', 'user_id'),
     )
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     cat_name = db.Column(db.String(250), nullable=False)
-    cat_type = db.Column(db.SmallInteger, nullable=False, comment="1 -> Entradas; 2 -> Saídas")
     cat_description = db.Column(db.String(250), default=None)
-    cat_goal = db.Column(db.Numeric(15, 3), default=None, nullable=True)
+    cat_goal = db.Column(db.Integer, default=0, nullable=True)
     cat_status = db.Column(db.Boolean, nullable=False, default=True)
     cat_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     cat_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -146,7 +145,7 @@ class Analytic(db.Model):
     user = db.relationship('User', backref=db.backref('analytics'))
 
     def __repr__(self):
-        return f"Analytic(id={self.id}, ana_cycle={self.ana_cycle}, user_id={self.user_id})"
+        return f"Analytic(ana_year={self.ana_year}, ana_month={self.ana_month}, user_id={self.user_id})"
 
 
 class Transaction(db.Model):
@@ -195,3 +194,23 @@ class CreditCardTransaction(db.Model):
 
     def __repr__(self):
         return f"CreditCardTransactions(id={self.id}, description={self.cct_description}, user_id={self.user_id})"
+
+
+class ChartCategoryMonthYear(db.Model):
+    __table_args__ = (
+        db.PrimaryKeyConstraint('ccm_month', 'ccm_year', 'user_id'),
+    )
+
+    ccm_month = db.Column(db.Integer, db.CheckConstraint('ccm_month BETWEEN 1 AND 12'), nullable=False, primary_key=True)
+    ccm_year = db.Column(db.Integer, nullable=False, primary_key=True)
+    category_ids = db.Column(db.String, nullable=True, comment="1,2,3,4,5")
+    ccm_status = db.Column(db.Boolean, nullable=False, default=True)
+    ccm_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ccm_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    ccm_date_deleted = db.Column(db.DateTime, default=None)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False, primary_key=True)
+
+    user = db.relationship('User', backref=db.backref('chart_category_month_year'))
+
+    def __repr__(self):
+        return f"ChartCategoryMonthYear(ccm_year={self.ccm_year}, ccm_month={self.ccm_month}, user_id={self.user_id})"

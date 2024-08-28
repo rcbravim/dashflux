@@ -101,7 +101,6 @@ def credit_card_dashboard_controller():
         categories = db.session.query(
             category.id,
             category.cat_name,
-            category.cat_type
         ).filter(
             category.cat_status == True,
             or_(
@@ -178,30 +177,6 @@ def credit_card_dashboard_controller():
                 db.session.merge(credit_card_transaction)
                 db.session.commit()
 
-                # if repetitions == ['']:
-                #     credit_card_transaction.cct_bound_hash = None
-                #     db.session.merge(credit_card_transaction)
-                #     db.session.commit()
-                # else:
-                #     # alterar vinculo para manter vinculo apenas com as demais repetições
-                #     hash_bound = generate_hash(str(now))
-                #     credit_card_transaction.cct_bound_hash = hash_bound
-                #     db.session.merge(credit_card_transaction)
-                #     db.session.commit()
-                #
-                #     # in this case, repetitions is based on due_date
-                #     repetitions = [datetime.strptime(d, "%m-%y").date() for d in repetitions]
-                #     for repetition_due_date in repetitions:
-                #         bound_credit_card_transaction = db.session.query(CreditCardTransaction).filter_by(
-                #                 cct_bound_hash=credit_card_transaction.cct_bound_hash
-                #             ).filter(
-                #                 credit_card_transaction.cct_due_date == repetition_due_date,
-                #             ).first()
-                #
-                #         bound_credit_card_transaction.cct_bound_hash = hash_bound
-                #         db.session.merge(bound_credit_card_transaction)
-                #         db.session.commit()
-
             else:
                 bound_credit_card_transactions = db.session.query(
                     CreditCardTransaction).filter(
@@ -241,38 +216,6 @@ def credit_card_dashboard_controller():
                 cycle_date = entry_date
                 update_analytic(user_id, cycle_date)
 
-                # user_id = session.get('user_id')
-                # entry_date_datetime = datetime.strptime(entry_date, '%Y-%m-%d')
-                # month = entry_date_datetime.month
-                # year = entry_date_datetime.year
-                # incomes = db.session.query(
-                #     func.coalesce(func.sum(CreditCardTransaction.tra_amount), 0)
-                # ).filter(
-                #     CreditCardTransaction.tra_amount > 0,
-                #     CreditCardTransaction.user_id == user_id,
-                #     extract('month', CreditCardTransaction.tra_entry_date) == month,
-                #     extract('year', CreditCardTransaction.tra_entry_date) == year
-                # ).scalar()
-                #
-                # expenses = db.session.query(
-                #     func.coalesce(func.sum(CreditCardTransaction.tra_amount), 0)
-                # ).filter(
-                #     CreditCardTransaction.tra_amount < 0,
-                #     CreditCardTransaction.user_id == user_id,
-                #     extract('month', CreditCardTransaction.tra_entry_date) == month,
-                #     extract('year', CreditCardTransaction.tra_entry_date) == year
-                # ).scalar()
-                #
-                # new_analytic = Analytic(
-                #     ana_month=month,
-                #     ana_year=year,
-                #     ana_incomes=incomes,
-                #     ana_expenses=expenses,
-                #     user_id=user_id
-                # )
-                # db.session.merge(new_analytic)
-                # db.session.commit()
-
             session['success'] = 'Lançamento(s) Alterado(s)!'
             return redirect(
                 url_for(
@@ -288,7 +231,7 @@ def credit_card_dashboard_controller():
 
             transaction = CreditCardTransaction.query.filter_by(id=request.form.get('del_index')).first()
 
-            # single/multiple transactions: not implemented yet
+            # todo: single/multiple transactions: not implemented yet
             # if transaction.cct_bound_hash is None or action == 'single':
             #     transactions = [transaction]
             # else:
@@ -354,35 +297,6 @@ def credit_card_dashboard_controller():
             # update analytic
             cycle_date = entry_date
             update_analytic(user_id, cycle_date)
-
-            # ref_month = entry_date.month
-            # ref_year = entry_date.year
-            #
-            # incomes = db.session.query(
-            #     func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
-            # ).filter(
-            #     CreditCardTransaction.cct_amount > 0,
-            #     CreditCardTransaction.user_id == user_id,
-            #     extract('month', CreditCardTransaction.cct_due_date) == ref_month
-            # ).scalar()
-            #
-            # expenses = db.session.query(
-            #     func.coalesce(func.sum(CreditCardTransaction.cct_amount), 0)
-            # ).filter(
-            #     CreditCardTransaction.cct_amount < 0,
-            #     CreditCardTransaction.user_id == user_id,
-            #     extract('month', CreditCardTransaction.cct_due_date) == ref_month
-            # ).scalar()
-            #
-            # new_analytic = Analytic(
-            #     ana_month=ref_month,
-            #     ana_year=ref_year,
-            #     ana_incomes=incomes,
-            #     ana_expenses=expenses,
-            #     user_id=user_id
-            # )
-            # db.session.merge(new_analytic)
-            # db.session.commit()
 
             session['success'] = 'Lançamento Cadastrado!'
             return redirect(

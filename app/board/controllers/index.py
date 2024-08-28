@@ -193,8 +193,7 @@ def index_controller():
 
         categories = db.session.query(
             category.id,
-            category.cat_name,
-            category.cat_type
+            category.cat_name
         ).filter(
             category.cat_status == True,
             or_(

@@ -12,7 +12,8 @@ def categories_edit_controller():
     data_query = db.session.query(
         Category.id,
         Category.cat_name,
-        Category.cat_type,
+        Category.cat_description,
+        Category.cat_goal,
     ).filter(
         Category.id == category_id,
         Category.cat_status == True,
@@ -24,7 +25,8 @@ def categories_edit_controller():
             {
                 'id': data_query.id,
                 'name': data_query.cat_name,
-                'type': data_query.cat_type
+                'description': data_query.cat_description,
+                'goal': float(data_query.cat_goal)
             }
     }
 

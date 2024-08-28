@@ -4,7 +4,6 @@ import chardet as chardet
 import pandas as pd
 from flask import Flask
 from sqlalchemy import func, extract
-from sqlalchemy.orm import Query
 
 from app.database.models import *
 from app.library.helper import normalize_for_match
@@ -15,6 +14,7 @@ columns = ['data', 'estabelecimento', 'descrição', 'categoria', 'valor', 'cont
 accounts = False
 
 
+# deprecated
 def insert_establishments():
     establishments = set(df[columns[1]])
     count = 0
