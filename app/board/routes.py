@@ -133,3 +133,9 @@ def clean():
 @bp.route('/backup', methods=['GET', 'POST'])
 def backup():
     return backup_controller()
+
+
+# charts
+@bp.route('/charts/top_categories', methods=['GET', 'POST'])
+def chart_establishments():
+    return chart_top_categories_controller()

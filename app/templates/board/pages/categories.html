@@ -43,27 +43,12 @@
                                 <hr class='mt-0 mb-3'>
                                 <form class='form-horizontal' action="{{ url_for('board.categories') }}" method='get'>
                                     <div class='row mb-3 align-items-end'>
-                                        <div class='col-sm-3'>
-                                            <div class='mb-3'>
-                                                <label for='type'>Tipo</label>
-                                                <select class='form-select select2-search-disable' id='type'
-                                                        name='type'>
-                                                    <option value='' {% if not context.filter.type %}selected{% endif
-                                                            %}>Todos os Tipos
-                                                    </option>
-                                                    <option value='1' {% if context.filter.type==
-                                                    '1' %}selected{% endif %}>Entrada</option>
-                                                    <option value='2' {% if context.filter.type==
-                                                    '2' %}selected{% endif %}>Saída</option>
-                                                </select>
-                                            </div>
-                                        </div>
                                         <div class='col-sm-5'>
                                             <div class='mb-3'>
                                                 <label for='search'>Categoria</label>
                                                 <input type='text' class='form-control match-select2' id='search'
                                                    name='search'
-                                                   placeholder='Pesquise pelo nome da categoria'
+                                                   placeholder='Pesquise pelo nome ou descrição da categoria'
                                                    value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
                                             </div>
                                         </div>
@@ -95,32 +80,25 @@
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-                                            <th class='align-middle'>Tipo</th>
                                             <th class='align-middle'>Categoria</th>
-                                            <th class='align-middle'></th>
+                                            <th class='align-middle'>Descrição</th>
+                                            <th class='align-middle'>Meta Mensal</th>
+                                            <th class='align-right'></th>
                                         </tr>
                                         </thead>
                                         <tbody>
                                         {% for row in context.categories %}
-                                        {% if row.id == 1 or row.id == 2 %}
+                                        {% if row.id == 1 %}
                                         <tr class="text-warning">
                                         {% else %}
                                         <tr>
                                         {% endif %}
-                                            <td>
-                                                {% if row.cat_type == 1 %}
-                                                <span class='badge badge-pill badge-soft-success font-size-12'>
-                                                    Entrada
-                                                </span>
-                                                {% else %}
-                                                <span class='badge badge-pill badge-soft-danger font-size-12'>
-                                                    Saída</span>
-                                                {% endif %}
-                                            </td>
                                             <td>{{ row.cat_name|upper }}</td>
+                                            <td>{{ row.cat_description|upper }}</td>
+                                            <td>{{ row.cat_goal }}</td>
                                             <td>
                                                 <div class='d-flex gap-3'>
-                                                    {% if row.id == 1 or row.id == 2 %}
+                                                    {% if row.id == 1 %}
                                                         <a class='text-success'>
                                                            <i class="mdi mdi-pencil-off font-size-18"></i>
                                                         </a>
