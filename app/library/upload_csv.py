@@ -1,8 +1,6 @@
 import pandas as pd
 
-from app.library.helper_imports import insert_establishments, insert_categories, insert_credit_cards, \
-    insert_credit_card_transactions, update_analytics, insert_accounts, insert_transactions, validar_datas, \
-    validar_valor
+from app.library.helper_imports import *
 
 columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
 cct_columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'cartao', 'data_cobranca']
@@ -36,9 +34,9 @@ def upload_transactions(csv_file):
         except ValueError as error:
             return False, error
 
-        insert_establishments(df)
-        insert_categories(df)
-        insert_accounts(df)
+        insert_establishments_by_transactions(df)
+        insert_categories_by_transactions(df)
+        insert_accounts_by_transactions(df)
         insert_transactions(df)
         update_analytics(df)
 

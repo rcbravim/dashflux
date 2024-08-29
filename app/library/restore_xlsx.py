@@ -1,9 +1,6 @@
 import pandas as pd
 from app.library.helper_imports import *
 
-columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
-cct_columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'cartao', 'data_cobranca']
-
 
 def restore_records(xlsx_file):
     try:
@@ -11,7 +8,7 @@ def restore_records(xlsx_file):
 
         sheets = pd.ExcelFile(xlsx_file).sheet_names
 
-        dfs = []
+        dfs = {}
 
         if 'conta_corrente' in sheets:
             print("Processando transações da conta corrente")
@@ -22,7 +19,7 @@ def restore_records(xlsx_file):
             df = df.fillna('')
 
             # validação de colunas
-            if columns != df.columns.to_list():
+            if columns_transactions != df.columns.to_list():
                 error = 'colunas inválidas'
                 print(error)
                 return False, error
@@ -42,7 +39,7 @@ def restore_records(xlsx_file):
                 print(error, e)
                 return False, error
 
-            dfs.append(df)
+            dfs['conta_corrente'] = df
 
         if 'cartao_credito' in sheets:
             print("Processando transações de cartão de crédito")
@@ -53,7 +50,7 @@ def restore_records(xlsx_file):
             df = df.fillna('')
 
             # validação de colunas
-            if cct_columns != df.columns.to_list():
+            if columns_credit_card_transactions != df.columns.to_list():
                 error = 'colunas inválidas'
                 print(error)
                 return False, error
@@ -71,19 +68,90 @@ def restore_records(xlsx_file):
             except ValueError as error:
                 return False, error
 
-            dfs.append(df)
+            dfs['cartao_credito'] = df
 
-        for df in dfs:
-            if not df.empty:
-                insert_establishments(df)
-                insert_categories(df)
-                if 'conta' in df.columns:
-                    insert_accounts(df)
-                    insert_transactions(df)
-                if 'cartao' in df.columns:
-                    insert_credit_cards(df)
-                    insert_credit_card_transactions(df)
-                update_analytics(df)
+        if 'estabelecimentos' in sheets:
+            print("Processando cadastro de estabelecimentos")
+            df = pd.read_excel(xlsx_file, sheet_name='estabelecimentos', engine='openpyxl')
+
+            df = df.dropna(how='all')
+            df = df.fillna('')
+
+            # validação de colunas
+            if columns_establishments != df.columns.to_list():
+                error = 'colunas inválidas'
+                print(error)
+                return False, error
+
+            dfs['estabelecimentos'] = df
+
+        if 'categorias' in sheets:
+            print("Processando cadastro de categorias")
+            df = pd.read_excel(xlsx_file, sheet_name='categorias', engine='openpyxl')
+
+            df = df.dropna(how='all')
+            df = df.fillna('')
+
+            # validação de colunas
+            if columns_categories != df.columns.to_list():
+                error = 'colunas inválidas'
+                print(error)
+                return False, error
+
+            dfs['categorias'] = df
+
+        if 'contas' in sheets:
+            print("Processando cadastro de contas")
+            df = pd.read_excel(xlsx_file, sheet_name='contas', engine='openpyxl')
+
+            df = df.dropna(how='all')
+            df = df.fillna('')
+
+            # validação de colunas
+            if columns_accounts != df.columns.to_list():
+                error = 'colunas inválidas'
+                print(error)
+                return False, error
+
+            dfs['contas'] = df
+
+        if 'cartoes' in sheets:
+            print("Processando cadastro de cartões de crédito")
+            df = pd.read_excel(xlsx_file, sheet_name='cartoes', engine='openpyxl')
+
+            df = df.dropna(how='all')
+            df = df.fillna('')
+
+            # validação de colunas
+            if columns_credit_cards != df.columns.to_list():
+                error = 'colunas inválidas'
+                print(error)
+                return False, error
+
+            dfs['cartoes'] = df
+
+        if 'estabelecimentos' in dfs:
+            insert_establishments(dfs['estabelecimentos'])
+        if 'categorias' in dfs:
+            insert_categories(dfs['categorias'])
+        if 'contas' in dfs:
+            insert_accounts(dfs['contas'])
+        if 'cartoes' in dfs:
+            insert_credit_cards(dfs['cartoes'])
+
+        if 'conta_corrente' in dfs:
+            insert_establishments_by_transactions(dfs['conta_corrente'])
+            insert_categories_by_transactions(dfs['conta_corrente'])
+            insert_accounts_by_transactions(dfs['conta_corrente'])
+            insert_transactions(dfs['conta_corrente'])
+            update_analytics(dfs['conta_corrente'])
+
+        if 'cartao_credito' in dfs:
+            insert_establishments_by_transactions(dfs['cartao_credito'])
+            insert_categories_by_transactions(dfs['cartao_credito'])
+            insert_credit_cards_by_transactions(dfs['cartao_credito'])
+            insert_credit_card_transactions(dfs['cartao_credito'])
+            update_analytics(dfs['cartao_credito'])
 
         print("Processo de Importação Finalizado")
 
