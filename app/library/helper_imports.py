@@ -7,11 +7,144 @@ from app.database.database import db
 from app.database.models import Establishment, Category, Account, CreditCardReceipt, Transaction, CreditCardTransaction
 from app.library.helper import normalize_for_match, update_analytic
 
-columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
-cct_columns = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'cartao', 'data_cobranca']
+columns_transactions = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
+columns_credit_card_transactions = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'cartao', 'data_cobranca']
+columns_establishments = ['nome', 'descricao']
+columns_categories = ['nome', 'descricao', 'meta']
+columns_accounts = ['nome', 'descricao', 'se_banco', 'se_banco_nome', 'se_banco_agencia', 'se_banco_conta']
+columns_credit_cards = ['nome', 'descricao', 'bandeira', 'ultimos_4_digitos', 'dia_vencimento']
 
 
 def insert_establishments(df):
+    print("Inserindo estabelecimentos...")
+    count = 0
+    user_id = session.get('user_id')
+
+    establishments = set(df[columns_establishments].itertuples(index=False, name=None))
+
+    db_establishments = db.session.query(
+        Establishment.est_name,
+    ).filter_by(
+        user_id=user_id
+    ).all()
+
+    list_db_establishments = [normalize_for_match(name[0]) for name in db_establishments]
+
+    for name, descriptions in establishments:
+        if name != '' and normalize_for_match(name) not in list_db_establishments:
+            establishment = Establishment(
+                est_name=name.strip().upper(),
+                est_description=descriptions.strip().upper(),
+                user_id=user_id
+            )
+            db.session.add(establishment)
+            list_db_establishments.append(normalize_for_match(name))
+            count += 1
+
+    db.session.commit()
+    print(f"{count} Estabelecimentos cadastrados!")
+
+
+def insert_categories(df):
+    print("Inserindo categorias...")
+    count = 0
+    user_id = session.get('user_id')
+
+    categories = set(df[columns_categories].itertuples(index=False, name=None))
+
+    db_categories = db.session.query(
+        Category.cat_name,
+    ).filter_by(
+        user_id=user_id
+    ).all()
+
+    list_db_categories = [(normalize_for_match(name[0])) for name in db_categories]
+
+    for name, descriptions, goals in categories:
+        if name != '' and normalize_for_match(name) not in list_db_categories:
+            category = Category(
+                cat_name=name.strip().upper(),
+                cat_description=descriptions.strip().upper(),
+                cat_goal=goals,
+                user_id=user_id
+            )
+            db.session.add(category)
+            list_db_categories.append(normalize_for_match(name))
+            count += 1
+
+    db.session.commit()
+    print(f"{count} Categorias cadastradas!")
+
+
+def insert_accounts(df):
+    print("Inserindo contas...")
+    count = 0
+    user_id = session.get('user_id')
+
+    accounts = set(df[columns_accounts].itertuples(index=False, name=None))
+
+    db_accounts = db.session.query(
+        Account.acc_name
+    ).filter_by(
+        user_id=user_id
+    ).all()
+
+    list_db_accounts = [normalize_for_match(name[0]) for name in db_accounts]
+
+    for name, descriptions, is_bank, bank_name, bank_branch, bank_account in accounts:
+        if name != '' and normalize_for_match(name) not in list_db_accounts:
+            account = Account(
+                acc_name=name.strip().upper(),
+                acc_description=descriptions.strip().upper(),
+                user_id=user_id,
+                acc_is_bank=is_bank,
+                acc_bank_name=bank_name.strip().upper(),
+                acc_bank_branch=bank_branch.strip().upper(),
+                acc_bank_account=bank_account.strip().upper()
+            )
+            db.session.add(account)
+            list_db_accounts.append(normalize_for_match(name))
+            count += 1
+
+    db.session.commit()
+    print(f"{count} Contas cadastradas!")
+
+
+def insert_credit_cards(df):
+    print("Inserindo cartões...")
+    count = 0
+    user_id = session.get('user_id')
+
+    credit_cards = set(df[columns_credit_cards].itertuples(index=False, name=None))
+
+    db_credit_cards = db.session.query(
+        CreditCardReceipt.ccr_name
+    ).filter_by(
+        user_id=user_id
+    ).all()
+
+    list_db_credit_cards = [normalize_for_match(name[0]) for name in db_credit_cards]
+
+    for name, descriptions, flag, last_digits, due_date in credit_cards:
+        if name != '' and normalize_for_match(name) not in list_db_credit_cards:
+            credit_card_receipt = CreditCardReceipt(
+                ccr_name=name.strip().upper(),
+                ccr_description=descriptions.strip().upper(),
+                ccr_flag=flag.strip().upper(),
+                ccr_last_digits=last_digits.strip().upper(),
+                ccr_due_date=due_date,
+                user_id=user_id
+            )
+            db.session.add(credit_card_receipt)
+            list_db_credit_cards.append(normalize_for_match(name))
+            count += 1
+
+    db.session.commit()
+    print(f"{count} Cartões Cadastrados!")
+
+
+def insert_establishments_by_transactions(df):
+    print("Inserindo estabelecimentos de transações...")
     count = 0
     user_id = session.get('user_id')
 
@@ -40,7 +173,8 @@ def insert_establishments(df):
     print(f"{count} Estabelecimentos cadastrados!")
 
 
-def insert_categories(df):
+def insert_categories_by_transactions(df):
+    print("Inserindo categorias de transações...")
     count = 0
     user_id = session.get('user_id')
 
@@ -55,24 +189,25 @@ def insert_categories(df):
         user_id=user_id
     ).all()
 
-    tuple_db_categories = [(normalize_for_match(name[0])) for name in db_categories]
+    list_db_categories = [(normalize_for_match(name[0])) for name in db_categories]
 
     for name in categories:
-        if name != '' and normalize_for_match(name) not in tuple_db_categories:
+        if name != '' and normalize_for_match(name) not in list_db_categories:
             category = Category(
                 cat_name=name.strip().upper(),
                 cat_description="",
                 user_id=user_id
             )
             db.session.add(category)
-            tuple_db_categories.append(normalize_for_match(name))
+            list_db_categories.append(normalize_for_match(name))
             count += 1
 
     db.session.commit()
     print(f"{count} Categorias cadastradas!")
 
 
-def insert_accounts(df):
+def insert_accounts_by_transactions(df):
+    print("Inserindo contas de transações...")
     count = 0
     user_id = session.get('user_id')
 
@@ -102,7 +237,8 @@ def insert_accounts(df):
     print(f"{count} Contas cadastradas!")
 
 
-def insert_credit_cards(df):
+def insert_credit_cards_by_transactions(df):
+    print("Inserindo cartões de crédito de transações...")
     count = 0
     user_id = session.get('user_id')
 
@@ -135,6 +271,7 @@ def insert_credit_cards(df):
 
 
 def insert_transactions(df):
+    print("Inserindo transações de conta corrente...")
     user_id = session.get('user_id')
 
     for index, row in df.iterrows():
@@ -172,6 +309,7 @@ def insert_transactions(df):
 
 
 def insert_credit_card_transactions(df):
+    print("Inserindo transações de cartão de crédito...")
     user_id = session.get('user_id')
     try:
         for index, row in df.iterrows():
@@ -217,12 +355,13 @@ def insert_credit_card_transactions(df):
 
 
 def update_analytics(df):
+    print("Atualizando relatórios mensais...")
     user_id = session.get('user_id')
 
     if 'data_cobranca' in df.columns:
-        months_years = set(df[cct_columns[6]].apply(lambda x: x.strftime("%m-%Y")))
+        months_years = set(df[columns_credit_card_transactions[6]].apply(lambda x: x.strftime("%m-%Y")))
     else:
-        months_years = set(df[columns[0]].apply(lambda x: x.strftime("%m-%Y")))
+        months_years = set(df[columns_transactions[0]].apply(lambda x: x.strftime("%m-%Y")))
 
     count = 0
     for month_year in months_years:
