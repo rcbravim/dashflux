@@ -71,9 +71,9 @@ def upload_credit_card_transactions(csv_file):
         except ValueError as error:
             return False, error
 
-        insert_establishments(df)
-        insert_categories(df)
-        insert_credit_cards(df)
+        insert_establishments_by_transactions(df)
+        insert_categories_by_transactions(df)
+        insert_credit_cards_by_transactions(df)
         insert_credit_card_transactions(df)
         update_analytics(df)
 

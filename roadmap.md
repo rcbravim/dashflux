@@ -1,6 +1,7 @@
 ## ROADMAP
 
 ### Prioridade 0
+    - bug: edit contas não está funcionando bem
     - enh: adicionar todas as informações em backup, descrições, categorias, etc
     - bug: ao restaurar backup e importar CSV, esetabelecimentos (e possivelmente categoria e contas) com nome padrão do sistema, criam-se novos cadastros
 
