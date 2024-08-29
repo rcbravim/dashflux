@@ -79,10 +79,32 @@ def backup_controller():
         for df in [df_transaction, df_credit_card]:
             df['valor'] = df['valor'].apply(lambda x: str(x * -1).replace('.', ','))
 
+        # establishments, accounts, categories, and receipts : all information
+        establishments = db.session.query(Establishment.est_name, Establishment.est_description).filter(Establishment.user_id == user_id).all()
+        accounts = db.session.query(Account.acc_name, Account.acc_description, Account.acc_is_bank, Account.acc_bank_name, Account.acc_bank_branch, Account.acc_bank_account).filter(Account.user_id == user_id).all()
+        categories = db.session.query(Category.cat_name, Category.cat_description, Category.cat_goal).filter(Category.user_id == user_id).all()
+        receipts = db.session.query(CreditCardReceipt.ccr_name, CreditCardReceipt.ccr_description, CreditCardReceipt.ccr_flag, CreditCardReceipt.ccr_last_digits, CreditCardReceipt.ccr_due_date).filter(CreditCardReceipt.user_id == user_id).all()
+
+        # columns
+        establishments_columns = ['nome', 'descricao']
+        accounts_columns = ['nome', 'descricao', 'se_banco', 'se_banco_nome', 'se_banco_agencia', 'se_banco_conta']
+        categories_columns = ['nome', 'descricao', 'meta']
+        receipts_columns = ['nome', 'descricao', 'bandeira', 'ultimos_4_digitos', 'dia_vencimento']
+
+        # df's
+        df_establishments = pd.DataFrame.from_records(establishments, columns=establishments_columns)
+        df_accounts = pd.DataFrame.from_records(accounts, columns=accounts_columns)
+        df_categories = pd.DataFrame.from_records(categories, columns=categories_columns)
+        df_receipts = pd.DataFrame.from_records(receipts, columns=receipts_columns)
+
         path_file = os.path.join(current_app.static_folder, f'{user_id}_backup.xlsx')
         with pd.ExcelWriter(path_file, engine='openpyxl') as writer:
             df_transaction.to_excel(writer, sheet_name='conta_corrente', index=False)
             df_credit_card.to_excel(writer, sheet_name='cartao_credito', index=False)
+            df_establishments.to_excel(writer, sheet_name='estabelecimentos', index=False)
+            df_accounts.to_excel(writer, sheet_name='contas', index=False)
+            df_categories.to_excel(writer, sheet_name='categorias', index=False)
+            df_receipts.to_excel(writer, sheet_name='cartoes', index=False)
 
         return send_file(
             path_file,
