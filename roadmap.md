@@ -1,6 +1,7 @@
 ## ROADMAP
 
 ### Prioridade 0
+    - enh: adicionar gasto médio de 3 meses na categoria em categorias (pensar)
     - bug: edit contas não está funcionando bem
     - enh: adicionar todas as informações em backup, descrições, categorias, etc
     - bug: ao restaurar backup e importar CSV, esetabelecimentos (e possivelmente categoria e contas) com nome padrão do sistema, criam-se novos cadastros
@@ -25,3 +26,4 @@
     - bug: Categorias invertidas ou durante inserçao do CSV ou restaurar backup
     - enh: acrescentar descrição para categoria
     - enh: acrescentar metas para categoria
+    - bug: gráfico top categorias não mostra mes selecionado, mas sim o mes atual

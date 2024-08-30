@@ -11,8 +11,8 @@ from app.database.database import db
 def chart_top_categories_controller():
     user_id = session.get('user_id')
     now = datetime.utcnow()
-    month = int(request.args.get('m', now.month))
-    year = int(request.args.get('y', now.year))
+    month = int(request.json.get('month', now.month))
+    year = int(request.args.get('year', now.year))
     three_months_ago = (now - timedelta(days=90)).date()
     quantity_categories = int(request.args.get('qnt_top_cat', 15))
 
