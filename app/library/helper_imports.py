@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from flask import session
-from sqlalchemy import func
 
 from app.database.database import db
 from app.database.models import Establishment, Category, Account, CreditCardReceipt, Transaction, CreditCardTransaction
@@ -33,7 +32,7 @@ def insert_establishments(df):
     for name, descriptions in establishments:
         if name != '' and normalize_for_match(name) not in list_db_establishments:
             establishment = Establishment(
-                est_name=name.strip().upper(),
+                est_name=normalize_for_match(name),
                 est_description=descriptions.strip().upper(),
                 user_id=user_id
             )
@@ -63,7 +62,7 @@ def insert_categories(df):
     for name, descriptions, goals in categories:
         if name != '' and normalize_for_match(name) not in list_db_categories:
             category = Category(
-                cat_name=name.strip().upper(),
+                cat_name=normalize_for_match(name),
                 cat_description=descriptions.strip().upper(),
                 cat_goal=goals,
                 user_id=user_id
@@ -94,7 +93,7 @@ def insert_accounts(df):
     for name, descriptions, is_bank, bank_name, bank_branch, bank_account in accounts:
         if name != '' and normalize_for_match(name) not in list_db_accounts:
             account = Account(
-                acc_name=name.strip().upper(),
+                acc_name=normalize_for_match(name),
                 acc_description=descriptions.strip().upper(),
                 user_id=user_id,
                 acc_is_bank=is_bank,
@@ -128,7 +127,7 @@ def insert_credit_cards(df):
     for name, descriptions, flag, last_digits, due_date in credit_cards:
         if name != '' and normalize_for_match(name) not in list_db_credit_cards:
             credit_card_receipt = CreditCardReceipt(
-                ccr_name=name.strip().upper(),
+                ccr_name=normalize_for_match(name),
                 ccr_description=descriptions.strip().upper(),
                 ccr_flag=flag.strip().upper(),
                 ccr_last_digits=last_digits.strip().upper(),
@@ -161,7 +160,7 @@ def insert_establishments_by_transactions(df):
     for name in establishments:
         if name != '' and normalize_for_match(name) not in list_db_establishments:
             establishment = Establishment(
-                est_name=name.strip().upper(),
+                est_name=normalize_for_match(name),
                 est_description="",
                 user_id=user_id
             )
@@ -194,7 +193,7 @@ def insert_categories_by_transactions(df):
     for name in categories:
         if name != '' and normalize_for_match(name) not in list_db_categories:
             category = Category(
-                cat_name=name.strip().upper(),
+                cat_name=normalize_for_match(name),
                 cat_description="",
                 user_id=user_id
             )
@@ -224,7 +223,7 @@ def insert_accounts_by_transactions(df):
     for name, acc_type in tuple_accounts:
         if name != '' and normalize_for_match(name) not in list_db_accounts:
             account = Account(
-                acc_name=name.strip().upper(),
+                acc_name=normalize_for_match(name),
                 acc_description="",
                 user_id=user_id,
                 acc_is_bank=acc_type.lower() == 'banco'
@@ -255,7 +254,7 @@ def insert_credit_cards_by_transactions(df):
     for name, due_date_day in tuple_cards:
         if name != '' and normalize_for_match(name) not in list_db_credit_cards:
             credit_card_receipt = CreditCardReceipt(
-                ccr_name=name.strip().upper(),
+                ccr_name=normalize_for_match(name),
                 ccr_description="",
                 ccr_last_digits="",
                 user_id=user_id,
@@ -275,8 +274,7 @@ def insert_transactions(df):
     user_id = session.get('user_id')
 
     for index, row in df.iterrows():
-        establishment = Establishment.query.filter_by(est_name=row['estabelecimento'].strip().upper(),
-                                                      user_id=user_id).first()
+        establishment = Establishment.query.filter_by(est_name=normalize_for_match(row['estabelecimento']).strip().upper(), user_id=user_id).first()
         establishment_id = establishment.id if establishment else 1
 
         if row['categorias'] == '':
@@ -286,10 +284,10 @@ def insert_transactions(df):
 
             category_ids = ''
             for cat_name in categories:
-                category = Category.query.filter_by(cat_name=cat_name.strip().upper(), user_id=user_id).first()
+                category = Category.query.filter_by(cat_name=normalize_for_match(cat_name).strip().upper(), user_id=user_id).first()
                 category_ids = category_ids + ',' + str(category.id) if category_ids != '' else str(category.id)
 
-        account = Account.query.filter_by(acc_name=row['conta'].strip().upper(), user_id=user_id).first()
+        account = Account.query.filter_by(acc_name=normalize_for_match(row['conta']).strip().upper(), user_id=user_id).first()
         account_id = account.id if account else 1
 
         transaction = Transaction(
@@ -313,8 +311,7 @@ def insert_credit_card_transactions(df):
     user_id = session.get('user_id')
     try:
         for index, row in df.iterrows():
-            establishment = Establishment.query.filter_by(est_name=row['estabelecimento'].strip().upper(),
-                                                          user_id=user_id).first()
+            establishment = Establishment.query.filter_by(est_name=normalize_for_match(row['estabelecimento']).strip().upper(), user_id=user_id).first()
             establishment_id = establishment.id if establishment else 1
             valor = row['valor']
 
@@ -325,13 +322,10 @@ def insert_credit_card_transactions(df):
 
                 category_ids = ''
                 for cat_name in categories:
-                    category = Category.query.filter_by(cat_name=cat_name.strip().upper(), user_id=user_id).first()
+                    category = Category.query.filter_by(cat_name=normalize_for_match(cat_name).strip().upper(), user_id=user_id).first()
                     category_ids = category_ids + ',' + str(category.id) if category_ids != '' else str(category.id)
 
-            # ignore case in filter by
-            _ignore_case = func.lower(CreditCardReceipt.ccr_name)
-            credit_card = CreditCardReceipt.query.filter(
-                func.lower(CreditCardReceipt.ccr_name) == func.lower(row['cartao'])).filter_by(user_id=user_id).first()
+            credit_card = CreditCardReceipt.query.filter_by(ccr_name=normalize_for_match(row['cartao']).strip().upper(), user_id=user_id).first()
             credit_card_id = credit_card.id if credit_card else 1
 
             credit_card_transaction = CreditCardTransaction(

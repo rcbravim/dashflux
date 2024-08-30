@@ -7,7 +7,7 @@ from sqlalchemy import or_, func, case
 
 from app.database.models import Category, Transaction, CreditCardTransaction
 from app.database.database import db
-from app.library.helper import paginator
+from app.library.helper import paginator, normalize_for_match
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
@@ -91,7 +91,7 @@ def categories_controller():
 
             category = Category(
                 id=category_id,
-                cat_name=cat_name.upper(),
+                cat_name=normalize_for_match(cat_name),
                 cat_goal=cat_goal,
                 cat_description=cat_description.upper(),
                 cat_date_updated=datetime.utcnow(),
@@ -167,7 +167,7 @@ def categories_controller():
         user_id = session.get('user_id')
 
         new_category = Category(
-            cat_name=cat_name.upper(),
+            cat_name=normalize_for_match(cat_name),
             cat_goal=cat_goal,
             cat_description=cat_description.upper(),
             user_id=user_id

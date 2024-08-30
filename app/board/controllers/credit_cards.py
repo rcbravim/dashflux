@@ -6,7 +6,7 @@ from sqlalchemy import or_
 
 from app.database.models import CreditCardReceipt, Transaction, CreditCardTransaction
 from app.database.database import db
-from app.library.helper import paginator
+from app.library.helper import paginator, normalize_for_match
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
@@ -86,7 +86,7 @@ def credit_cards_controller():
 
             credit_card = CreditCardReceipt(
                 id=credit_card_id,
-                ccr_name=ccr_name.upper(),
+                ccr_name=normalize_for_match(ccr_name),
                 ccr_flag=ccr_flag,
                 ccr_last_digits=ccr_last_digits,
                 ccr_due_date=ccr_due_date,
@@ -138,7 +138,7 @@ def credit_cards_controller():
         credit_card_due_date = request.form.get('credit_card_due_date')
 
         new_credit_card_receipt = CreditCardReceipt(
-            ccr_name=credit_card_name.upper(),
+            ccr_name=normalize_for_match(credit_card_name),
             ccr_description=credit_card_description,
             ccr_flag=credit_card_flag,
             ccr_last_digits=credit_card_last_digits,

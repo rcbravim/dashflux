@@ -7,7 +7,7 @@ from sqlalchemy import or_
 
 from app.database.models import Account, Transaction
 from app.database.database import db
-from app.library.helper import paginator
+from app.library.helper import paginator, normalize_for_match
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
@@ -123,7 +123,7 @@ def accounts_controller():
 
             account = Account(
                 id=account_id,
-                acc_name=acc_name.upper(),
+                acc_name=normalize_for_match(acc_name),
                 acc_is_bank=acc_is_bank,
                 acc_description=acc_description,
                 acc_bank_name=acc_bank_name.upper(),
@@ -184,7 +184,7 @@ def accounts_controller():
         description = request.form.get('acc_description', None)
 
         new_account = Account(
-            acc_name=account_name.upper(),
+            acc_name=normalize_for_match(account_name),
             acc_description=description,
             acc_is_bank=is_bank,
             acc_bank_name=bank.upper(),

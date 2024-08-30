@@ -6,7 +6,7 @@ from sqlalchemy import or_
 
 from app.database.models import Establishment, Transaction
 from app.database.database import db
-from app.library.helper import paginator
+from app.library.helper import paginator, normalize_for_match
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
@@ -87,7 +87,7 @@ def establishments_controller():
 
             establishment = Establishment(
                 id=establishment_id,
-                est_name=est_name.upper(),
+                est_name=normalize_for_match(est_name),
                 est_description=est_description,
                 est_date_updated=datetime.utcnow(),
                 user_id=user_id
@@ -133,7 +133,7 @@ def establishments_controller():
         user_id = session.get('user_id')
 
         new_establishment = Establishment(
-            est_name=est_name.upper(),
+            est_name=normalize_for_match(est_name),
             est_description=est_description,
             user_id=user_id
         )

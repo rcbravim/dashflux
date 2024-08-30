@@ -35,7 +35,8 @@ def compare_values(value_1, value_2):
 
 
 def normalize_for_match(value):
-    return normalize('NFKD', value).encode('ASCII', 'ignore').decode('ASCII').lower().strip()
+    # return normalize('NFKD', value).encode('ASCII', 'ignore').decode('ASCII').upper().strip()
+    return value.upper().strip()
 
 
 def generate_hash(value: str) -> str:
