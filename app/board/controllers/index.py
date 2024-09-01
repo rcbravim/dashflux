@@ -1,6 +1,7 @@
 import os
 import math
 from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract, or_, and_
@@ -19,6 +20,7 @@ def index_controller():
     now = datetime.utcnow()
 
     if request.method == 'GET':
+        search = request.args.get('search', None)
         pg = int(request.args.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
 
@@ -187,6 +189,18 @@ def index_controller():
 
         entries = entries_with_flow[pg_offset:(pg_offset + PG_LIMIT)]
 
+        if search:
+            for entry in entries.copy():
+                if not entry.get('is_receipt'):
+                    if search.lower() in entry['tra_description'].lower():
+                        continue
+                    if search.lower() in entry['est_name'].lower():
+                        continue
+                    category_list = [category['cat_name'].lower() for category in entry['categories_entry']]
+                    if any(search.lower() in category for category in category_list):
+                        continue
+                entries.remove(entry)
+
         total_pages = math.ceil(len(entries_all) / PG_LIMIT)
 
         pg_range = paginator(pg, total_pages)
@@ -281,7 +295,8 @@ def index_controller():
                 'displayed_str': datetime_ref.strftime('%B/%Y'),
                 'displayed_int': datetime_ref.strftime('%m.%Y'),
                 'month': month,
-                'year': year
+                'year': year,
+                'search': search
             },
             'pages': {
                 'pg': pg,

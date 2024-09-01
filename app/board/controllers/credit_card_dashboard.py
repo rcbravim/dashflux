@@ -2,9 +2,9 @@ import os
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
-from sqlalchemy import extract, or_, func
+from sqlalchemy import extract, or_
 
-from app.database.models import Category, Establishment, CreditCardTransaction, CreditCardReceipt, Analytic, Transaction
+from app.database.models import Category, Establishment, CreditCardTransaction, CreditCardReceipt
 from app.database.database import db
 from app.library.helper import generate_hash, update_analytic
 
@@ -19,6 +19,7 @@ def credit_card_dashboard_controller():
     if request.method == 'GET':
         pg = int(request.args.get('pg', 1))
         pg_offset = (pg * PG_LIMIT) - PG_LIMIT
+        search = request.args.get('search')
 
         month = int(request.args.get('m', now.month))
         year = int(request.args.get('y', now.year))
@@ -94,6 +95,20 @@ def credit_card_dashboard_controller():
             receipt['overall'] = abs(overall)
             receipts.append(receipt)
 
+        if search:
+            for index, receipt in enumerate(receipts):
+                entries = receipt['entries']
+                for entry in entries.copy():
+                    if search.lower() in entry['cct_description'].lower():
+                        continue
+                    if search.lower() in entry['est_name'].lower():
+                        continue
+                    cat_list = [category['cat_name'].lower() for category in entry['categories_entry']]
+                    if any(search.lower() in category for category in cat_list):
+                        continue
+                    entries.remove(entry)
+                receipts[index]['entries'] = entries
+
         # entries = entries_with_categories[pg_offset:(pg_offset + PG_LIMIT)]
         # total_pages = math.ceil(len(entries_all) / PG_LIMIT)
         # pg_range = paginator(pg, total_pages)
@@ -135,7 +150,8 @@ def credit_card_dashboard_controller():
                 'displayed_str': datetime_ref.strftime('%B/%Y'),
                 'displayed_int': datetime_ref.strftime('%m.%Y'),
                 'month': month,
-                'year': year
+                'year': year,
+                'search': search
             },
             'pages': {
                 'pg': pg,
