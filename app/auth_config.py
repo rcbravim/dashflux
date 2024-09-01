@@ -5,13 +5,13 @@ from flask import render_template, request, url_for, redirect
 from werkzeug.security import generate_password_hash
 
 from app.database.database import db
-from app.database.models import User, Establishment, Category, Account, CreditCardReceipt
+from app.database.models import User, Establishment, Category, Account, CreditCardReceipt, Transaction, \
+    CreditCardTransaction, Analytic
 
 
 def auth_config(login_manager):
     @login_manager.unauthorized_handler
     def unauthorized():
-
         if request.url_rule.endpoint == 'board.index':
             return redirect(url_for('auth.login'))
 
@@ -26,20 +26,19 @@ def auth_config(login_manager):
 def insert_default_records(app):
     @app.cli.command('insert-default-records')
     def insert_default_records_command():
-
-        default_admin_use_login=os.getenv('ADMIN_USER')
-        default_admin_use_password=generate_password_hash(os.getenv('ADMIN_PASS'))
-        default_dev_use_login=os.getenv('DEV_USER')
-        default_dev_use_password=generate_password_hash(os.getenv('DEV_PASS'))
-        default_establishment_name='NÃO INFORMADO'
-        default_establishment_description='REGISTROS SEM INFORMAÇÃO DO ESTABELECIMENTO'
-        default_category_name='SEM CATEGORIA'
-        default_category_description='CATEGORIA PADRÃO DO SISTEMA, NÃO ESPECIFICADO PELO USUÁRIO'
-        default_account_name='CONTA PADRÃO'
-        default_account_description='CONTA PADRÃO DO SISTEMA'
-        default_credit_card_receipt_name='SEM FATURA'
-        default_credit_card_receipt_description='FATURA PADRÃO DO SISTEMA, QUANDO NÃO HÁ VINCULO COM CARTÃO DE CRÉDITO'
-        default_credit_card_receipt_flag='OUTRO'
+        default_admin_use_login = os.getenv('ADMIN_USER')
+        default_admin_use_password = generate_password_hash(os.getenv('ADMIN_PASS'))
+        default_dev_use_login = os.getenv('DEV_USER')
+        default_dev_use_password = generate_password_hash(os.getenv('DEV_PASS'))
+        default_establishment_name = 'NÃO INFORMADO'
+        default_establishment_description = 'REGISTROS SEM INFORMAÇÃO DO ESTABELECIMENTO'
+        default_category_name = 'SEM CATEGORIA'
+        default_category_description = 'CATEGORIA PADRÃO DO SISTEMA, NÃO ESPECIFICADO PELO USUÁRIO'
+        default_account_name = 'CONTA PADRÃO'
+        default_account_description = 'CONTA PADRÃO DO SISTEMA'
+        default_credit_card_receipt_name = 'SEM FATURA'
+        default_credit_card_receipt_description = 'FATURA PADRÃO DO SISTEMA, QUANDO NÃO HÁ VINCULO COM CARTÃO DE CRÉDITO'
+        default_credit_card_receipt_flag = 'OUTRO'
 
         # insert admin user
         admin_user = User(
@@ -98,3 +97,55 @@ def insert_default_records(app):
         click.echo('Admin user inserted.')
         click.echo('Dev user inserted.')
         click.echo('System records inserted.')
+
+
+def clean_user_db(app):
+    @app.cli.command('clean-user-db')
+    @click.argument('user_id')
+    def clean_user_db_command(user_id):
+        click.echo('Cleaning user data...')
+
+        # clean categories
+        click.echo('Cleaning categories...')
+        categories = Category.query.filter_by(user_id=user_id).all()
+        for category in categories:
+            db.session.delete(category)
+
+        # clean establishments
+        click.echo('Cleaning establishments...')
+        establishments = Establishment.query.filter_by(user_id=user_id).all()
+        for establishment in establishments:
+            db.session.delete(establishment)
+
+        # clean accounts
+        click.echo('Cleaning accounts...')
+        accounts = Account.query.filter_by(user_id=user_id).all()
+        for account in accounts:
+            db.session.delete(account)
+
+        # clean credit card receipts
+        click.echo('Cleaning credit card receipts...')
+        credit_card_receipts = CreditCardReceipt.query.filter_by(user_id=user_id).all()
+        for credit_card_receipt in credit_card_receipts:
+            db.session.delete(credit_card_receipt)
+
+        # clean transactions
+        click.echo('Cleaning transactions...')
+        transactions = Transaction.query.filter_by(user_id=user_id).all()
+        for transaction in transactions:
+            db.session.delete(transaction)
+
+        # clean credit card transactions
+        click.echo('Cleaning credit card transactions...')
+        credit_card_transactions = CreditCardTransaction.query.filter_by(user_id=user_id).all()
+        for credit_card_transaction in credit_card_transactions:
+            db.session.delete(credit_card_transaction)
+
+        # clean analitics reports
+        click.echo('Cleaning analitics reports...')
+        analitics_reports = Analytic.query.filter_by(user_id=user_id).all()
+        for analitic_report in analitics_reports:
+            db.session.delete(analitic_report)
+
+        db.session.commit()
+        click.echo('User data successful cleaned.')

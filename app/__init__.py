@@ -2,7 +2,7 @@ import locale
 from flask import Flask
 from flask_login import LoginManager
 
-from app.auth_config import auth_config, insert_default_records
+from app.auth_config import auth_config, insert_default_records, clean_user_db
 from app.config import Config
 from app.auth.routes import bp as auth_bp
 from app.board.routes import bp as board_bp
@@ -37,6 +37,9 @@ def create_app():
 
     # insert admin user and default registers (if insert-default command)
     insert_default_records(app)
+
+    # clean user db by user_id (if clean-db command)
+    clean_user_db(app)
 
     # register blueprint instances
     app.register_blueprint(auth_bp)
