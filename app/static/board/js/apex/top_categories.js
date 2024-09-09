@@ -70,7 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         }
                     }
                 }, {
-                    name: "Média Últimos 3 Meses",
+                    name: "Média Trimestral",
                     type: "line",
                     data: avgLast3Months
                 }],

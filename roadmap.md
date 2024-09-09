@@ -1,6 +1,11 @@
 ## ROADMAP
 
 ### Prioridade 0
+    - enh: quando meta 0, nao mostrar no grafico
+    - enh: adicionar filtro/classificação na pagina de categorias (principal: organizar por meta/média)
+    - enh: ajustar nome do arquivo de backup para conter data (talvez hora)
+    - bug: data em formato americana ao editar/inserir transações
+    - bug: quando altera data (dia) de um registro com vinculo, os seguintes não são alterados
     - enh: adicionar gasto médio de 3 meses na categoria em categorias (pensar)
     - bug: edit contas não está funcionando bem
     - enh: adicionar todas as informações em backup, descrições, categorias, etc

@@ -1,6 +1,7 @@
 import math
 import os
-from datetime import datetime
+from audioop import reverse
+from datetime import datetime, timedelta
 
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import or_, func, case
@@ -15,12 +16,13 @@ PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 def categories_controller():
     success = session.pop('success', None)
     error = session.pop('error', None)
+    user_id = session.get('user_id')
 
     if request.method == 'GET':
-
-        pg = int(request.args.get('pg', 1))
-        pg_offset = (pg * PG_LIMIT) - PG_LIMIT
         session_id = session.get('user_id')
+        search = request.args.get('search', '')
+        sort = request.args.get('sort', 'cat_name')  # default sort by cat_name
+        order = request.args.get('order', 'asc')
 
         query = db.session.query(
             Category.id,
@@ -34,42 +36,85 @@ def categories_controller():
                 Category.user_id == session_id,
                 Category.user_id == 1
             )
-        ).order_by(
-            Category.cat_name.asc()
         )
 
-        if request.args.get('search'):
+        if search:
             query = query.filter(
                 or_(
-                    Category.cat_name.ilike('%{}%'.format(request.args.get('search'))),
-                    Category.cat_description.ilike('%{}%'.format(request.args.get('search')))
+                    Category.cat_name.ilike('%{}%'.format(search)),
+                    Category.cat_description.ilike('%{}%'.format(search))
                 )
             )
 
-        categories_default = query.filter(
-            Category.user_id == 1
-        ).all()
+        # Order By
+        if sort == 'cat_name':
+            if order == 'asc':
+                query = query.order_by(Category.cat_name.asc())
+            else:
+                query = query.order_by(Category.cat_name.desc())
+        elif sort == 'cat_goal':
+            if order == 'asc':
+                query = query.order_by(Category.cat_goal.asc())
+            else:
+                query = query.order_by(Category.cat_goal.desc())
 
-        categories_user = query.filter(
-            Category.user_id == session_id
-        ).all()
+        # Pagination
+        pg = int(request.args.get('pg', 1))
+        categories_paginated = query.offset((pg - 1) * PG_LIMIT).limit(PG_LIMIT).all()
 
-        categories_all = categories_default + categories_user
+        # Total de páginas para controle da paginação
+        total_items = query.count()
+        total_pages = (total_items + PG_LIMIT - 1) // PG_LIMIT
+        pg_range = range(1, total_pages + 1)
 
-        # Separate rows for exposure
-        categories = categories_all[pg_offset:(pg_offset + PG_LIMIT)]
+        categories_all = categories_paginated
 
-        # Counting total pages
-        total_pages = math.ceil(len(categories_all) / PG_LIMIT)
+        # 3 months avg
+        avg_months = 3
+        three_months_ago = (datetime.utcnow() - timedelta(days=avg_months * 30)).date()
+        # three_months_ago = (datetime.utcnow() - timedelta(months=avg_months)).date()  # outra forma, testar...
 
-        # Set page range
-        pg_range = paginator(pg, total_pages)
+        credit_card_transactions = db.session.query(
+            CreditCardTransaction.cct_amount,
+            CreditCardTransaction.category_ids
+        ).filter(
+            CreditCardTransaction.cct_status == True,
+            CreditCardTransaction.user_id == user_id,
+            CreditCardTransaction.cct_due_date >= three_months_ago
+        )
+        categories_with_avg = []
+        for category in categories_all:
+            avg_last_3_months = credit_card_transactions.filter(
+                or_(
+                    CreditCardTransaction.category_ids.contains(f',{category.id},'),
+                    CreditCardTransaction.category_ids.contains(f'{category.id},'),
+                    CreditCardTransaction.category_ids == str(category.id))
+            ).with_entities(
+                (func.sum(CreditCardTransaction.cct_amount) / 3).label('avg_last_3_months')
+            ).scalar()
+
+            cat_with_avg = {
+                'id': category.id,
+                'cat_name': category.cat_name,
+                'cat_goal': category.cat_goal,
+                'cat_avg': round(avg_last_3_months * -1, 2) if avg_last_3_months else 0,
+                'cat_description': category.cat_description,
+                'cat_date_created': category.cat_date_created
+            }
+
+            categories_with_avg.append(cat_with_avg)
+
+        if sort == 'cat_avg':
+            order_by = False if order == 'asc' else True
+            categories_with_avg = sorted(categories_with_avg, key=lambda k: k[sort], reverse=order_by)
 
         context = {
-            'categories': categories,
+            'categories': categories_with_avg,
             'filter': {
-                'search': request.args.get('search', '')
+                'search': search
             },
+            'sort': sort,
+            'order': order,
             'pages': {
                 'pg': pg,
                 'total_pg': total_pages,

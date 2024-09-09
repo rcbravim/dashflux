@@ -80,9 +80,32 @@
                                     <table class='table align-middle table-nowrap table-check'>
                                         <thead class='table-light'>
                                         <tr>
-                                            <th class='align-middle'>Categoria</th>
+                                            <th class='align-middle'>
+                                                <a href="?search={{ context.filter.search }}&sort=cat_name&order={% if context.sort == 'cat_name' and context.order == 'asc' %}desc{% else %}asc{% endif %}">
+                                                    Categoria
+                                                    {% if context.sort == 'cat_name' %}
+                                                        <i class="mdi mdi-chevron-{% if context.order == 'asc' %}up{% else %}down{% endif %}"></i>
+                                                    {% endif %}
+                                                </a>
+                                            </th>
                                             <th class='align-middle'>Descrição</th>
-                                            <th class='align-middle'>Meta Mensal</th>
+                                            <th class='align-middle'>
+                                                <a
+                                                        href="?search={{ context.filter.search }}&sort=cat_avg&order={% if context.sort == 'cat_avg' and context.order == 'asc' %}desc{% else %}asc{% endif %}">
+                                                    Média Trimestral
+                                                    {% if context.sort == 'cat_avg' %}
+                                                        <i class="mdi mdi-chevron-{% if context.order == 'asc' %}up{% else %}down{% endif %}"></i>
+                                                    {% endif %}
+                                                </a>
+                                            </th>
+                                            <th class='align-middle'>
+                                                <a href="?search={{ context.filter.search }}&sort=cat_goal&order={% if context.sort == 'cat_goal' and context.order == 'asc' %}desc{% else %}asc{% endif %}">
+                                                    Meta Mensal
+                                                    {% if context.sort == 'cat_goal' %}
+                                                        <i class="mdi mdi-chevron-{% if context.order == 'asc' %}up{% else %}down{% endif %}"></i>
+                                                    {% endif %}
+                                                </a>
+                                            </th>
                                             <th class='align-right'></th>
                                         </tr>
                                         </thead>
@@ -95,6 +118,7 @@
                                         {% endif %}
                                             <td>{{ row.cat_name|upper }}</td>
                                             <td>{{ row.cat_description|upper }}</td>
+                                            <td>{{ row.cat_avg }}</td>
                                             <td>{{ row.cat_goal }}</td>
                                             <td>
                                                 <div class='d-flex gap-3'>
@@ -125,6 +149,8 @@
                                 <form action="{{ url_for('board.categories') }}" method='get'>
                                     <input type='hidden' name='type' value='{{ context.filter.type }}'/>
                                     <input type='hidden' name='search' value='{{ context.filter.search }}'/>
+                                    <input type='hidden' name='sort' value='{{ context.sort }}'/>
+                                    <input type='hidden' name='order' value='{{ context.order }}'/>
 <!--                                    <input type='hidden' name='label' value='{{ context.filter.label }}'/>-->
                                     <ul class='pagination pagination-rounded justify-content-end mb-2'>
                                         <li class='page-item {% if context.pages.pg == 1 %}disabled{% endif %}'>
