@@ -15,7 +15,7 @@ def category_return_id_by_name_controller():
         Category.cat_description,
         Category.cat_goal
     ).filter(
-        Category.cat_name.ilike('%{}%'.format(category_name)),
+        Category.cat_name.ilike('{}'.format(category_name)),
         Category.cat_status == True,
         Category.user_id == user_id
     ).first()

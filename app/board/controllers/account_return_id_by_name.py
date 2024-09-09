@@ -13,7 +13,7 @@ def account_return_id_by_name_controller():
     account = db.session.query(
         Account.id
     ).filter(
-        Account.acc_name.ilike('%{}%'.format(acc_name)),
+        Account.acc_name.ilike('{}'.format(acc_name)),
         Account.acc_is_bank == acc_is_bank,
         Account.acc_status == True,
         Account.user_id == user_id

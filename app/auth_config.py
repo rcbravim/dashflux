@@ -31,13 +31,13 @@ def insert_default_records(app):
         default_dev_use_login = os.getenv('DEV_USER')
         default_dev_use_password = generate_password_hash(os.getenv('DEV_PASS'))
         default_establishment_name = 'NÃO INFORMADO'
-        default_establishment_description = 'REGISTROS SEM INFORMAÇÃO DO ESTABELECIMENTO'
+        default_establishment_description = 'SEM INFORMAÇÃO'
         default_category_name = 'SEM CATEGORIA'
-        default_category_description = 'CATEGORIA PADRÃO DO SISTEMA, NÃO ESPECIFICADO PELO USUÁRIO'
+        default_category_description = 'PADRÃO DO SISTEMA'
         default_account_name = 'CONTA PADRÃO'
-        default_account_description = 'CONTA PADRÃO DO SISTEMA'
+        default_account_description = 'PADRÃO DO SISTEMA'
         default_credit_card_receipt_name = 'SEM FATURA'
-        default_credit_card_receipt_description = 'FATURA PADRÃO DO SISTEMA, QUANDO NÃO HÁ VINCULO COM CARTÃO DE CRÉDITO'
+        default_credit_card_receipt_description = 'PADRÃO DO SISTEMA'
         default_credit_card_receipt_flag = 'OUTRO'
 
         # insert admin user
