@@ -1,0 +1,23 @@
+<tr>
+    <td>{{ row.env_name|upper }}</td>
+    <td style='text-align: left;'>{{ row.env_goal|format_currency }}</td>
+    <td style='text-align: left;'>{{ row.env_amount_left|format_currency }}</td>
+    <td style='text-align: left;'>{{ row.env_due_day }}</td>
+    <td>
+        {% for category in row.categories_entry %}
+            <span class='badge badge-pill badge-soft-success font-size-12'>
+                {{ category.cat_name|lower }}
+            </span>
+        {% endfor %}
+    </td>
+    <td>
+        <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
+           class='text-success index_edit' style='cursor:pointer;'
+           data-value='{{ row.id }}'><i
+                class='mdi mdi-pencil font-size-18'></i></a>
+        <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
+           class='text-danger index_del' style='cursor:pointer;'
+           data-value='{{ row.id }}'><i
+                class='mdi mdi-delete font-size-18'></i></a>
+    </td>
+</tr>

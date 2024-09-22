@@ -1,17 +1,14 @@
 ## ROADMAP
 
 ### Prioridade 0
-    - enh: quando meta 0, nao mostrar no grafico
-    - enh: adicionar filtro/classificação na pagina de categorias (principal: organizar por meta/média)
+    - eng: criar página de "envelopes" (wrapper)
     - enh: ajustar nome do arquivo de backup para conter data (talvez hora)
     - bug: data em formato americana ao editar/inserir transações
-    - bug: quando altera data (dia) de um registro com vinculo, os seguintes não são alterados
-    - enh: adicionar gasto médio de 3 meses na categoria em categorias (pensar)
     - bug: edit contas não está funcionando bem
-    - enh: adicionar todas as informações em backup, descrições, categorias, etc
     - bug: ao restaurar backup e importar CSV, esetabelecimentos (e possivelmente categoria e contas) com nome padrão do sistema, criam-se novos cadastros
 
 ### Prioridade 1
+    - bug: quando altera data (dia) de um registro com vinculo, os seguintes não são alterados
     - bug: ao editar despesa, não é possível colocar mais de uma categoria
     - bug: editar despesa no celular, teclado sumindo e aparecendo repetidamente
     - enh: não cadastrar nada que seja string como NULL no banco, mas sim como "" (vazio)
@@ -32,3 +29,7 @@
     - enh: acrescentar descrição para categoria
     - enh: acrescentar metas para categoria
     - bug: gráfico top categorias não mostra mes selecionado, mas sim o mes atual
+    - enh: quando meta 0, nao mostrar no grafico
+    - enh: adicionar filtro/classificação na pagina de categorias (principal: organizar por meta/média)
+    - enh: adicionar gasto médio de 3 meses na categoria em categorias (pensar)
+    - enh: adicionar todas as informações em backup, descrições, categorias, etc

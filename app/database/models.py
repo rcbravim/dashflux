@@ -214,3 +214,30 @@ class ChartCategoryMonthYear(db.Model):
 
     def __repr__(self):
         return f"ChartCategoryMonthYear(ccm_year={self.ccm_year}, ccm_month={self.ccm_month}, user_id={self.user_id})"
+
+
+class Envelope(db.Model):
+
+    # todo: analiar se é mais eficientre fazer pk composta, e remover id
+    # __table_args__ = (
+    #     db.PrimaryKeyConstraint('env_name', 'env_due_day', 'user_id'),
+    # )
+
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    env_name = db.Column(db.String(250), nullable=False)
+    env_description = db.Column(db.String(250), default=None)
+    env_due_day = db.Column(db.Integer, nullable=False)
+    env_goal = db.Column(db.Integer, default=0, nullable=True)
+
+    env_status = db.Column(db.Boolean, nullable=False, default=True)
+    env_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    env_date_updated = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    env_date_deleted = db.Column(db.DateTime, default=None)
+
+    category_ids = db.Column(db.String, nullable=True, comment="1,2,3,4,5")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    user = db.relationship('User', backref=db.backref('wrapper'))
+
+    def __repr__(self):
+        return '<Wrapper %r>' % self.env_name

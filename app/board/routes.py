@@ -135,7 +135,12 @@ def backup():
     return backup_controller()
 
 
+@bp.route('/envelopes', methods=['GET', 'POST'])
+def envelopes():
+    return envelopes_controller()
+
+
 # charts
 @bp.route('/charts/top_categories', methods=['GET', 'POST'])
-def chart_establishments():
+def chart_top_categories():
     return chart_top_categories_controller()
