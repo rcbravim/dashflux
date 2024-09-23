@@ -1,6 +1,4 @@
-import math
 import os
-from audioop import reverse
 from datetime import datetime, timedelta
 
 from flask import request, render_template, session, redirect, url_for
@@ -8,7 +6,7 @@ from sqlalchemy import or_, func, case
 
 from app.database.models import Category, Transaction, CreditCardTransaction
 from app.database.database import db
-from app.library.helper import paginator, normalize_for_match
+from app.library.helper import normalize_for_match
 
 PG_LIMIT = int(os.getenv('PG_LIMIT', 25))
 
@@ -24,7 +22,7 @@ def categories_controller():
         sort = request.args.get('sort', 'cat_name')  # default sort by cat_name
         order = request.args.get('order', 'asc')
 
-        query = db.session.query(
+        query_categories = db.session.query(
             Category.id,
             Category.cat_name,
             Category.cat_goal,
@@ -39,7 +37,7 @@ def categories_controller():
         )
 
         if search:
-            query = query.filter(
+            query_categories = query_categories.filter(
                 or_(
                     Category.cat_name.ilike('%{}%'.format(search)),
                     Category.cat_description.ilike('%{}%'.format(search))
@@ -49,30 +47,20 @@ def categories_controller():
         # Order By
         if sort == 'cat_name':
             if order == 'asc':
-                query = query.order_by(Category.cat_name.asc())
+                query_categories = query_categories.order_by(Category.cat_name.asc())
             else:
-                query = query.order_by(Category.cat_name.desc())
+                query_categories = query_categories.order_by(Category.cat_name.desc())
         elif sort == 'cat_goal':
             if order == 'asc':
-                query = query.order_by(Category.cat_goal.asc())
+                query_categories = query_categories.order_by(Category.cat_goal.asc())
             else:
-                query = query.order_by(Category.cat_goal.desc())
+                query_categories = query_categories.order_by(Category.cat_goal.desc())
 
-        # Pagination
-        pg = int(request.args.get('pg', 1))
-        categories_paginated = query.offset((pg - 1) * PG_LIMIT).limit(PG_LIMIT).all()
-
-        # Total de páginas para controle da paginação
-        total_items = query.count()
-        total_pages = (total_items + PG_LIMIT - 1) // PG_LIMIT
-        pg_range = range(1, total_pages + 1)
-
-        categories_all = categories_paginated
+        categories_all = query_categories.all()
 
         # 3 months avg
         avg_months = 3
-        three_months_ago = (datetime.utcnow() - timedelta(days=avg_months * 30)).date()
-        # three_months_ago = (datetime.utcnow() - timedelta(months=avg_months)).date()  # outra forma, testar...
+        three_months_ago = (datetime.utcnow() - timedelta(days=avg_months * 30)).date()  # outra forma, testar: three_months_ago = (datetime.utcnow() - timedelta(months=avg_months)).date()
 
         credit_card_transactions = db.session.query(
             CreditCardTransaction.cct_amount,
@@ -82,6 +70,7 @@ def categories_controller():
             CreditCardTransaction.user_id == user_id,
             CreditCardTransaction.cct_due_date >= three_months_ago
         )
+
         categories_with_avg = []
         for category in categories_all:
             avg_last_3_months = credit_card_transactions.filter(
@@ -108,8 +97,19 @@ def categories_controller():
             order_by = False if order == 'asc' else True
             categories_with_avg = sorted(categories_with_avg, key=lambda k: k[sort], reverse=order_by)
 
+        # Pagination
+        pg = int(request.args.get('pg', 1))
+        start_idx = (pg - 1) * PG_LIMIT
+        end_idx = start_idx + PG_LIMIT
+        categories_paginated = categories_with_avg[start_idx:end_idx]
+
+        # Total de páginas para controle da paginação
+        total_items = len(categories_with_avg)
+        total_pages = (total_items + PG_LIMIT - 1) // PG_LIMIT
+        pg_range = range(1, total_pages + 1)
+
         context = {
-            'categories': categories_with_avg,
+            'categories': categories_paginated,
             'filter': {
                 'search': search
             },
