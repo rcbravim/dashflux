@@ -123,10 +123,6 @@
                                         </table>
                                     </div>
                                     <!-- end table-responsive -->
-<!--                                    <form action="{{ url_for('board.index') }}" method='get'>-->
-<!--                                        <input type='hidden' name='m' value='{{ context.filter.month }}'/>-->
-<!--                                        <input type='hidden' name='y' value='{{ context.filter.year }}'/>-->
-<!--                                    </form>-->
                                     <!-- end page footer -->
                                 {% else %}
                                     <div class='table-responsive'>
@@ -154,14 +150,14 @@
 <!-- end newEntryModal -->
 
 <!-- labelEditModal Modal -->
-<!--todo: continuar-->
-{% include 'board/pages/credit_card_dashboard_modal_edit_transaction.html' %}
+{% include 'board/pages/envelopes_modal_edit_envelope.html' %}
 <!-- end labelEditModal -->
 
 <!-- labelEditModal Modal -->
-{% include 'board/pages/credit_card_dashboard_modal_remove_transaction.html' %}
+{% include 'board/pages/envelopes_modal_remove_envelope.html' %}
 <!-- end labelEditModal -->
 
+<!--deprecated-->
 <!-- labelUploadCsvModal Modal -->
-{% include 'board/pages/credit_card_dashboard_modal_upload_csv.html' %}
+<!--{% include 'board/pages/credit_card_dashboard_modal_upload_csv.html' %}-->
 <!-- end labelEditModal -->

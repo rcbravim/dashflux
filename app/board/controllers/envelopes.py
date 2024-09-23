@@ -4,9 +4,8 @@ from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import or_, extract, and_
 
-from app.database.models import Category, CreditCardTransaction, Envelope, Transaction, CreditCardReceipt
+from app.database.models import Category, CreditCardTransaction, Envelope, CreditCardReceipt
 from app.database.database import db
-from app.library.helper import generate_hash, update_analytic
 
 
 def envelopes_controller():
@@ -16,13 +15,6 @@ def envelopes_controller():
 
     if request.method == 'GET':
         search = request.args.get('search')
-
-        month = int(request.args.get('m', now.month))
-        year = int(request.args.get('y', now.year))
-        if month == now.month and year == now.year:
-            datetime_ref = now
-        else:
-            datetime_ref = datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y')
 
         envelopes = db.session.query(
             Envelope.id,
@@ -50,43 +42,7 @@ def envelopes_controller():
             Category.cat_name.asc()
         ).all()
 
-        # todo: somente para cartão de crédito mesmo?
-        # transactions = db.session.query(
-        #     Transaction.tra_amount,
-        #     Transaction.tra_entry_date,
-        #     Transaction.tra_description,
-        #     Transaction.category_ids
-        # ).filter(
-        #     Transaction.tra_status == True,
-        #     Transaction.user_id == user_id,
-        #     extract('month', Transaction.tra_entry_date) == month,
-        #     extract('year', Transaction.tra_entry_date) == year
-        # ).order_by(
-        #     Transaction.tra_entry_date.asc()
-        # ).all()
-
-        # credit_card_transactions = db.session.query(
-        #     CreditCardTransaction.cct_amount,
-        #     CreditCardTransaction.cct_entry_date,
-        #     CreditCardTransaction.category_ids,
-        #     CreditCardReceipt.ccr_due_date
-        # ).join(
-        #     CreditCardReceipt, CreditCardTransaction.credit_card_receipt_id == CreditCardReceipt.id
-        # ).filter(
-        #     CreditCardTransaction.cct_status == True,
-        #     CreditCardTransaction.user_id == user_id,
-        #     and_(
-        #         CreditCardTransaction.cct_due_date >= now.date() - relativedelta(months=1),
-        #         CreditCardTransaction.cct_due_date <= now.date() + relativedelta(months=1)
-        #     )
-        #
-        #     # extract('month', CreditCardTransaction.cct_due_date) == month,
-        #     # extract('year', CreditCardTransaction.cct_due_date) == year,
-        # ).order_by(
-        #     CreditCardTransaction.cct_entry_date.asc()
-        # ).all()
-
-        # todo: parece estar pegando todas transações, melhorar eficiência?
+        # todo: [enh] parece estar pegando todas transações, melhorar eficiência?
         query_credit_card_transactions = db.session.query(
             CreditCardTransaction.cct_amount,
             CreditCardTransaction.cct_entry_date,
@@ -153,111 +109,48 @@ def envelopes_controller():
 
     elif request.method == 'POST':
 
-        # todo: edit credit_card_transaction
+        # edit envelope
         if request.form.get('_method') == 'PUT':
-            multiply = 1 if request.form.get('type_transaction') == '1' else -1
-            amount = float(request.form.get('modal_amount').replace('.', '').replace(',', '.'))
-            entry_date = datetime.strptime(request.form.get('modal_entry_date'), "%Y-%m-%d")
-            category_ids = ','.join(request.form.get('modal_category[]').split(','))
-            establishment_id = request.form.get('modal_establishment')
-            credit_card_receipt_id = request.form.get('credit_card')
-            due_month = int(request.form.get('due_month'))
-            due_year = int(request.form.get('due_year'))
-            description = request.form.get('modal_description')
-            repetitions = ','.join(request.form.get('selected_repetitions').split(',')).split(',')
-            action = request.form.get('action_edit_cct')
+            env_id = request.form.get('edit_index')
+            env_name = request.form.get('envelope_name_edit')
+            env_description = request.form.get('envelope_description_edit')
+            env_goal = int(request.form.get('envelope_goal_edit'))
+            env_due_day = int(request.form.get('envelope_due_day_edit'))
+            category_ids = request.form.get('modal_category[]') if request.form.get(
+                'selected_categories') == '' else ','.join(set(request.form.get('selected_categories').split(',')))
 
-            credit_card_transaction = CreditCardTransaction.query.filter_by(id=request.form.get('edit_index')).first()
+            envelope = Envelope.query.filter_by(id=env_id).first()
 
             # update fields
-            credit_card_transaction.cct_entry_date = entry_date.date()
-            credit_card_transaction.cct_description = description
-            credit_card_transaction.cct_due_date = datetime.strptime(f'1-{due_month}-{due_year}', '%d-%m-%Y').date()
-            credit_card_transaction.credit_card_receipt_id = int(credit_card_receipt_id)
-            credit_card_transaction.establishment_id = int(establishment_id)
-            credit_card_transaction.category_ids = category_ids
-            credit_card_transaction.cct_amount = amount * multiply
+            envelope.env_name = env_name.upper()
+            envelope.env_description = env_description
+            envelope.env_goal = env_goal
+            envelope.env_due_day = env_due_day
+            envelope.category_ids = category_ids
 
-            if action == 'single':
-                db.session.merge(credit_card_transaction)
-                db.session.commit()
+            db.session.merge(envelope)
+            db.session.commit()
 
-            else:
-                bound_credit_card_transactions = db.session.query(
-                    CreditCardTransaction).filter(
-                        CreditCardTransaction.cct_due_date > credit_card_transaction.cct_due_date,
-                    ).filter_by(
-                        cct_bound_hash=credit_card_transaction.cct_bound_hash
-                    ).all()
-
-                if len(repetitions) != len(bound_credit_card_transactions):
-                    bound_hash = generate_hash(str(now))
-                else:
-                    bound_hash = credit_card_transaction.cct_bound_hash
-
-                db.session.merge(credit_card_transaction)
-                db.session.commit()
-
-                repetitions = [datetime.strptime(d, "%m-%y").date() for d in repetitions]
-                for repetition_due_date in repetitions:
-                    bound_credit_card_transaction = db.session.query(CreditCardTransaction).filter_by(
-                        cct_bound_hash=credit_card_transaction.cct_bound_hash
-                    ).filter(
-                        CreditCardTransaction.cct_due_date == repetition_due_date,
-                    ).first()
-
-                    bound_credit_card_transaction.cct_entry_date = entry_date.date()
-                    bound_credit_card_transaction.cct_description = description
-                    bound_credit_card_transaction.credit_card_receipt_id = int(credit_card_receipt_id)
-                    bound_credit_card_transaction.establishment_id = int(establishment_id)
-                    bound_credit_card_transaction.category_ids = category_ids
-                    bound_credit_card_transaction.cct_amount = amount * multiply
-                    bound_credit_card_transaction.cct_bound_hash = bound_hash
-
-                    db.session.merge(bound_credit_card_transaction)
-                    db.session.commit()
-
-                # update analytic
-                cycle_date = entry_date
-                update_analytic(user_id, cycle_date)
-
-            session['success'] = 'Lançamento(s) Alterado(s)!'
+            session['success'] = 'Envelope Atualizado!'
             return redirect(
                 url_for(
-                    'board.credit_card_dashboard'
+                    'board.envelopes'
                 )
             )
 
-        # todo: delete transaction
+        # remove envelope
         elif request.form.get('_method') == 'DELETE':
-            action = request.form.get('action_remove_cct')
+            env_id = request.form.get('del_index')
 
-            transaction = CreditCardTransaction.query.filter_by(id=request.form.get('del_index')).first()
+            envelope = Envelope.query.filter_by(id=env_id).first()
 
-            # todo: single/multiple transactions: not implemented yet
-            # if transaction.cct_bound_hash is None or action == 'single':
-            #     transactions = [transaction]
-            # else:
-            #     transactions = CreditCardTransaction.query.filter_by(
-            #         cct_bound_hash=transaction.cct_bound_hash
-            #     ).filter(
-            #         CreditCardTransaction.cct_due_date >= transaction.cct_due_date
-            #     ).all()
-            # end
-
-            db.session.delete(transaction)
+            db.session.delete(envelope)
             db.session.commit()
 
-            # update analytic
-            cycle_date = transaction.cct_due_date
-            update_analytic(user_id, cycle_date)
-
-            session['success'] = 'Lançamento(s) Removido(s)'
+            session['success'] = 'Envelope Removido'
             return redirect(
                 url_for(
-                    'board.credit_card_dashboard',
-                    y=request.form.get('y'),
-                    m=request.form.get('m')
+                    'board.envelopes'
                 )
             )
 
@@ -271,7 +164,7 @@ def envelopes_controller():
 
             new_envelope = Envelope(
                 user_id=user_id,
-                env_name=env_name,
+                env_name=env_name.upper(),
                 env_description=env_description,
                 env_goal=env_goal,
                 env_due_day=env_due_day,
@@ -284,9 +177,7 @@ def envelopes_controller():
             session['success'] = 'Envelope Criado!'
             return redirect(
                 url_for(
-                    'board.envelopes',
-                    y=request.form.get('y'),
-                    m=request.form.get('m')
+                    'board.envelopes'
                 )
             )
 

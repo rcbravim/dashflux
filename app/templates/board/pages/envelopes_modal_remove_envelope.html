@@ -1,0 +1,30 @@
+<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Remover Envelope</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.envelopes') }}" novalidate method='post'>
+                {{ csrf_token }}
+                <input type='hidden' name='_method' value='DELETE'/>
+                <input type='hidden' id='del_index' name='del_index'/>
+                <div class='modal-body'>
+                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção deste envelope?</p>
+                    <p class='mb-2 envelope_name_del'>Nome do Envelope: <span class='text-primary'></span></p>
+                    <p class='mb-2 envelope_description_del'>Descrição: <span class='text-primary'></span></p>
+                    <p class='mb-2 envelope_goal_del'>Meta: <span class='text-primary'></span></p>
+                    <p class='mb-2 envelope_due_day_del'>Renova dia: <span class='text-primary'></span></p>
+                    <p class='mb-2 envelope_category_names_del'>Categorias: <span class='text-primary'></span></p>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='removeEnvelope'>
+                        Remover Envelope</button>
+                </div>
+                <input type="hidden" id="action_remove_envelope" name="action_remove_envelope" value="">
+            </form>
+        </div>
+    </div>
+</div>

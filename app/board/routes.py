@@ -140,6 +140,11 @@ def envelopes():
     return envelopes_controller()
 
 
+@bp.route('/envelopes_edit', methods=['POST', 'PUT'])
+def envelopes_edit():
+    return envelopes_edit_controller()
+
+
 # charts
 @bp.route('/charts/top_categories', methods=['GET', 'POST'])
 def chart_top_categories():
