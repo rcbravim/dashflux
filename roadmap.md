@@ -1,7 +1,6 @@
 ## ROADMAP
 
 ### Prioridade 0
-    - eng: criar página de "envelopes" (wrapper)
     - enh: ajustar nome do arquivo de backup para conter data (talvez hora)
     - bug: data em formato americana ao editar/inserir transações
     - bug: edit contas não está funcionando bem
@@ -33,3 +32,4 @@
     - enh: adicionar filtro/classificação na pagina de categorias (principal: organizar por meta/média)
     - enh: adicionar gasto médio de 3 meses na categoria em categorias (pensar)
     - enh: adicionar todas as informações em backup, descrições, categorias, etc
+    - enh: criar página de "envelopes" (wrapper)
