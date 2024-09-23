@@ -1,0 +1,53 @@
+<style>
+    /* Forçar a cor dos rótulos dos dados */
+    .apexcharts-text tspan {
+        fill: #000000 !important;  /* Preto para todos os textos */
+    }
+    .apexcharts-datalabel tspan {
+        fill: #000000 !important;  /* Força a cor preta para os rótulos dos valores */
+    }
+
+    /* Forçar a cor dos rótulos do eixo X */
+    .apexcharts-xaxis-label {
+        fill: #000000 !important;  /* Preto para rótulos do eixo X */
+    }
+
+    /* Forçar a cor dos rótulos do eixo Y */
+    .apexcharts-yaxis-label {
+        fill: #000000 !important;  /* Preto para rótulos do eixo Y */
+    }
+
+    /* Forçar a cor da legenda */
+    .apexcharts-legend-text {
+        fill: #000000 !important;  /* Preto para textos da legenda */
+    }
+</style>
+
+<script type="text/javascript">
+    var envelope_entries = {{ context.envelope_entries|tojson }};
+</script>
+
+<!--grafico barras horizontais-->
+<!--<div class="row">-->
+<!--    <div class="col-xl">-->
+<!--        <div class="card">-->
+<!--            <div class="card-body">-->
+<!--&lt;!&ndash;                <h4 class="card-title mb-4">Grafico Envelopes</h4>&ndash;&gt;-->
+<!--                <div id="chart_bar_vert" class="apex-charts" dir="ltr"></div>-->
+<!--                <script src="{{ url_for('static.serve_static', filename='board/js/apex/chart_bar_vert_envelopes.js') }}"></script>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--grafico donut-->
+<div class="row">
+    <div class="col-xl">
+        <div class="card">
+            <div class="card-body">
+                <div id="chart_donut" class="apex-charts" dir="ltr"></div>
+                <script src="{{ url_for('static.serve_static', filename='board/js/apex/chart_donut_envelopes.js') }}"></script>
+            </div>
+        </div>
+    </div>
+</div>

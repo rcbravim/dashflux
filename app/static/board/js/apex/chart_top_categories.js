@@ -1,3 +1,5 @@
+// neste tipo de gráfico, é feita uma request a um endpoint para resgatar os dados
+
 document.addEventListener("DOMContentLoaded", function () {
     const csrftoken = getCookie('csrftoken');
 
@@ -22,6 +24,11 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(response => response.json())
         .then(data => {
+            if (data.length == 0) {
+                document.getElementById('top_categories').innerHTML = '<p style="text-align: center;">Não existem dados suficientes para exibir o gráfico.</p>';
+                return
+            }
+
             // Extraindo as categorias, valores, metas e médias dos dados recebidos
             const categories = data.map(item => item.category);
             const amounts = data.map(item => item.amount);
