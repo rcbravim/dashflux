@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import or_, extract, and_
 
-from app.database.models import Category, CreditCardTransaction, Envelope, CreditCardReceipt
+from app.database.models import Category, CreditCardTransaction, Envelope
 from app.database.database import db
 
 
@@ -46,10 +46,7 @@ def envelopes_controller():
         query_credit_card_transactions = db.session.query(
             CreditCardTransaction.cct_amount,
             CreditCardTransaction.cct_entry_date,
-            CreditCardTransaction.category_ids,
-            CreditCardReceipt.ccr_due_date
-        ).join(
-            CreditCardReceipt, CreditCardTransaction.credit_card_receipt_id == CreditCardReceipt.id
+            CreditCardTransaction.category_ids
         ).filter(
             CreditCardTransaction.cct_status == True,
             CreditCardTransaction.user_id == user_id,
@@ -62,8 +59,8 @@ def envelopes_controller():
                 filter_month = extract('month', CreditCardTransaction.cct_due_date) == (now.date() + relativedelta(months=1)).month
             else:
                 filter_month = and_(
-                    CreditCardTransaction.cct_due_date.month == (now.date() - relativedelta(months=1)).month,
-                    CreditCardTransaction.cct_due_date.month == (now.date() + relativedelta(months=1)).month,
+                    extract('month', CreditCardTransaction.cct_due_date) == (now.date() - relativedelta(months=1)).month,
+                    extract('month', CreditCardTransaction.cct_due_date) == (now.date() + relativedelta(months=1)).month
                 )
 
             credit_card_transactions = query_credit_card_transactions.filter(
@@ -80,7 +77,7 @@ def envelopes_controller():
                 categories_entry.append(d)
 
                 for transaction in credit_card_transactions:
-                    if _id in transaction.category_ids:
+                    if _id in transaction.category_ids.split(','):
                         total_spent -= transaction.cct_amount
 
             entry = {

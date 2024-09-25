@@ -1,6 +1,8 @@
 ## ROADMAP
 
 ### Prioridade 0
+    - bug: acrescentar envelopes no backup
+    - bug: envelopes (ex: farmácia)
     - enh: ajustar nome do arquivo de backup para conter data (talvez hora)
     - bug: data em formato americana ao editar/inserir transações
     - bug: edit contas não está funcionando bem
