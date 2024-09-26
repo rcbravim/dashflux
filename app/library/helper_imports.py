@@ -277,8 +277,8 @@ def insert_transactions(df):
         establishment = Establishment.query.filter_by(est_name=normalize_for_match(row['estabelecimento']).strip().upper(), user_id=user_id).first()
         establishment_id = establishment.id if establishment else 1
 
-        if row['categorias'] == '':
-            category_ids = 1 if row['valor'] > 0 else 2
+        if row['categorias'] == '' or row['categorias'].lower() == 'sem categoria':
+            category_ids = '1' if row['valor'] > 0 else '2'
         else:
             categories = row['categorias'].split(',')
 
@@ -315,8 +315,8 @@ def insert_credit_card_transactions(df):
             establishment_id = establishment.id if establishment else 1
             valor = row['valor']
 
-            if row['categorias'] == '':
-                category_ids = 1 if valor > 0 else 2
+            if row['categorias'] == '' or row['categorias'].lower() == 'sem categoria':
+                category_ids = '1' if valor > 0 else '2'
             else:
                 categories = row['categorias'].split(',')
 
