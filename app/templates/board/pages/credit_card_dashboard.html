@@ -109,14 +109,14 @@
                                                 data-bs-toggle="collapse"
                                                 data-bs-target="#collapseIndex_{{ receipt.id }}" aria-expanded="false"
                                                 aria-controls="collapseIndex_{{ receipt.id }}">
-                                            <div style="display: flex; justify-content: space-between;">
+                                            <span style="display: flex; justify-content: space-between;">
                                                 <span style="margin-right: 100px;">{{ receipt.ccr_name|upper }}</span>
                                                 <span style="margin-right: 100px;">{{ receipt.ccr_description|upper }}</span>
                                                 <span style="margin-right: 100px;">{{ receipt.ccr_last_digits }}</span>
                                                 <span style="margin-right: 100px;">Venc: {{ receipt.ccr_due_date }}</span>
                                                 <span style="margin-right: 100px;">Total da Fatura: R$ {{
                                                     receipt.overall|format_currency }}</span>
-                                            </div>
+                                            </span>
                                         </button>
                                         <!-- Contêiner de colapso -->
                                         <div class="collapse" id="collapseIndex_{{ receipt.id }}">
@@ -168,7 +168,7 @@
 </div>
 </body>
 
-{% include 'board/partials/footer.html' %}
+{% include 'board/partials/footer.html' %}'
 
 <!-- newEntryModal Modal -->
 {% include 'board/pages/credit_card_dashboard_modal_new_transaction.html' %}

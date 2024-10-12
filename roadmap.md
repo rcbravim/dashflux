@@ -1,6 +1,7 @@
 ## ROADMAP
 
 ### Prioridade 0
+    
     - bug: acrescentar envelopes no backup
     - bug: envelopes (ex: farmácia)
     - enh: ajustar nome do arquivo de backup para conter data (talvez hora)
@@ -35,3 +36,9 @@
     - enh: adicionar gasto médio de 3 meses na categoria em categorias (pensar)
     - enh: adicionar todas as informações em backup, descrições, categorias, etc
     - enh: criar página de "envelopes" (wrapper)
+
+
+### Won't fix
+    - bug: dashboard cartão de credito, expandir/colapsar faturas com problemas em navegador antigo
+        -> foram identificados outros problemas em navegadores antigos, bootstrap, modais, etc.
+        -> não foi identificado o motivo, por isso, momentaneamente abandonado
