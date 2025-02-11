@@ -13,9 +13,6 @@ RUN apt-get update -qq \
     && pip install --upgrade pip \
     && pip install -r requirements.txt
 
-# init database
-RUN flask init-db
-
 EXPOSE 5000
 
 ENTRYPOINT ["gunicorn"]
