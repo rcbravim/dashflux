@@ -5,9 +5,9 @@ from app.database.database import db
 
 
 class User(db.Model, UserMixin):
-    id = db.Column(db.Integer, primary_key=True)
-    use_login = db.Column(db.String(250), nullable=False)
-    use_password = db.Column(db.String(128), nullable=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    use_login = db.Column(db.String(255), nullable=False)
+    use_password = db.Column(db.String(255), nullable=False)
     use_status = db.Column(db.Boolean, nullable=False, default=True)
     use_date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     use_date_updated = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
