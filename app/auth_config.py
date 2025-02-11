@@ -57,6 +57,9 @@ def insert_default_records(app):
         )
         db.session.add(dev_user)
 
+        # guarantee that the users are inserted
+        db.session.commit()
+
         # insert system establishment
         default_establishment = Establishment(
             est_name=default_establishment_name,

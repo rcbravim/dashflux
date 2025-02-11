@@ -14,7 +14,7 @@ class Config:
         app.config['SECRET_KEY'] = os.getenv('FLASK_SECRET_KEY')
         app.config['SESSION_PERMANENT'] = False
         app.config['SESSION_TYPE'] = 'filesystem'
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance_path, f'database{"-" + environment if environment else ""}.db')
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')  # os.path.join('sqlite:///' + app.instance_path, f'database{"-" + environment if environment else ""}.db')
         app.config['TEMPLATE_FOLDER'] = f'app/templates{"-" + environment if environment else ""}'
         app.config['SESSION_FILE_DIR'] = os.path.join(app.root_path, f'logs{"-" + environment if environment else ""}')
 
