@@ -1,0 +1,92 @@
+name: First Deploy to AWS EC2
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Ambiente de Deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prd
+
+env:
+  EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+  HOSTNAME: ${{ secrets.HOSTNAME }}
+  USER_NAME: ${{ secrets.USER_NAME }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  CONTAINER_NAME: dashflux
+  BRANCH: main
+  WORKDIR: app-dashflux
+
+  # app envs
+  MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+  MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+  MAIL_DEFAULT_SENDER: ${{ secrets.MAIL_DEFAULT_SENDER }}
+  MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+  MAIL_PORT: ${{ secrets.MAIL_PORT }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
+  ADMIN_USER: ${{ secrets.ADMIN_USER }}
+  ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+  DEV_USER: ${{ secrets.DEV_USER }}
+  DEV_PASS: ${{ secrets.DEV_PASS }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.env == 'prd' && 'main' || github.event.inputs.env }}
+
+      - name: Deploy in EC2
+        run: |
+          mkdir -p ~/.ssh && echo "$EC2_PRIVATE_KEY" > ~/.ssh/private_key && chmod 600 ~/.ssh/private_key
+
+          ssh -o StrictHostKeyChecking=no -i ~/.ssh/private_key ${USER_NAME}@${HOSTNAME} "
+            sudo mkdir -p /$WORKDIR
+            cd /$WORKDIR
+
+            if [ ! -d .git ]; then
+              echo 'Cloning the repository for the first time'
+              git clone https://github.com/rcbravim/dashflux.git .
+            fi
+            
+            cd $CONTAINER_NAME
+            git fetch --all
+            CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+            if [ \"$CURRENT_BRANCH\" != \"$BRANCH\" ]; then
+              git checkout $BRANCH
+            fi
+            git reset --hard origin/$BRANCH
+            git pull origin $BRANCH
+
+            if [ ! -e $(pwd)/instance/database.db ]; then
+              sudo mkdir -p $(pwd)/instance
+              sudo touch $(pwd)/instance/database.db
+            fi
+
+            sudo docker stop $CONTAINER_NAME || true
+            sudo docker rm $CONTAINER_NAME || true
+            sudo docker image prune -f
+
+            echo Build and run new Docker container
+            sudo docker build -t $CONTAINER_NAME .
+            
+            sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 -v $(pwd)/instance:/app/instance \
+              -e MAIL_USERNAME=$MAIL_USERNAME \
+              -e MAIL_PASSWORD=$MAIL_PASSWORD \
+              -e MAIL_DEFAULT_SENDER=$MAIL_DEFAULT_SENDER \
+              -e MAIL_SERVER=$MAIL_SERVER \
+              -e MAIL_PORT=$MAIL_PORT \
+              -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+              -e FLASK_SECRET_KEY=$FLASK_SECRET_KEY \
+              -e ADMIN_USER=$ADMIN_USER \
+              -e ADMIN_PASS=$ADMIN_PASS \
+              -e DEV_USER=$DEV_USER \
+              -e DEV_PASS=$DEV_PASS \
+              --restart always $CONTAINER_NAME
+          "
