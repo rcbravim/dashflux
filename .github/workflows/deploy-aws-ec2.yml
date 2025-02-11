@@ -62,14 +62,7 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
 
-      - name: Debug Environment Variables
-        run: |
-          echo "BRANCH=${{ env.BRANCH }}"
-          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}"
-          echo "PORT=${{ env.PORT }}"
-          echo "DATABASE_URI=${{ env.DATABASE_URI }}"
-
-      - name: Deploy in EC2
+      - name: Deploying in EC2
 
         run: |
           echo "$EC2_PRIVATE_KEY" > private_key && chmod 600 private_key
