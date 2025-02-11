@@ -62,6 +62,13 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
 
+      - name: Debug Environment Variables
+        run: |
+          echo "BRANCH=${{ env.BRANCH }}"
+          echo "CONTAINER_NAME=${{ env.CONTAINER_NAME }}"
+          echo "PORT=${{ env.PORT }}"
+          echo "DATABASE_URI=${{ env.DATABASE_URI }}"
+
       - name: Deploy in EC2
 
         run: |
