@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Definir variáveis de ambiente com base na branch
+      - name: Define dynamic env vars based
         run: |
           if [ "${{ github.ref }}" == "refs/heads/main" ]; then
             echo "CONTAINER_NAME=dashflux-prd" >> $GITHUB_ENV
@@ -62,28 +62,37 @@ jobs:
         with:
           ref: ${{ env.BRANCH }}
 
-      - name: Deploy no EC2
+      - name: Deploy in EC2
+
         run: |
           echo "$EC2_PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} "
-
+        
+            sudo mkdir -p /$WORKDIR/$CONTAINER_NAME
             cd /$WORKDIR/$CONTAINER_NAME
-
-            echo 'Git checkout/fetch/reset/pull'
-            git checkout $BRANCH
-            git fetch --all
-            git reset --hard origin/$BRANCH
-            git pull origin $BRANCH
+            sudo chown -R ${USER_NAME}:${USER_NAME} /$WORKDIR/$CONTAINER_NAME
+          
+            if [ ! -d .git ]; then
+              echo 'Cloning the repository for the first time'
+              git clone https://github.com/rcbravim/dashflux.git .
+              git checkout $BRANCH
+            else
+              echo 'Fetching the latest code from $BRANCH branch'
+              git checkout $BRANCH
+              git fetch --all
+              git reset --hard origin/$BRANCH
+              git pull origin $BRANCH
+            fi
             
-            echo 'Parando e removendo o container antigo'
+            echo 'Removing container $CONTAINER_NAME'
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
             sudo docker system prune -af || true
 
-            echo 'Construindo a nova imagem Docker'
+            echo 'Building new container $CONTAINER_NAME'
             sudo docker build -t $CONTAINER_NAME .
 
-            echo 'Executando o novo container'
+            echo 'Running new container $CONTAINER_NAME'
             sudo docker run -d --name $CONTAINER_NAME -p $PORT:5000 \
               -e DATABASE_URI=$DATABASE_URI \
               -e MAIL_USERNAME=$MAIL_USERNAME \

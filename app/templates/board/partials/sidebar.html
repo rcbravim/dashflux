@@ -7,11 +7,31 @@
                 <!-- Left Menu Start -->
                 <ul class='metismenu list-unstyled' id='side-menu'>
                     <li class='menu-title' key='t-menu'>Menu</li>
-                    <li>
-                        <a href="{{ url_for('board.index') }}" class='waves-effect'>
+                    <li id='transactions-menu'>
+                        <a class='has-arrow waves-effect'>
                             <i class='mdi mdi-table-of-contents'></i>
-                            <span key='t-dashboards'>Dashboard</span>
+                            <span key='t-labels'>Lançamentos</span>
                         </a>
+                        <ul class='sub-menu' aria-expanded='false'>
+                            <li>
+                                <a href="{{ url_for('board.index') }}" class='waves-effect'>
+                                    <i class='bx bx-transfer-alt'></i>
+                                    <span key='t-dashboards'>Conta Corrente</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('board.credit_card_dashboard') }}" class='waves-effect'>
+                                    <i class='bx bx-credit-card'></i>
+                                    <span key='t-credit-card-dashboard'>Faturas de Cartão</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ url_for('board.envelopes') }}" class='waves-effect'>
+                                    <i class='bx bx-envelope'></i>
+                                    <span key='t-credit-card-dashboard'>Envelopes</span>
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li id='lables-menu'>
                         <a class='has-arrow waves-effect'>
@@ -26,13 +46,9 @@
                                 <i class='mdi mdi-clipboard-list-outline'></i>Categorias</a></li>
                             <li><a href="{{ url_for('board.accounts') }}" key='t-financial'>
                                 <i class='mdi mdi-bank-outline'></i>Contas</a></li>
+                            <li><a href="{{ url_for('board.credit_cards') }}" key='t-credit-cards'>
+                                <i class='mdi mdi-credit-card-outline'></i>Cartões de Crédito</a></li>
                         </ul>
-                    </li>
-                    <li id='import-csv-menu'>
-                        <a href="{{ url_for('board.upload') }}" class='waves-effect'>
-                            <i class='bx bx-upload'></i>
-                            <span key='t-upload'>Upload</span>
-                        </a>
                     </li>
                     <li>
                         <a href="{{ url_for('board.backup') }}" class='waves-effect'>
@@ -40,11 +56,17 @@
                             <span key='t-trash'>Backup</span>
                         </a>
                     </li>
+                    <li id='import-csv-menu'>
+                        <a href="{{ url_for('board.restore') }}" class='waves-effect'>
+                            <i class='bx bx-upload'></i>
+                            <span key='t-upload'>Restaurar</span>
+                        </a>
+                    </li>
                     <li class='menu-title' key='t-apps'>Informações da Conta</li>
 <!--                    <li>-->
 <!--                        <a href="{{ url_for('board.clean') }}" class='waves-effect'>-->
 <!--                            <i class='bx bx-trash'></i>-->
-<!--                            <span key='t-trash'>Limpeza</span>-->
+<!--                            <span key='t-trash'>Limpar Base</span>-->
 <!--                        </a>-->
 <!--                    </li>-->
                     <li id='profile-menu'>

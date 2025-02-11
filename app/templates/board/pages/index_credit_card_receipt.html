@@ -1,0 +1,46 @@
+<button class="btn btn-primary w-100 text-start mt-2" type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#collapseIndex_{{ receipt.id }}" aria-expanded="false"
+        aria-controls="collapseIndex_{{ receipt.id }}">
+    <div style="display: flex; justify-content: space-between;">
+        <span style="margin-right: 100px;">{{ receipt.ccr_name|upper }}</span>
+        <span style="margin-right: 100px;">{{ receipt.ccr_description|upper }}</span>
+        <span style="margin-right: 100px;">{{ receipt.ccr_last_digits }}</span>
+        <span style="margin-right: 100px;">Venc: {{ receipt.ccr_due_date }}</span>
+        <span style="margin-right: 100px;">Total da Fatura: R$ {{
+            receipt.overall|format_currency }}</span>
+    </div>
+</button>
+<!-- Contêiner de colapso -->
+<div class="collapse" id="collapseIndex_{{ receipt.id }}">
+    {% if receipt.entries %}
+        <div class="card card-body">
+            <div class='table-responsive'>
+                <table class='table align-middle table-nowrap mb-0'>
+                    <thead class='table-light'>
+                    <tr>
+                        <th class='align-middle'>Data</th>
+                        <th class='align-middle'>Estabelecimento</th>
+                        <th class='align-middle'>Descrição</th>
+                        <th class='align-middle'>Categorias</th>
+                        <th style='text-align: right;'>Valor</th>
+                        <th class='align-middle'></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row_entry in receipt.entries %}
+                        {% with row=row_entry %}
+                            {% include 'board/pages/credit_card_entries.html' %}
+                        {% endwith %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class='table-responsive'>
+            <div class='card-body'>Nenhuma entrada registrada nesta fatura.
+            </div>
+        </div>
+    {% endif %}
+</div>

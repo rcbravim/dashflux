@@ -8,8 +8,8 @@
                 <div class='navbar-brand-box'>
                     <a href="{{ url_for('board.index') }}" class='logo logo-light'>
             <span class='logo-lg'>
-<!--              <img src="{{ url_for('static', filename='global/images/logo-letter.svg') }}" alt='' height='26'>-->
-              <img src="{{ url_for('static', filename='global/images/profile-img_.png') }}" alt='' height='26'>
+<!--              <img src="{{ url_for('static.serve_static', filename='global/images/logo-letter.svg') }}" alt='' height='26'>-->
+              <img src="{{ url_for('static.serve_static', filename='global/images/profile-img_.png') }}" alt='' height='26'>
             </span>
                     </a>
                 </div>
@@ -24,7 +24,7 @@
                     <button type='button' class='btn header-item waves-effect' id='page-header-user-dropdown'
                             data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>
                         <img class='rounded-circle header-profile-user'
-                             src="{{ url_for('static', filename='global/images/logo-symbol.svg') }}"
+                             src="{{ url_for('static.serve_static', filename='global/images/logo-symbol.svg') }}"
                              alt='Header Avatar'>
                         <i class='mdi mdi-chevron-down d-none d-xl-inline-block'></i>
                     </button>

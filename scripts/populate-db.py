@@ -5,7 +5,7 @@ from flask import Flask
 from werkzeug.security import generate_password_hash
 from app.database.models import *
 
-# depreciated -> need adjustment for recent updates
+# depreciated -> need adjustment to reflect last updates
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.path.join('sqlite:///' + app.instance_path, 'database.db').replace('\\scripts', '')

@@ -1,0 +1,187 @@
+{% include 'board/partials/header.html' %}
+{% include 'board/partials/sidebar.html' %}
+
+<body data-topbar='dark'>
+<div id='layout-wrapper'>
+    <!-- ============================================================== -->
+    <!-- Start main content here -->
+    <!-- ============================================================== -->
+    <div class='main-content'>
+        <div class='page-content'>
+            <div class='container-fluid'>
+
+                <!-- start page title -->
+                <div class='row'>
+                    <div class='col-12'>
+                        <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
+                            <h4 class='mb-sm-0 font-size-18'>Faturas Cartão de Crédito</h4>
+                            <div class='page-title-right'>
+                                <ol class='breadcrumb m-0'>
+                                    <li class='breadcrumb-item'>Menu</li>
+                                    <li class='breadcrumb-item active'>Faturas de Cartão</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- end page title -->
+
+                {% if success %}
+                <div class='alert alert-success mb-4 text-center' role='alert'>{{ success }}</div>
+                {% elif error %}
+                <div class='alert alert-danger mb-4' role='alert'>{{ error|safe }}</div>
+                {% endif %}
+
+                <div class='row'>
+                    <div class='col-lg-12'>
+                        <div class='card'>
+                            <div class='card-body'>
+                                <div id='right'>
+                                    <div id='menu' class='mb-3'>
+                                        <span id='menu-navi'
+                                              class='d-sm-flex flex-wrap text-center text-sm-start justify-content-sm-between'>
+                                            <div class='d-sm-flex flex-wrap gap-1'>
+                                                <div class='btn-group mb-2' role='group' aria-label='Basic example'>
+                                                    <button type='button' class='btn btn-primary move-month'
+                                                            data-value='move-prev'>
+                                                        <i class='calendar-icon ic-arrow-line-left mdi mdi-chevron-left'
+                                                           data-action='move-prev'></i>
+                                                    </button>
+                                                    <button type='button' class='btn btn-primary move-month'
+                                                            data-value='move-next'>
+                                                        <i class='calendar-icon ic-arrow-line-right mdi mdi-chevron-right'
+                                                           data-action='move-next'></i>
+                                                    </button>
+                                                </div>
+                                                <div class='dropdown mb-2'>
+                                                    <button class='btn btn-primary dropdown-toggle' type='button'
+                                                            data-bs-toggle='dropdown' aria-haspopup='true'
+                                                            aria-expanded='false'>Ir Para
+                                                    </button>
+                                                    <div class='dropdown-menu dropdown-menu-md dropdown-menu-start'>
+                                                        <div class='form-group m-0 p-3'>
+                                                            <div class='input-group'>
+                                                                <input type='text' class='form-control mask_date_short'
+                                                                       id='goto'
+                                                                       placeholder='MM/YYYY'>
+                                                                <button class='btn btn-primary move-month' type='button'
+                                                                        data-value='goto'><i
+                                                                        class='mdi mdi-magnify'></i></button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type='button' class='btn btn-primary move-today mb-2'
+                                                        data-action='move-today'>Atual</button>
+                                                <form action="{{ url_for('board.credit_card_dashboard') }}" method='get'>
+                                                    <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                                                    <input type='hidden' name='y' value='{{ context.filter.year }}'/>
+                                                    <div class='col'>
+                                                        <input type='text' class='form-control match-select2' id='search'
+                                                               name='search'
+                                                               placeholder='Pesquisar'
+                                                               value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <h4 class='render-range fw-bold pt-1 mx-3'>{{
+                                                context.filter.displayed_str|upper }}</h4>
+                                            <input type='hidden' id='renderRange'
+                                                   value='{{ context.filter.displayed_int }}'/>
+                                            <div class='dropdown align-self-start mt-3 mt-sm-0 mb-2'>
+                                                <button class='btn btn-primary dropdown-toggle' type='button'
+                                                        data-bs-toggle='modal'
+                                                        data-bs-target='.newEntryModal'>
+                                                    <i class='mdi mdi-plus'></i> Adicionar Entrada
+                                                </button>
+                                                <button class='btn btn-success dropdown-toggle' type='button'
+                                                        data-bs-toggle='modal'
+                                                        data-bs-target='.labelUploadCsvModal'>
+                                                    <i class='mdi mdi-table'></i> Adicionar CSV
+                                                </button>
+                                            </div>
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if context.receipts %}
+                                    {% for receipt in context.receipts %}
+                                        <button class="btn btn-primary w-100 text-start mt-2" type="button"
+                                                data-bs-toggle="collapse"
+                                                data-bs-target="#collapseIndex_{{ receipt.id }}" aria-expanded="false"
+                                                aria-controls="collapseIndex_{{ receipt.id }}">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span style="margin-right: 100px;">{{ receipt.ccr_name|upper }}</span>
+                                                <span style="margin-right: 100px;">{{ receipt.ccr_description|upper }}</span>
+                                                <span style="margin-right: 100px;">{{ receipt.ccr_last_digits }}</span>
+                                                <span style="margin-right: 100px;">Venc: {{ receipt.ccr_due_date }}</span>
+                                                <span style="margin-right: 100px;">Total da Fatura: R$ {{
+                                                    receipt.overall|format_currency }}</span>
+                                            </div>
+                                        </button>
+                                        <!-- Contêiner de colapso -->
+                                        <div class="collapse" id="collapseIndex_{{ receipt.id }}">
+                                            {% if receipt.entries %}
+                                                <div class="card card-body">
+                                                    <div class='table-responsive'>
+                                                        <table class='table align-middle table-nowrap mb-0'>
+                                                            <thead class='table-light'>
+                                                            <tr>
+                                                                <th class='align-middle'>Data</th>
+                                                                <th class='align-middle'>Estabelecimento</th>
+                                                                <th class='align-middle'>Descrição</th>
+                                                                <th class='align-middle'>Categorias</th>
+                                                                <th style='text-align: right;'>Valor</th>
+                                                                <th class='align-middle'></th>
+                                                            </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                            {% for row in receipt.entries %}
+                                                                {% include 'board/pages/credit_card_entries.html' %}
+                                                            {% endfor %}
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            {% else %}
+                                                <div class='table-responsive'>
+                                                    <div class='card-body'>Nenhuma entrada registrada nesta fatura.
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        {% include 'board/pages/charts/chart_top_categories.html' %}
+                    </div>
+                </div>
+
+                <!-- end row -->
+            </div> <!-- container-fluid -->
+        </div>
+        <!-- End Page-content -->
+    </div>
+    <!-- end main content-->
+</div>
+</body>
+
+{% include 'board/partials/footer.html' %}
+
+<!-- newEntryModal Modal -->
+{% include 'board/pages/credit_card_dashboard_modal_new_transaction.html' %}
+<!-- end newEntryModal -->
+
+<!-- labelEditModal Modal -->
+{% include 'board/pages/credit_card_dashboard_modal_edit_transaction.html' %}
+<!-- end labelEditModal -->
+
+<!-- labelEditModal Modal -->
+{% include 'board/pages/credit_card_dashboard_modal_remove_transaction.html' %}
+<!-- end labelEditModal -->
+
+<!-- labelUploadCsvModal Modal -->
+{% include 'board/pages/credit_card_dashboard_modal_upload_csv.html' %}
+<!-- end labelEditModal -->

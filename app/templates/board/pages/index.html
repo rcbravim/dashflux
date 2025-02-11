@@ -58,8 +58,7 @@
                                         <div class='flex-grow-1'>
                                             <p class='text-muted fw-medium'>Saídas</p>
                                             <h4 class='mb-0 text-danger'>
-                                                R$ {% if context.analytic %}{{ context.analytic.expenses|format_currency
-                                                }}{%
+                                                R$ {% if context.analytic %}{{ (context.analytic.expenses * -1)|format_currency                                                }}{%
                                                 else %}0,00{% endif %}
                                             </h4>
                                         </div>
@@ -192,6 +191,16 @@
                                                 </div>
                                                 <button type='button' class='btn btn-primary move-today mb-2'
                                                         data-action='move-today'>Atual</button>
+                                                <form action="{{ url_for('board.index') }}" method='get'>
+                                                    <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                                                    <input type='hidden' name='y' value='{{ context.filter.year }}'/>
+                                                    <div class='col'>
+                                                        <input type='text' class='form-control match-select2' id='search'
+                                                               name='search'
+                                                               placeholder='Pesquisar'
+                                                               value='{% if context.filter.search %}{{ context.filter.search }}{% endif %}'>
+                                                    </div>
+                                                </form>
                                             </div>
                                             <h4 class='render-range fw-bold pt-1 mx-3'>{{
                                                 context.filter.displayed_str|upper }}</h4>
@@ -224,53 +233,7 @@
                                         </thead>
                                         <tbody>
                                         {% for row in context.entries %}
-                                        <tr class={% if row.tra_amount
-                                        < 0 %}"text-danger"{% else %}"text-success"
-                                        {% endif %}>
-                                        <td>{{ row.tra_entry_date|format_date }}</td>
-                                        <td>{{ row.est_name|upper }}</td>
-                                        <td>{{ row.tra_description|upper }}</td>
-                                        <td>
-                                            {% for category in row.categories_entry %}
-                                                {% if row.tra_amount > 0 %}
-                                                    <span class='badge badge-pill badge-soft-success font-size-12'>
-                                                        {{ category.cat_name|lower }}
-                                                    </span>
-                                                {% else %}
-                                                    <span class='badge badge-pill badge-soft-danger font-size-12'>
-                                                        {{ category.cat_name|lower }}
-                                                    </span>
-                                                {% endif %}
-                                            {% endfor %}
-                                        </td>
-
-                                        <td style='text-align: right;'>{{ row.tra_amount|format_currency }}</td>
-                                        <td style='text-align: right;'>{{ row.cumulative_balance|format_currency}}</td>
-                                        <td>
-                                            {% if row.tra_situation == 1 %}
-                                            <span class='badge badge-pill badge-soft-primary font-size-12'>Pago</span>
-                                            {% elif row.tra_situation == 2 %}
-                                            <span class='badge badge-pill badge-soft-secondary font-size-12'>Aberto</span>
-                                            {% elif row.tra_situation == 3 %}
-                                            <span class='badge badge-pill badge-soft-danger font-size-12'>Em Negociação</span>
-                                            {% elif row.tra_situation == 4 %}
-                                            <span class='badge badge-pill badge-soft-success font-size-12'>Recebido</span>
-                                            {% elif row.tra_situation == 5 %}
-                                            <span class='badge badge-pill badge-soft-warning font-size-12'>Agendado</span>
-                                            {% endif %}
-                                        </td>
-                                        <td>
-                                            <a data-bs-toggle='modal' data-bs-target='.labelEditModal'
-                                               class='text-success index_edit' style='cursor:pointer;'
-                                               data-value='{{ row.id }}'><i
-                                                    class='mdi mdi-pencil font-size-18'></i></a>
-
-                                            <a data-bs-toggle='modal' data-bs-target='.labelRemoveModal'
-                                               class='text-danger index_del' style='cursor:pointer;'
-                                               data-value='{{ row.id }}'><i
-                                                    class='mdi mdi-delete font-size-18'></i></a>
-                                        </td>
-                                        </tr>
+                                            {% include 'board/pages/index_entries.html' %}
                                         {% endfor %}
                                         </tbody>
                                     </table>

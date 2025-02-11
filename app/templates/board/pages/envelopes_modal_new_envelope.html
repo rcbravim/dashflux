@@ -1,0 +1,106 @@
+<div class='modal fade newEntryModal' id='newEntryModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Adicionar Novo Envelope</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.envelopes') }}" novalidate
+                  method='post'>
+                <input type='hidden' name='_method' value='POST'/>
+                {{ csrf_token }}
+                <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                <input type='hidden' name='y' value='{{ context.filter.year }}'/>
+                <div class='modal-body'>
+                    <div class='content mt-1'>
+                        <div class='row'>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='envelope_name_add' class='form-label'>Nome<span
+                                            class='text-danger'>*</span></label>
+                                    <input type='text' class='form-control'
+                                           id='envelope_name_add'
+                                           name='envelope_name_add'
+                                           placeholder='Identificador principal' required>
+                                    <div class='invalid-feedback'>Forneça um nome para o cartão de crédito</div>
+                                </div>
+                            </div>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label class='form-label'>Categorias<span class='text-danger'>*</span></label>
+
+                                    <select class="select2 form-control select2-multiple"
+                                            multiple="multiple" data-placeholder="..."
+                                            id="select-multiple-categories" name="selected_categories[]">
+
+                                        {% if context.categories %}
+                                            {% for row in context.categories %}
+                                                {% if row.id == 2 %}
+                                                    <option value='{{ row.id }}' selected>{{ row.cat_name|lower }}</option>
+                                                {% else %}
+                                                    <option value='{{ row.id }}'>{{ row.cat_name|lower }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <option value='' selected disabled>Selecione ao menos uma categoria</option>
+                                        {% endif %}
+                                    </select>
+
+                                    <div class='invalid-feedback'>Selecione uma categoria</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class='row'>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='envelope_description_add' class='form-label'>Descrição</label>
+                                    <input type='text' class='form-control'
+                                           id='envelope_description_add'
+                                           name='envelope_description_add'
+                                           placeholder='Forneça detalhes acerca do envelope'>
+                                </div>
+                            </div>
+                            <div class='col-lg-3'>
+                                <div class='mb-3'>
+                                    <label for='envelope_goal_add' class='form-label'>
+                                        Meta Mensal (R$)<span class='text-danger'>*</span>
+                                    </label>
+                                    <input type='number' class='form-control' id='envelope_goal_add'
+                                           name='envelope_goal_add'
+                                           placeholder='Valor do envelope'>
+                                </div>
+                            </div>
+                            <div class='col-lg-3'>
+                                <div class='mb-3'>
+                                    <label class='control-label'>Renova<span
+                                            class='text-danger'>*</span></label>
+                                    <select class='form-control select2-search-disable' name='envelope_due_day_add'
+                                            id='envelope_due_day_add'
+                                            required>
+                                        <option selected disabled>Dia</option>
+                                        {% for i in range(1, 32) %}
+                                            <option value='{{ i }}'>{{ i }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
+                    <button type='submit' class='btn btn-primary'>Adicionar Envelope</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+      $("#select-multiple-categories").select2({
+        dropdownParent: $("#newEntryModal")
+      });
+    });
+</script>
