@@ -26,6 +26,7 @@ env:
   CONTAINER_NAME: ""
   PORT: ""
   BRANCH: ""
+  ENVIRONMENT: ""
 
 on:
   push:
@@ -51,11 +52,13 @@ jobs:
             echo "PORT=5001" >> $GITHUB_ENV
             echo "DATABASE_URI=${{ secrets.DATABASE_URI }}_uat" >> $GITHUB_ENV
             echo "BRANCH=uat" >> $GITHUB_ENV
+            echo "ENVIRONMENT=uat" >> $GITHUB_ENV
           elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
             echo "CONTAINER_NAME=dashflux-dev" >> $GITHUB_ENV
             echo "PORT=5002" >> $GITHUB_ENV
             echo "DATABASE_URI=${{ secrets.DATABASE_URI }}_dev" >> $GITHUB_ENV
             echo "BRANCH=dev" >> $GITHUB_ENV
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
           fi
 
       - uses: actions/checkout@v4
@@ -87,7 +90,7 @@ jobs:
             echo 'Removing container $CONTAINER_NAME'
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
-            sudo docker system prune -af || true
+            sudo docker system prune -f || true
 
             echo 'Building new container $CONTAINER_NAME'
             sudo docker build -t $CONTAINER_NAME .
@@ -106,5 +109,6 @@ jobs:
               -e ADMIN_PASS=$ADMIN_PASS \
               -e DEV_USER=$DEV_USER \
               -e DEV_PASS=$DEV_PASS \
+              -e ENVIRONMENT=$ENVIRONMENT \
               --restart always $CONTAINER_NAME
           "

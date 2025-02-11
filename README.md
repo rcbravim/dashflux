@@ -137,7 +137,7 @@ $ python flask run --debug
 ## Nginx Config (more envs, same ec2)
 ```
 # Aplicação UAT
-  ocation /uat/ {
+  location /uat/ {
       proxy_pass http://127.0.0.1:5001;
       proxy_set_header Host $host;
       proxy_set_header X-Real-IP $remote_addr;
