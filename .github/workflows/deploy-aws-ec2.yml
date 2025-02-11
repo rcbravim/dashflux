@@ -1,13 +1,11 @@
-name: Deploy to AWS EC2 PRD
+name: Deploy to AWS EC2
 
 env:
   # deploy envs
-  EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}           # ${{ secrets.EC2_PRIVATE_KEY }}
-  HOSTNAME: ${{ secrets.HOSTNAME }}                         # ${{ secrets.HOSTNAME }}
-  USER_NAME: ${{ secrets.USER_NAME }}                       # ${{ secrets.USER_NAME }}
-  AWS_REGION: ${{ secrets.AWS_REGION }}                     # ${{ secrets.AWS_REGION }}
-  CONTAINER_NAME: dashflux                                  # ${{ secrets.CONTAINER_NAME }}
-  BRANCH: main
+  EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+  HOSTNAME: ${{ secrets.HOSTNAME }}
+  USER_NAME: ${{ secrets.USER_NAME }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
   WORKDIR: app-dashflux
 
   # app envs
@@ -23,16 +21,44 @@ env:
   DEV_USER: ${{ secrets.DEV_USER }}
   DEV_PASS: ${{ secrets.DEV_PASS }}
 
+  # dynamic vars
+  DATABASE_URI: ""
+  CONTAINER_NAME: ""
+  PORT: ""
+  BRANCH: ""
+
 on:
   push:
     branches:
       - main
+      - uat
+      - dev
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v2
+      - name: Define dynamic env vars based
+        run: |
+          if [ "${{ github.ref }}" == "refs/heads/main" ]; then
+            echo "CONTAINER_NAME=dashflux-prd" >> $GITHUB_ENV
+            echo "PORT=5000" >> $GITHUB_ENV
+            echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> $GITHUB_ENV
+            echo "BRANCH=main" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" == "refs/heads/uat" ]; then
+            echo "CONTAINER_NAME=dashflux-uat" >> $GITHUB_ENV
+            echo "PORT=5001" >> $GITHUB_ENV
+            echo "DATABASE_URI=${{ secrets.DATABASE_URI }}_uat" >> $GITHUB_ENV
+            echo "BRANCH=uat" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" == "refs/heads/dev" ]; then
+            echo "CONTAINER_NAME=dashflux-dev" >> $GITHUB_ENV
+            echo "PORT=5002" >> $GITHUB_ENV
+            echo "DATABASE_URI=${{ secrets.DATABASE_URI }}_dev" >> $GITHUB_ENV
+            echo "BRANCH=dev" >> $GITHUB_ENV
+          fi
+
+      - uses: actions/checkout@v4
         with:
           ref: ${{ env.BRANCH }}
 
@@ -52,26 +78,23 @@ jobs:
               git checkout $BRANCH
             else
               echo 'Fetching the latest code from $BRANCH branch'
+              git checkout $BRANCH
               git fetch --all
               git reset --hard origin/$BRANCH
               git pull origin $BRANCH
             fi
             
-            echo Copy database if not exists
-            if [ ! -e /instance/database.db ]; then
-              sudo docker cp dashflux:/app/instance/database.db $(pwd)/instance/database.db
-            fi
-            
-            echo Stop, remove the existing container and cleaning with docker prune
+            echo 'Removing container $CONTAINER_NAME'
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
             sudo docker system prune -af || true
-          
-            echo Build a new Docker image with the updated code
+
+            echo 'Building new container $CONTAINER_NAME'
             sudo docker build -t $CONTAINER_NAME .
-            
-            echo Run the new container with the data volume mounted
-            sudo docker run -d --name $CONTAINER_NAME -p 5000:5000 -v $(pwd)/instance:/app/instance \
+
+            echo 'Running new container $CONTAINER_NAME'
+            sudo docker run -d --name $CONTAINER_NAME -p $PORT:5000 \
+              -e DATABASE_URI=$DATABASE_URI \
               -e MAIL_USERNAME=$MAIL_USERNAME \
               -e MAIL_PASSWORD=$MAIL_PASSWORD \
               -e MAIL_DEFAULT_SENDER=$MAIL_DEFAULT_SENDER \
@@ -84,4 +107,4 @@ jobs:
               -e DEV_USER=$DEV_USER \
               -e DEV_PASS=$DEV_PASS \
               --restart always $CONTAINER_NAME
-            "
+          "
