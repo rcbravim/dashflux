@@ -15,6 +15,7 @@ on:
 
 env:
   PROJECT_NAME: dashflux
+
   EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
   HOSTNAME: ${{ secrets.HOSTNAME }}
   USER_NAME: ${{ secrets.USER_NAME }}
@@ -66,10 +67,6 @@ jobs:
             git reset --hard origin/$BRANCH
             git pull origin $BRANCH
 
-#            if [ ! -e $(pwd)/instance/database.db ]; then
-#              sudo mkdir -p $(pwd)/instance
-#              sudo touch $(pwd)/instance/database.db
-#            fi
 
             sudo docker stop $CONTAINER_NAME || true
             sudo docker rm $CONTAINER_NAME || true
