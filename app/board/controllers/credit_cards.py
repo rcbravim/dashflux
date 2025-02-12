@@ -4,7 +4,7 @@ from datetime import datetime
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import or_
 
-from app.database.models import CreditCardReceipt, Transaction, CreditCardTransaction
+from app.database.models import CreditCard, CreditCardTransaction
 from app.database.database import db
 from app.library.helper import paginator, normalize_for_match
 
@@ -22,31 +22,31 @@ def credit_cards_controller():
         session_id = session.get('user_id')
 
         query = db.session.query(
-            CreditCardReceipt.id,
-            CreditCardReceipt.ccr_name,
-            CreditCardReceipt.ccr_description,
-            CreditCardReceipt.ccr_flag,
-            CreditCardReceipt.ccr_last_digits,
-            CreditCardReceipt.ccr_due_date
+            CreditCard.id,
+            CreditCard.ccr_name,
+            CreditCard.ccr_description,
+            CreditCard.ccr_flag,
+            CreditCard.ccr_last_digits,
+            CreditCard.ccr_due_day
         ).filter(
-            CreditCardReceipt.ccr_status == True,
+            CreditCard.ccr_status == True,
             or_(
-                CreditCardReceipt.user_id == session_id,
-                CreditCardReceipt.user_id == 1)
+                CreditCard.user_id == session_id,
+                CreditCard.user_id == 1)
         ).order_by(
-            CreditCardReceipt.ccr_name
+            CreditCard.ccr_name
         )
 
         if request.args.get('search'):
             query = query.filter(
                 or_(
-                    CreditCardReceipt.ccr_name.ilike('%{}%'.format(request.args.get('search'))),
-                    CreditCardReceipt.ccr_description.ilike('%{}%'.format(request.args.get('search')))
+                    CreditCard.ccr_name.ilike('%{}%'.format(request.args.get('search'))),
+                    CreditCard.ccr_description.ilike('%{}%'.format(request.args.get('search')))
                 )
             )
 
         credit_card_user = query.filter(
-            CreditCardReceipt.user_id == session_id
+            CreditCard.user_id == session_id
         ).all()
 
         # Separate rows for exposure
@@ -80,16 +80,16 @@ def credit_cards_controller():
             ccr_name = request.form.get('ccr_name_edit')
             ccr_flag = request.form.get('ccr_flag_edit')
             ccr_last_digits = request.form.get('ccr_last_digits_edit')
-            ccr_due_date = request.form.get('ccr_due_date_edit')
+            ccr_due_day = request.form.get('ccr_due_day_edit')
             ccr_description = request.form.get('ccr_description_edit')
             user_id = session.get('user_id')
 
-            credit_card = CreditCardReceipt(
+            credit_card = CreditCard(
                 id=credit_card_id,
                 ccr_name=normalize_for_match(ccr_name),
                 ccr_flag=ccr_flag,
                 ccr_last_digits=ccr_last_digits,
-                ccr_due_date=ccr_due_date,
+                ccr_due_day=ccr_due_day,
                 ccr_description=ccr_description,
                 ccr_date_updated=datetime.utcnow(),
                 user_id=user_id
@@ -110,7 +110,7 @@ def credit_cards_controller():
 
             # 1/2 delete record in credit_card table
             credit_card = db.session.query(
-                CreditCardReceipt
+                CreditCard
             ).get(
                 credit_card_id
             )
@@ -120,9 +120,9 @@ def credit_cards_controller():
             db.session.query(
                 CreditCardTransaction
             ).filter_by(
-                credit_card_receipt_id=credit_card_id
+                credit_card_id=credit_card_id
             ).update(
-                {"credit_card_receipt_id": 1}
+                {"credit_card_id": 1}
             )
 
             db.session.commit()
@@ -135,17 +135,17 @@ def credit_cards_controller():
         credit_card_description = request.form.get('credit_card_description')
         credit_card_flag = request.form.get('credit_card_flag')
         credit_card_last_digits = request.form.get('credit_card_last_digits')
-        credit_card_due_date = request.form.get('credit_card_due_date')
+        credit_card_due_day = request.form.get('credit_card_due_day')
 
-        new_credit_card_receipt = CreditCardReceipt(
+        new_credit_card = CreditCard(
             ccr_name=normalize_for_match(credit_card_name),
             ccr_description=credit_card_description,
             ccr_flag=credit_card_flag,
             ccr_last_digits=credit_card_last_digits,
-            ccr_due_date=credit_card_due_date,
+            ccr_due_day=credit_card_due_day,
             user_id=user_id
         )
-        db.session.add(new_credit_card_receipt)
+        db.session.add(new_credit_card)
         db.session.commit()
         session['success'] = 'Cartão de Crédito Cadatrado com Sucesso!'
         return redirect(url_for('board.credit_cards'))

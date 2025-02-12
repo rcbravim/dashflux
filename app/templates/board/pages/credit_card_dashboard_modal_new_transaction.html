@@ -82,10 +82,10 @@
                                             {% for row in context.credit_cards %}
                                                 {% if row.id == 1 %}
                                                     <option value='{{ row.id }}' selected>{{ row.ccr_name }} | {{
-                                                        row.ccr_last_digits }} | {{ row.ccr_due_date }}</option>
+                                                        row.ccr_last_digits }} | {{ row.ccr_due_day }}</option>
                                                 {% else %}
                                                     <option value='{{ row.id }}'>{{ row.ccr_name }} | {{
-                                                        row.ccr_last_digits }} | {{ row.ccr_due_date }}</option>
+                                                        row.ccr_last_digits }} | {{ row.ccr_due_day }}</option>
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}

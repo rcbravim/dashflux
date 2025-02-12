@@ -3,7 +3,7 @@ from datetime import datetime
 
 from flask import request, session, jsonify
 
-from app.database.models import Category, Establishment, CreditCardTransaction, CreditCardReceipt
+from app.database.models import Category, Establishment, CreditCardTransaction, CreditCard
 from app.database.database import db
 
 
@@ -27,7 +27,7 @@ def credit_card_dashboard_edit_controller():
             old_transaction.cct_due_date.year != int(request.form.get('due_year')),
             old_transaction.cct_due_date.year != int(request.form.get('due_year')),
             old_transaction.establishment_id != int(request.form.get('modal_establishment')),
-            old_transaction.credit_card_receipt_id != int(request.form.get('credit_card')),
+            old_transaction.credit_card_id != int(request.form.get('credit_card')),
             old_transaction.category_ids != category_ids,
             old_transaction.cct_amount != amount * multiply
         ]):
@@ -64,16 +64,16 @@ def credit_card_dashboard_edit_controller():
         CreditCardTransaction.category_ids,
         Establishment.id.label('est_id'),
         Establishment.est_name,
-        CreditCardReceipt.id.label('ccr_id'),
-        CreditCardReceipt.ccr_name,
-        CreditCardReceipt.ccr_description,
-        CreditCardReceipt.ccr_flag,
-        CreditCardReceipt.ccr_last_digits,
-        CreditCardReceipt.ccr_due_date
+        CreditCard.id.label('ccr_id'),
+        CreditCard.ccr_name,
+        CreditCard.ccr_description,
+        CreditCard.ccr_flag,
+        CreditCard.ccr_last_digits,
+        CreditCard.ccr_due_day
     ).join(
         Establishment, CreditCardTransaction.establishment_id == Establishment.id
     ).join(
-        CreditCardReceipt, CreditCardTransaction.credit_card_receipt_id == CreditCardReceipt.id
+        CreditCard, CreditCardTransaction.credit_card_id == CreditCard.id
     ).filter(
         CreditCardTransaction.id == credit_card_transaction_id,
         CreditCardTransaction.cct_status == True,
@@ -82,7 +82,7 @@ def credit_card_dashboard_edit_controller():
 
     repetitions = []
     if data_query.cct_bound_hash is not None:
-        # due_date = datetime.strptime(f'{data_query.cct_due_month}/{data_query.cct_due_year}', '%m/%Y')
+        # due_day = datetime.strptime(f'{data_query.cct_due_month}/{data_query.cct_due_year}', '%m/%Y')
 
         repetitions = db.session.query(
             CreditCardTransaction.cct_due_date
@@ -116,14 +116,14 @@ def credit_card_dashboard_edit_controller():
             },
         'category_names': category_names,
         'category_ids': list(filter(bool, data_query.category_ids.split(','))),
-        'credit_card_receipt':
+        'credit_card':
             {
                 'id': data_query.ccr_id,
                 'name': data_query.ccr_name,
                 'description': data_query.ccr_description,
                 'flag': data_query.ccr_flag,
                 'last_digits': data_query.ccr_last_digits,
-                'due_date': data_query.ccr_due_date
+                'due_day': data_query.ccr_due_day
             }
     }
 

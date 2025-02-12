@@ -4,7 +4,7 @@ from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import extract, or_
 
-from app.database.models import Category, Establishment, CreditCardTransaction, CreditCardReceipt
+from app.database.models import Category, Establishment, CreditCardTransaction, CreditCard
 from app.database.database import db
 from app.library.helper import generate_hash, update_analytic
 
@@ -29,17 +29,19 @@ def credit_card_dashboard_controller():
             datetime_ref = datetime.strptime(f'1-{month}-{year}', '%d-%m-%Y')
 
         credit_card_transaction = CreditCardTransaction
-        credit_card_receipt = CreditCardReceipt
+        credit_card = CreditCard
         category = Category
         establishment = Establishment
 
         receipts_this_month = db.session.query(
-            credit_card_receipt,
+            credit_card,
         ).filter(
-            credit_card_receipt.ccr_status == True,
-            credit_card_receipt.user_id == user_id,
-            extract('month', credit_card_receipt.ccr_due_date == month),
-            extract('year', credit_card_receipt.ccr_due_date == year)
+            credit_card.ccr_status == True,
+            credit_card.user_id == user_id,
+
+            # todo: review this filter
+            # extract('month', credit_card.ccr_due_day == month),
+            # extract('year', credit_card.ccr_due_day == year)
         ).all()
 
         entries_all = db.session.query(
@@ -49,11 +51,11 @@ def credit_card_dashboard_controller():
             credit_card_transaction.cct_entry_date,
             credit_card_transaction.cct_description,
             credit_card_transaction.category_ids,
-            credit_card_transaction.credit_card_receipt_id,
+            credit_card_transaction.credit_card_id,
         ).join(
             establishment, credit_card_transaction.establishment_id == establishment.id
         ).join(
-            credit_card_receipt, credit_card_transaction.credit_card_receipt_id == credit_card_receipt.id
+            credit_card, credit_card_transaction.credit_card_id == credit_card.id
         ).filter(
             credit_card_transaction.cct_status == True,
             credit_card_transaction.user_id == user_id,
@@ -72,11 +74,11 @@ def credit_card_dashboard_controller():
                 'ccr_description': receipt_row.ccr_description,
                 'ccr_flag': receipt_row.ccr_flag,
                 'ccr_last_digits': receipt_row.ccr_last_digits,
-                'ccr_due_date': receipt_row.ccr_due_date,
+                'ccr_due_day': receipt_row.ccr_due_day,
                 'entries': []
             }
             for entry in entries_all:
-                if receipt_row.id == entry.credit_card_receipt_id:
+                if receipt_row.id == entry.credit_card_id:
                     categories_entry = []
                     for _id in list(filter(bool, entry.category_ids.split(','))):
                         categories_entry.append({
@@ -171,7 +173,7 @@ def credit_card_dashboard_controller():
             entry_date = datetime.strptime(request.form.get('modal_entry_date'), "%Y-%m-%d")
             category_ids = ','.join(request.form.get('modal_category[]').split(','))
             establishment_id = request.form.get('modal_establishment')
-            credit_card_receipt_id = request.form.get('credit_card')
+            credit_card_id = request.form.get('credit_card')
             due_month = int(request.form.get('due_month'))
             due_year = int(request.form.get('due_year'))
             description = request.form.get('modal_description')
@@ -184,7 +186,7 @@ def credit_card_dashboard_controller():
             credit_card_transaction.cct_entry_date = entry_date.date()
             credit_card_transaction.cct_description = description
             credit_card_transaction.cct_due_date = datetime.strptime(f'1-{due_month}-{due_year}', '%d-%m-%Y').date()
-            credit_card_transaction.credit_card_receipt_id = int(credit_card_receipt_id)
+            credit_card_transaction.credit_card_id = int(credit_card_id)
             credit_card_transaction.establishment_id = int(establishment_id)
             credit_card_transaction.category_ids = category_ids
             credit_card_transaction.cct_amount = amount * multiply
@@ -219,7 +221,7 @@ def credit_card_dashboard_controller():
 
                     bound_credit_card_transaction.cct_entry_date = entry_date.date()
                     bound_credit_card_transaction.cct_description = description
-                    bound_credit_card_transaction.credit_card_receipt_id = int(credit_card_receipt_id)
+                    bound_credit_card_transaction.credit_card_id = int(credit_card_id)
                     bound_credit_card_transaction.establishment_id = int(establishment_id)
                     bound_credit_card_transaction.category_ids = category_ids
                     bound_credit_card_transaction.cct_amount = amount * multiply
@@ -299,7 +301,7 @@ def credit_card_dashboard_controller():
                     cct_due_date=due_date.date(),
                     establishment_id=establishment,
                     category_ids=','.join(category_list),
-                    credit_card_receipt_id=credit_card
+                    credit_card_id=credit_card
                 )
                 if repetition > 1:
                     cct_bound_hash = generate_hash(str(now)) if i == 0 else cct_bound_hash

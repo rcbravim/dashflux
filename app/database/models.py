@@ -102,7 +102,7 @@ class Establishment(db.Model):
         return '<Establishment %r>' % self.est_name
 
 
-class CreditCardReceipt(db.Model):
+class CreditCard(db.Model):
     __table_args__ = (
         db.UniqueConstraint('id', 'ccr_name', 'user_id'),
     )
@@ -112,7 +112,7 @@ class CreditCardReceipt(db.Model):
     ccr_description = db.Column(db.String(250), nullable=True)
     ccr_flag = db.Column(db.String(250), nullable=False)
     ccr_last_digits = db.Column(db.String(4), nullable=True)
-    ccr_due_date = db.Column(db.Integer, nullable=False)
+    ccr_due_day = db.Column(db.Integer, nullable=False)
 
     ccr_status = db.Column(db.Boolean, default=True, nullable=False)
     ccr_date_created = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
@@ -121,10 +121,10 @@ class CreditCardReceipt(db.Model):
 
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
-    user = db.relationship('User', backref=db.backref('credit_card_receipt'))
+    user = db.relationship('User', backref=db.backref('credit_card'))
 
     def __repr__(self):
-        return f"CreditCardReceipt(id={self.id}, ccr_name={self.ccr_name}, user_id={self.user_id})"
+        return f"CreditCard(id={self.id}, ccr_name={self.ccr_name}, user_id={self.user_id})"
 
 
 class Analytic(db.Model):
@@ -188,7 +188,7 @@ class CreditCardTransaction(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     establishment_id = db.Column(db.Integer, db.ForeignKey('establishment.id'), nullable=False)
     category_ids = db.Column(db.String, nullable=False, default='', comment="1,2,3,4,5")
-    credit_card_receipt_id = db.Column(db.Integer, db.ForeignKey('credit_card_receipt.id'), nullable=False)
+    credit_card_id = db.Column(db.Integer, db.ForeignKey('credit_card.id'), nullable=False)
 
     user = db.relationship('User', backref=db.backref('credit_card_transaction'))
 
@@ -218,7 +218,7 @@ class ChartCategoryMonthYear(db.Model):
 
 class Envelope(db.Model):
 
-    # todo: analiar se é mais eficientre fazer pk composta, e remover id
+    # todo: analisar se é mais eficientre fazer pk composta, e remover id
     # __table_args__ = (
     #     db.PrimaryKeyConstraint('env_name', 'env_due_day', 'user_id'),
     # )

@@ -5,7 +5,7 @@ from flask import render_template, request, url_for, redirect
 from werkzeug.security import generate_password_hash
 
 from app.database.database import db
-from app.database.models import User, Establishment, Category, Account, CreditCardReceipt, Transaction, \
+from app.database.models import User, Establishment, Category, Account, CreditCard, Transaction, \
     CreditCardTransaction, Analytic
 
 
@@ -36,9 +36,9 @@ def insert_default_records(app):
         default_category_description = 'PADRÃO DO SISTEMA'
         default_account_name = 'CONTA PADRÃO'
         default_account_description = 'PADRÃO DO SISTEMA'
-        default_credit_card_receipt_name = 'SEM FATURA'
-        default_credit_card_receipt_description = 'PADRÃO DO SISTEMA'
-        default_credit_card_receipt_flag = 'OUTRO'
+        default_credit_card_name = 'SEM FATURA'
+        default_credit_card_description = 'PADRÃO DO SISTEMA'
+        default_credit_card_flag = 'OUTRO'
 
         # insert admin user
         admin_user = User(
@@ -86,12 +86,12 @@ def insert_default_records(app):
         db.session.add(default_account)
 
         # insert system credit card
-        default_account = CreditCardReceipt(
-            ccr_name=default_credit_card_receipt_name,
-            ccr_description=default_credit_card_receipt_description,
-            ccr_flag=default_credit_card_receipt_flag,
+        default_account = CreditCard(
+            ccr_name=default_credit_card_name,
+            ccr_description=default_credit_card_description,
+            ccr_flag=default_credit_card_flag,
             ccr_last_digits='',
-            ccr_due_date=1,
+            ccr_due_day=1,
             user_id=1
         )
         db.session.add(default_account)
@@ -128,9 +128,9 @@ def clean_user_db(app):
 
         # clean credit card receipts
         click.echo('Cleaning credit card receipts...')
-        credit_card_receipts = CreditCardReceipt.query.filter_by(user_id=user_id).all()
-        for credit_card_receipt in credit_card_receipts:
-            db.session.delete(credit_card_receipt)
+        credit_cards = CreditCard.query.filter_by(user_id=user_id).all()
+        for credit_card in credit_cards:
+            db.session.delete(credit_card)
 
         # clean transactions
         click.echo('Cleaning transactions...')

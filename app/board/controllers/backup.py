@@ -5,7 +5,7 @@ from flask import request, render_template, session, send_file, current_app
 from sqlalchemy import or_
 
 from app.database.database import db
-from app.database.models import Transaction, Establishment, Account, Category, CreditCardTransaction, CreditCardReceipt
+from app.database.models import Transaction, Establishment, Account, Category, CreditCardTransaction, CreditCard
 
 
 def backup_controller():
@@ -60,12 +60,12 @@ def backup_controller():
             CreditCardTransaction.cct_description,
             CreditCardTransaction.category_ids,
             CreditCardTransaction.cct_amount,
-            CreditCardReceipt.ccr_name,
+            CreditCard.ccr_name,
             CreditCardTransaction.cct_due_date,
         ).join(
             Establishment, CreditCardTransaction.establishment_id == Establishment.id
         ).join(
-            CreditCardReceipt, CreditCardTransaction.credit_card_receipt_id == CreditCardReceipt.id
+            CreditCard, CreditCardTransaction.credit_card_id == CreditCard.id
         ).filter(
             CreditCardTransaction.user_id == user_id
         ).all()
@@ -83,7 +83,7 @@ def backup_controller():
         establishments = db.session.query(Establishment.est_name, Establishment.est_description).filter(Establishment.user_id == user_id).all()
         accounts = db.session.query(Account.acc_name, Account.acc_description, Account.acc_is_bank, Account.acc_bank_name, Account.acc_bank_branch, Account.acc_bank_account).filter(Account.user_id == user_id).all()
         categories = db.session.query(Category.cat_name, Category.cat_description, Category.cat_goal).filter(Category.user_id == user_id).all()
-        receipts = db.session.query(CreditCardReceipt.ccr_name, CreditCardReceipt.ccr_description, CreditCardReceipt.ccr_flag, CreditCardReceipt.ccr_last_digits, CreditCardReceipt.ccr_due_date).filter(CreditCardReceipt.user_id == user_id).all()
+        receipts = db.session.query(CreditCard.ccr_name, CreditCard.ccr_description, CreditCard.ccr_flag, CreditCard.ccr_last_digits, CreditCard.ccr_due_day).filter(CreditCard.user_id == user_id).all()
 
         # columns
         establishments_columns = ['nome', 'descricao']

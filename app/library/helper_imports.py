@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import session
 
 from app.database.database import db
-from app.database.models import Establishment, Category, Account, CreditCardReceipt, Transaction, CreditCardTransaction
+from app.database.models import Establishment, Category, Account, CreditCard, Transaction, CreditCardTransaction
 from app.library.helper import normalize_for_match, update_analytic
 
 columns_transactions = ['data', 'estabelecimento', 'descrição', 'categorias', 'valor', 'conta', 'tipo']
@@ -117,24 +117,24 @@ def insert_credit_cards(df):
     credit_cards = set(df[columns_credit_cards].itertuples(index=False, name=None))
 
     db_credit_cards = db.session.query(
-        CreditCardReceipt.ccr_name
+        CreditCard.ccr_name
     ).filter_by(
         user_id=user_id
     ).all()
 
     list_db_credit_cards = [normalize_for_match(name[0]) for name in db_credit_cards]
 
-    for name, descriptions, flag, last_digits, due_date in credit_cards:
+    for name, descriptions, flag, last_digits, due_day in credit_cards:
         if name != '' and normalize_for_match(name) not in list_db_credit_cards:
-            credit_card_receipt = CreditCardReceipt(
+            credit_card = CreditCard(
                 ccr_name=normalize_for_match(name),
                 ccr_description=descriptions.strip().upper(),
                 ccr_flag=flag.strip().upper(),
                 ccr_last_digits=last_digits.strip().upper(),
-                ccr_due_date=due_date,
+                ccr_due_day=due_day,
                 user_id=user_id
             )
-            db.session.add(credit_card_receipt)
+            db.session.add(credit_card)
             list_db_credit_cards.append(normalize_for_match(name))
             count += 1
 
@@ -244,7 +244,7 @@ def insert_credit_cards_by_transactions(df):
     tuple_cards = set(df.apply(lambda row: (row['cartao'], row['data_cobranca'].day), axis=1))
 
     db_credit_cards = db.session.query(
-        CreditCardReceipt.ccr_name
+        CreditCard.ccr_name
     ).filter_by(
         user_id=user_id
     ).all()
@@ -253,15 +253,15 @@ def insert_credit_cards_by_transactions(df):
 
     for name, due_date_day in tuple_cards:
         if name != '' and normalize_for_match(name) not in list_db_credit_cards:
-            credit_card_receipt = CreditCardReceipt(
+            credit_card = CreditCard(
                 ccr_name=normalize_for_match(name),
                 ccr_description="",
                 ccr_last_digits="",
                 user_id=user_id,
                 ccr_flag='Outro',
-                ccr_due_date=int(due_date_day)
+                ccr_due_day=int(due_date_day)
             )
-            db.session.add(credit_card_receipt)
+            db.session.add(credit_card)
             list_db_credit_cards.append(normalize_for_match(name))
             count += 1
 
@@ -325,7 +325,7 @@ def insert_credit_card_transactions(df):
                     category = Category.query.filter_by(cat_name=normalize_for_match(cat_name).strip().upper(), user_id=user_id).first()
                     category_ids = category_ids + ',' + str(category.id) if category_ids != '' else str(category.id)
 
-            credit_card = CreditCardReceipt.query.filter_by(ccr_name=normalize_for_match(row['cartao']).strip().upper(), user_id=user_id).first()
+            credit_card = CreditCard.query.filter_by(ccr_name=normalize_for_match(row['cartao']).strip().upper(), user_id=user_id).first()
             credit_card_id = credit_card.id if credit_card else 1
 
             credit_card_transaction = CreditCardTransaction(
@@ -336,7 +336,7 @@ def insert_credit_card_transactions(df):
                 user_id=user_id,
                 establishment_id=establishment_id,
                 category_ids=category_ids,
-                credit_card_receipt_id=credit_card_id
+                credit_card_id=credit_card_id
             )
             db.session.add(credit_card_transaction)
 

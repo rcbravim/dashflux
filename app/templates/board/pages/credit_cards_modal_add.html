@@ -73,11 +73,11 @@
                                     <div class='mb-3'>
                                         <label class='control-label'>Vencimento<span
                                                 class='text-danger'>*</span></label>
-                                        <select class='form-control select2-search-disable' name='credit_card_due_date'
-                                                id='credit_card_due_date'
+                                        <select class='form-control select2-search-disable' name='credit_card_due_day'
+                                                id='credit_card_due_day'
                                                 required>
                                             <option selected disabled>Dia</option>
-                                            {% for i in range(1, 32) %}
+                                            {% for i in range(1, 29) %}
                                                 <option value='{{ i }}'>{{ i }}</option>
                                             {% endfor %}
                                         </select>

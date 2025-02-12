@@ -6,7 +6,7 @@ from dateutil.relativedelta import relativedelta
 from flask import request, render_template, session, redirect, url_for
 from sqlalchemy import func, extract, or_, and_
 
-from app.database.models import Category, Establishment, Account, Transaction, Analytic, CreditCardReceipt, \
+from app.database.models import Category, Establishment, Account, Transaction, Analytic, CreditCard, \
     CreditCardTransaction
 from app.database.database import db
 from app.library.helper import paginator, generate_hash, update_analytic
@@ -36,7 +36,7 @@ def index_controller():
         category = Category
         establishment = Establishment
         account = Account
-        credit_card_receipt = CreditCardReceipt
+        credit_card = CreditCard
         credit_card_transaction = CreditCardTransaction
 
         entries_all = db.session.query(
@@ -78,12 +78,14 @@ def index_controller():
 
         # credit card receipts
         receipts_this_month = db.session.query(
-            credit_card_receipt,
+            credit_card,
         ).filter(
-            credit_card_receipt.ccr_status == True,
-            credit_card_receipt.user_id == user_id,
-            extract('month', credit_card_receipt.ccr_due_date == month),
-            extract('year', credit_card_receipt.ccr_due_date == year)
+            credit_card.ccr_status == True,
+            credit_card.user_id == user_id,
+
+            # todo: review this filter
+            # extract('month', credit_card.ccr_due_date == month),
+            # extract('year', credit_card.ccr_due_date == year)
         ).all()
 
         entries_credit_card_all = db.session.query(
@@ -93,11 +95,11 @@ def index_controller():
             credit_card_transaction.cct_entry_date,
             credit_card_transaction.cct_description,
             credit_card_transaction.category_ids,
-            credit_card_transaction.credit_card_receipt_id,
+            credit_card_transaction.credit_card_id,
         ).join(
             establishment, credit_card_transaction.establishment_id == establishment.id
         ).join(
-            credit_card_receipt, credit_card_transaction.credit_card_receipt_id == credit_card_receipt.id
+            credit_card, credit_card_transaction.credit_card_id == credit_card.id
         ).filter(
             credit_card_transaction.cct_status == True,
             credit_card_transaction.user_id == user_id,
@@ -116,11 +118,11 @@ def index_controller():
                 'ccr_description': receipt_row.ccr_description,
                 'ccr_flag': receipt_row.ccr_flag,
                 'ccr_last_digits': receipt_row.ccr_last_digits,
-                'ccr_due_date': receipt_row.ccr_due_date,
+                'ccr_due_day': receipt_row.ccr_due_day,
                 'entries': []
             }
             for entry in entries_credit_card_all:
-                if receipt_row.id == entry.credit_card_receipt_id:
+                if receipt_row.id == entry.credit_card_id:
                     categories_entry = []
                     for _id in list(filter(bool, entry.category_ids.split(','))):
                         categories_entry.append({
@@ -140,7 +142,7 @@ def index_controller():
             receipts.append(receipt)
 
         for idx, receipt in enumerate(receipts):
-            receipts[idx]['tra_entry_date'] = datetime.strptime(f'{receipt["ccr_due_date"]}-{now.month}-{now.year}', '%d-%m-%Y')
+            receipts[idx]['tra_entry_date'] = datetime.strptime(f'{receipt["ccr_due_day"]}-{now.month}-{now.year}', '%d-%m-%Y')
         entries_with_receipts = entries_all + receipts
         entries_with_receipts = sorted(entries_with_receipts, key=lambda x: x['tra_entry_date'].day if 'tra_entry_date' in x else x.tra_entry_date.day)
 
