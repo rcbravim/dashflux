@@ -2,10 +2,11 @@ import locale
 from flask import Flask
 from flask_login import LoginManager
 
-from app.auth_config import auth_config, insert_default_records
+from app.auth_config import auth_config, insert_default_records, clean_user_db
 from app.config import Config
 from app.auth.routes import bp as auth_bp
 from app.board.routes import bp as board_bp
+from app.static.routes import static_bp
 from app.database.models import User
 from app.library.mail import mail
 from app.database import models
@@ -37,9 +38,13 @@ def create_app():
     # insert admin user and default registers (if insert-default command)
     insert_default_records(app)
 
+    # clean user db by user_id (if clean-db command)
+    clean_user_db(app)
+
     # register blueprint instances
     app.register_blueprint(auth_bp)
     app.register_blueprint(board_bp)
+    app.register_blueprint(static_bp)
 
     # translate dates
     locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')

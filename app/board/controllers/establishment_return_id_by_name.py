@@ -14,7 +14,7 @@ def establishment_return_id_by_name_controller():
         Establishment.id,
         Establishment.est_name,
     ).filter(
-        Establishment.est_name.ilike('%{}%'.format(establishment_name)),
+        Establishment.est_name.ilike('{}'.format(establishment_name)),
         Establishment.est_status == True,
         Establishment.user_id == user_id,
         Establishment.id != establishment_id

@@ -14,24 +14,7 @@
                 <div class='modal-body'>
                     <div class='content mt-1'>
                         <div class='row'>
-                            <div class='col-lg-12'>
-                                <div class='mb-3'>
-                                    <label class='d-block mb-3'>Tipo de Categoria<span class='text-danger'>*</span></label>
-                                    <div class='form-check form-check-inline'>
-                                        <input class='form-check-input' type='radio' name='inlineRadioOptions'
-                                               id='inlineRadioAdd1' value='1'>
-                                        <label class='form-check-label' for='inlineRadioAdd1'>Entrada</label>
-                                    </div>
-                                    <div class='form-check form-check-inline'>
-                                        <input class='form-check-input' type='radio' name='inlineRadioOptions'
-                                               id='inlineRadioAdd2' value='2'>
-                                        <label class='form-check-label' for='inlineRadioAdd2'>Saída</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class='row'>
-                            <div class='col-lg-12'>
+                            <div class='col-lg-6'>
                                 <div class='mb-3'>
                                     <label for='cat_name_add' class='form-label'>Nome<span class='text-danger'>*</span></label>
                                     <input type='text' class='form-control valid_entry_add' id='cat_name_add'
@@ -39,6 +22,26 @@
                                            placeholder='Digite o nome da categoria'
                                            required>
                                     <div class='invalid-feedback'>Digite o nome da categoria</div>
+                                </div>
+                            </div>
+                            <div class='col-lg-6'>
+                                <div class='mb-3'>
+                                    <label for='cat_goal_add' class='form-label'>
+                                        Meta Mensal (R$)
+                                        <i class="mdi mdi-alert text-danger" data-bs-toggle="tooltip" data-bs-placement="top"
+                                           title="Metas zeradas não aparecerão nos gráficos"></i>
+                                    </label>
+                                    <input type='number' class='form-control' id='cat_goal_add'
+                                           name='cat_goal_add'
+                                           placeholder='Digite uma meta mensal para a categoria'>
+                                </div>
+                            </div>
+                            <div class='col-lg-12'>
+                                <div class='mb-3'>
+                                    <label for='cat_description_add' class='form-label'>Descrição</label>
+                                    <input type='text' class='form-control' id='cat_description_add'
+                                           name='cat_description_add'
+                                           placeholder='Se preferir, digite a descrição da categoria'>
                                 </div>
                             </div>
                         </div>

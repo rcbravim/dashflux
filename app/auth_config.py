@@ -5,13 +5,13 @@ from flask import render_template, request, url_for, redirect
 from werkzeug.security import generate_password_hash
 
 from app.database.database import db
-from app.database.models import User, Establishment, Category, Account
+from app.database.models import User, Establishment, Category, Account, CreditCard, Transaction, \
+    CreditCardTransaction, Analytic
 
 
 def auth_config(login_manager):
     @login_manager.unauthorized_handler
     def unauthorized():
-
         if request.url_rule.endpoint == 'board.index':
             return redirect(url_for('auth.login'))
 
@@ -26,11 +26,24 @@ def auth_config(login_manager):
 def insert_default_records(app):
     @app.cli.command('insert-default-records')
     def insert_default_records_command():
+        default_admin_use_login = os.getenv('ADMIN_USER')
+        default_admin_use_password = generate_password_hash(os.getenv('ADMIN_PASS'))
+        default_dev_use_login = os.getenv('DEV_USER')
+        default_dev_use_password = generate_password_hash(os.getenv('DEV_PASS'))
+        default_establishment_name = 'NÃO INFORMADO'
+        default_establishment_description = 'SEM INFORMAÇÃO'
+        default_category_name = 'SEM CATEGORIA'
+        default_category_description = 'PADRÃO DO SISTEMA'
+        default_account_name = 'CONTA PADRÃO'
+        default_account_description = 'PADRÃO DO SISTEMA'
+        default_credit_card_name = 'SEM FATURA'
+        default_credit_card_description = 'PADRÃO DO SISTEMA'
+        default_credit_card_flag = 'OUTRO'
 
         # insert admin user
         admin_user = User(
-            use_login=os.getenv('ADMIN_USER'),
-            use_password=generate_password_hash(os.getenv('ADMIN_PASS')),
+            use_login=default_admin_use_login,
+            use_password=default_admin_use_password,
             use_is_manager=True,
             use_is_valid=True
         )
@@ -38,39 +51,47 @@ def insert_default_records(app):
 
         # insert dev user
         dev_user = User(
-            use_login=os.getenv('DEV_USER'),
-            use_password=generate_password_hash(os.getenv('DEV_PASS')),
+            use_login=default_dev_use_login,
+            use_password=default_dev_use_password,
             use_is_valid=True
         )
         db.session.add(dev_user)
 
-        # insert establishment
+        # guarantee that the users are inserted
+        db.session.commit()
+
+        # insert system establishment
         default_establishment = Establishment(
-            est_name='Não Informado',
-            est_description='Registros sem informação do estabelecimento',
+            est_name=default_establishment_name,
+            est_description=default_establishment_description,
             user_id=1
         )
         db.session.add(default_establishment)
 
-        # insert categories
+        # insert system categories
         default_category_1 = Category(
-            cat_name='Sem Categoria (Entradas)',
-            cat_type=1,
+            cat_name=default_category_name,
+            cat_description=default_category_description,
             user_id=1
         )
         db.session.add(default_category_1)
-        default_category_2 = Category(
-            cat_name='Sem Categoria (Saídas)',
-            cat_type=2,
+
+        # insert system account
+        default_account = Account(
+            acc_name=default_account_name,
+            acc_description=default_account_description,
+            acc_is_bank=False,
             user_id=1
         )
-        db.session.add(default_category_2)
+        db.session.add(default_account)
 
-        # insert account
-        default_account = Account(
-            acc_name='Conta Padrão',
-            acc_description='Conta Padrão do Sistema',
-            acc_is_bank=False,
+        # insert system credit card
+        default_account = CreditCard(
+            ccr_name=default_credit_card_name,
+            ccr_description=default_credit_card_description,
+            ccr_flag=default_credit_card_flag,
+            ccr_last_digits='',
+            ccr_due_day=1,
             user_id=1
         )
         db.session.add(default_account)
@@ -78,4 +99,56 @@ def insert_default_records(app):
         db.session.commit()
         click.echo('Admin user inserted.')
         click.echo('Dev user inserted.')
-        click.echo('Default records inserted.')
+        click.echo('System records inserted.')
+
+
+def clean_user_db(app):
+    @app.cli.command('clean-user-db')
+    @click.argument('user_id')
+    def clean_user_db_command(user_id):
+        click.echo('Cleaning user data...')
+
+        # clean categories
+        click.echo('Cleaning categories...')
+        categories = Category.query.filter_by(user_id=user_id).all()
+        for category in categories:
+            db.session.delete(category)
+
+        # clean establishments
+        click.echo('Cleaning establishments...')
+        establishments = Establishment.query.filter_by(user_id=user_id).all()
+        for establishment in establishments:
+            db.session.delete(establishment)
+
+        # clean accounts
+        click.echo('Cleaning accounts...')
+        accounts = Account.query.filter_by(user_id=user_id).all()
+        for account in accounts:
+            db.session.delete(account)
+
+        # clean credit card receipts
+        click.echo('Cleaning credit card receipts...')
+        credit_cards = CreditCard.query.filter_by(user_id=user_id).all()
+        for credit_card in credit_cards:
+            db.session.delete(credit_card)
+
+        # clean transactions
+        click.echo('Cleaning transactions...')
+        transactions = Transaction.query.filter_by(user_id=user_id).all()
+        for transaction in transactions:
+            db.session.delete(transaction)
+
+        # clean credit card transactions
+        click.echo('Cleaning credit card transactions...')
+        credit_card_transactions = CreditCardTransaction.query.filter_by(user_id=user_id).all()
+        for credit_card_transaction in credit_card_transactions:
+            db.session.delete(credit_card_transaction)
+
+        # clean analitics reports
+        click.echo('Cleaning analitics reports...')
+        analitics_reports = Analytic.query.filter_by(user_id=user_id).all()
+        for analitic_report in analitics_reports:
+            db.session.delete(analitic_report)
+
+        db.session.commit()
+        click.echo('User data successful cleaned.')

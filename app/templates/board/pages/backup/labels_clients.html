@@ -92,7 +92,7 @@
                             <tr>
                               <td>{{ row.cli_date_created|date }}</td>
                               <td>
-                                <img src="{{ url_for('static', filename='board/images/flags/') }}" alt='' height='15'>&nbsp;&nbsp;
+                                <img src="{{ url_for('static.serve_static', filename='board/images/flags/') }}" alt='' height='15'>&nbsp;&nbsp;
                                 {{ row.cou_name|upper }}{% if row.country__cou_name|length > 15 %}...{% endif %}
                               </td>
                               <td>{{ row.sta_name|upper }}</td>

@@ -1,0 +1,105 @@
+<div class='modal fade labelEditModal' id='labelEditModal' tabindex='-1' role='dialog'
+     aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Editar Envelope</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' id='editFormEnvelope' method='post'
+                  action="{{ url_for('board.envelopes') }}" novalidate>
+                <input type='hidden' name='_method' value='PUT'/>
+                {{ csrf_token }}
+                <input type='hidden' id='edit_index' name='edit_index'/>
+                <div class='modal-body'>
+                    <div id="editAlert" class="alert alert-warning d-none" role="alert">
+                        Nenhuma alteração foi realizada.
+                    </div>
+                    <div class='row'>
+                        <div class='col-lg-6'>
+                            <div class='mb-3'>
+                                <label for='envelope_name_edit' class='form-label'>Nome<span
+                                        class='text-danger'>*</span></label>
+                                <input type='text' class='form-control'
+                                       id='envelope_name_edit'
+                                       name='envelope_name_edit'
+                                       placeholder='Identificador principal' required>
+                                <div class='invalid-feedback'>Forneça um nome para o cartão de crédito</div>
+                            </div>
+                        </div>
+                        <div class='col-lg-6'>
+                            <div class='mb-3'>
+                                <label for='modal_category' class='form-label'>Categorias<span
+                                        class='text-danger'>*</span></label>
+                                <input type="hidden" id="selected_categories_input" name="selected_categories" value="">
+                                <select class="select2 form-control select2-multiple"
+                                        multiple="multiple" data-placeholder="Selecione ao menos uma categoria"
+                                        id="modal_category" name="modal_category[]">
+
+                                    {% for row in context.categories %}
+                                        <option value="{{ row.id }}">{{ row.cat_name|lower }}</option>
+                                    {% endfor %}
+
+                                    <option value='' disabled selected>Selecione ao menos uma categoria</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-lg-6'>
+                            <div class='mb-3'>
+                                <label for='envelope_description_edit' class='form-label'>Descrição</label>
+                                <input type='text' class='form-control'
+                                       id='envelope_description_edit'
+                                       name='envelope_description_edit'
+                                       placeholder='Forneça detalhes acerca do envelope'>
+                            </div>
+                        </div>
+                        <div class='col-lg-3'>
+                            <div class='mb-3'>
+                                <label for='envelope_goal_edit' class='form-label'>
+                                    Meta Mensal (R$)<span class='text-danger'>*</span>
+                                </label>
+                                <input type='number' class='form-control' id='envelope_goal_edit'
+                                       name='envelope_goal_edit'
+                                       placeholder='Valor do envelope'>
+                            </div>
+                        </div>
+                        <div class='col-lg-3'>
+                            <div class='mb-3'>
+                                <label class='control-label'>Renova<span
+                                        class='text-danger'>*</span></label>
+                                <select class='form-control select2-search-disable' name='envelope_due_day_edit'
+                                        id='envelope_due_day_edit'
+                                        required>
+                                    <option selected disabled>Dia</option>
+                                    {% for i in range(1, 32) %}
+                                        <option value='{{ i }}'>{{ i }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='editEnvelope'
+                            data-action='single'>Editar Envelope</button>
+                </div>
+                <input type="hidden" id="action_edit_envelope" name="action_edit_envelope" value="">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function() {
+      $("#modal_category").select2({
+        dropdownParent: $("#labelEditModal")
+      });
+      $("#modal_repetition").select2({
+        dropdownParent: $("#labelEditModal")
+      });
+    });
+</script>

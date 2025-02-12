@@ -13,11 +13,11 @@
                 <div class='row'>
                     <div class='col-12'>
                         <div class='page-title-box d-sm-flex align-items-center justify-content-between'>
-                            <h4 class='mb-sm-0 font-size-18'>Upload</h4>
+                            <h4 class='mb-sm-0 font-size-18'>Restaurar | Upload File</h4>
                             <div class='page-title-right'>
                                 <ol class='breadcrumb m-0'>
                                     <li class='breadcrumb-item'>Menu</li>
-                                    <li class='breadcrumb-item active'>Upload</li>
+                                    <li class='breadcrumb-item active'>Restaurar</li>
                                 </ol>
                             </div>
                         </div>
@@ -39,9 +39,10 @@
                                     </div>
                                 </div>
                                     <div class='d-flex flex-wrap gap-2'>
-                                        <a href="{{ url_for('static', filename='board/files/exemplo.csv') }}"
-                                           download="exemplo.csv" class="btn btn-success waves-effect waves-light">
-                                            exemplo.csv
+                                        <a href="{{ url_for('static.serve_static', filename='board/files/exemplo_backup.xlsx') }}"
+                                           download="exemplo_backup.xlsx"
+                                           class="btn btn-success waves-effect waves-light">
+                                            exemplo_backup.xlsx
                                         </a>
                                     </div>
                             </div>
@@ -57,7 +58,7 @@
                                         <h4 class='card-title'>Preencha o arquivo e faça o upload abaixo</h4>
                                     </div>
                                 </div>
-                                <form action="{{ url_for('board.upload') }}" method="POST"
+                                <form action="{{ url_for('board.restore') }}" method="POST"
                                       enctype="multipart/form-data">
                                     <div class="mb-3">
                                         <label for="upload_file" class="form-label">Selecionar arquivo</label>
@@ -80,6 +81,9 @@
                                             registros</h4>
                                     </div>
                                 </div>
+                                <p class='mb-2'>&#9679; Todos os registros atuais não serão alterados; </p>
+                                <p class='mb-2'>&#9679; Aba 1: "conta_corrente"; </p>
+                                <p class='mb-2'>&#9679; Aba 2: "cartao_credito"; </p>
                                 <p class='mb-2'>&#9679; A ordem e o nome das colunas não devem ser alterados; </p>
                                 <p class='mb-2'>&#9679; Registros negativos são tratados como "Entrada"; </p>
                                 <p class='mb-2'>&#9679; Registros positivos são tratados como "Saída"; </p>

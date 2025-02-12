@@ -16,7 +16,7 @@ def index_edit_controller():
         category_ids = request.form.get('modal_category[]') if request.form.get('selected_categories') == '' else ','.join(request.form.get('selected_categories').split(','))
         repetitions = ','.join(request.form.get('selected_repetitions').split(','))
 
-        if repetitions == '' and request.form.get('action') == 'all':
+        if repetitions == '' and request.form.get('action_edit') == 'all':
             return jsonify({'valid': False, 'message': 'Nenhuma repetição selecionada!'})
 
         old_transaction = db.session.query(Transaction).filter_by(id=request.form.get('edit_index')).first()
