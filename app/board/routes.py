@@ -5,7 +5,8 @@ from flask_login import login_required
 
 from .controllers import *
 
-bp = Blueprint('board', __name__, url_prefix=f'/{os.getenv("ENVIRONMENT", "")}/board')
+env = os.getenv('ENVIRONMENT', '')
+bp = Blueprint('board', __name__, url_prefix=f'/{env}/board', static_folder='static', static_url_path=f'/{env}/static')
 
 
 @bp.before_request
@@ -17,6 +18,26 @@ def require_login():
 @bp.route('/index', methods=['GET', 'POST'])
 def index():
     return index_controller()
+
+
+@bp.route('/credit_card_dashboard', methods=['GET', 'POST'])
+def credit_card_dashboard():
+    return credit_card_dashboard_controller()
+
+
+@bp.route('/credit_card_dashboard_edit', methods=['GET', 'POST', 'PUT'])
+def credit_card_dashboard_edit():
+    return credit_card_dashboard_edit_controller()
+
+
+@bp.route('/index_dashboard_upload_csv', methods=['POST'])
+def index_dashboard_upload_csv():
+    return index_dashboard_upload_csv_controller()
+
+
+@bp.route('/credit_card_dashboard_upload_csv', methods=['POST'])
+def credit_card_dashboard_upload_csv():
+    return credit_card_dashboard_upload_csv_controller()
 
 
 @bp.route('/profile', methods=['GET', 'POST'])
@@ -84,9 +105,24 @@ def index_edit():
     return index_edit_controller()
 
 
-@bp.route('/upload', methods=['GET', 'POST'])
-def upload():
-    return upload_controller()
+@bp.route('/credit_cards', methods=['GET', 'POST'])
+def credit_cards():
+    return credit_cards_controller()
+
+
+@bp.route('/credit_cards_edit', methods=['GET', 'POST', 'PUT'])
+def credit_cards_edit():
+    return credit_cards_edit_controller()
+
+
+@bp.route('/credit_card_return_id_by_name', methods=['GET', 'POST'])
+def credit_card_return_id_by_name():
+    return credit_card_return_id_by_name_controller()
+
+
+@bp.route('/restore', methods=['GET', 'POST'])
+def restore():
+    return restore_controller()
 
 
 @bp.route('/clean', methods=['GET', 'POST'])
@@ -97,3 +133,19 @@ def clean():
 @bp.route('/backup', methods=['GET', 'POST'])
 def backup():
     return backup_controller()
+
+
+@bp.route('/envelopes', methods=['GET', 'POST'])
+def envelopes():
+    return envelopes_controller()
+
+
+@bp.route('/envelopes_edit', methods=['POST', 'PUT'])
+def envelopes_edit():
+    return envelopes_edit_controller()
+
+
+# charts
+@bp.route('/charts/top_categories', methods=['GET', 'POST'])
+def chart_top_categories():
+    return chart_top_categories_controller()

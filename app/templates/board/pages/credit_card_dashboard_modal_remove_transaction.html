@@ -1,0 +1,42 @@
+<div class='modal fade labelRemoveModal' id='labelRemoveModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Remover Registro</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.credit_card_dashboard') }}" novalidate method='post'>
+                {{ csrf_token }}
+                <input type='hidden' name='_method' value='DELETE'/>
+                <input type='hidden' name='m' value='{{ context.filter.month }}'/>
+                <input type='hidden' name='y' value='{{ context.filter.year }}'/>
+                <input type='hidden' id='del_index' name='del_index'/>
+                <div class='modal-body'>
+                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção deste registro?</p>
+                    <div class='form-row col-md d-flex justify-content-between'>
+                        <input type='hidden' id='modal_entry_date_delete' name='modal_entry_date_delete'/>
+                        <p class='mb-2 modal_entry_date'>Data: <span
+                                class='text-primary'></span></p>
+                        <span class='modal_entry_status badge badge-pill font-size-12 mb-2'></span>
+                    </div>
+                    <p class='mb-2 modal_amount'>Quantia: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_transaction_type_del'>Tipo: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_description'>Descrição: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_category_del'>Categorias: <span class='text-primary' id="category_badges"></span></p>
+                    <p class='mb-2 modal_establishment_del'>Estabelecimento: <span class='text-primary'></span></p>
+                    <p class='mb-4 modal_bounds_del d-none'>Transações Vinculadas: <span class='text-primary'
+                                                                                   id='bound_badges'></span></p>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>
+                        Cancelar</button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light' id='removeSingleCreditCardTransaction'
+                            data-action='single'> Remover Este Registro</button>
+                    <button type='submit' class='btn btn-danger waves-effect waves-light d-none' id='removeAllCreditCardTransaction'
+                            data-action='all'> Remover Todos Registros Seguintes</button>
+                </div>
+                <input type="hidden" id="action_remove_cct" name="action_remove_cct" value="">
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+<div class='modal fade labelUploadCsvModal' id='labelUploadCsvModal' tabindex='-1' role='dialog' aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered modal-lg' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Upload CSV</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <div class='modal-body'>
+                <div class='content mt-1'>
+                    <div class='row'>
+                        <div class='col-md'>
+                            <div class='card'>
+                                <div class='card-body'>
+                                    <div class='row mb-2'>
+                                        <div class='col-sm'>
+                                            <h4 class='card-title'>Preencha o arquivo e faça o upload abaixo</h4>
+                                        </div>
+                                    </div>
+                                    <form action="{{ url_for('board.credit_card_dashboard_upload_csv') }}" method="POST"
+                                          enctype="multipart/form-data">
+                                        <div class="mb-3">
+                                            <label for="upload_file" class="form-label">Selecionar arquivo</label>
+                                            <input class="form-control" type="file" id="upload_file" name="upload_file"
+                                                   required>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Enviar arquivo</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class='row'>
+                        <div class='col-md'>
+                            <div class='card-body'>
+                                <div class='col-sm'>
+                                    <button class="btn btn-warning w-100 text-start mt-2" type="button"
+                                            data-bs-toggle="collapse"
+                                            data-bs-target="#collapseUploadNotes" aria-expanded="false"
+                                            aria-controls="collapseUploadNotes">
+                                        <div class='row mb'>
+                                            <div class='col-sm'>
+                                                <h4 class='card-title text-center text-black'>
+                                                    Observações sobre a importação do arquivo CSV
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <div class="collapse" id="collapseUploadNotes">
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='card'>
+                                                    <div class='card-body ml-5'>
+                                                        <p class='mb-2'>&#9679; A ordem e o nome das colunas
+                                                            não devem ser alterados; </p>
+                                                        <p class='mb-2'>&#9679; Registros negativos são
+                                                            tratados como "Entrada"; </p>
+                                                        <p class='mb-2'>&#9679; Registros positivos são
+                                                            tratados como "Saída"; </p>
+                                                        <p class='mb-2'>&#9679; Transações com valor 0,00
+                                                            serão ignoradas; </p>
+                                                        <p class='mb-2'>&#9679; Para vincular categorias a
+                                                            uma mesma
+                                                            transação, separar por virgula; </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class='row'>
+                                            <div class='col-md'>
+                                                <div class='card'>
+                                                    <div class='card-body'>
+                                                        <div class='row mb-2'>
+                                                            <div class='col-sm  d-flex justify-content-center align-items-center'>
+                                                                <h4 class='card-title'>Se preferir, faça o download do
+                                                                    arquivo de
+                                                                    exemplo</h4>
+                                                            </div>
+                                                        </div>
+                                                        <div class='d-flex flex-wrap gap-2  d-flex justify-content-center align-items-center'>
+                                                            <a href="{{ url_for('static.serve_static', filename='board/files/exemplo_fatura.csv') }}"
+                                                               download="exemplo_fatura.csv"
+                                                               class="btn btn-success waves-effect waves-light">
+                                                                exemplo_fatura.csv
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

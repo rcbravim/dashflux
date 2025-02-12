@@ -1,0 +1,32 @@
+<!-- labelRemoveModal Modal -->
+<div class='modal fade removeCreditCardModal' id='removeCreditCardModal' tabindex='-1' role='dialog'
+     aria-hidden='true'>
+    <div class='modal-dialog modal-dialog-centered' role='document'>
+        <div class='modal-content'>
+            <div class='modal-header'>
+                <h5 class='modal-title'>Remover Cartão de Crédito</h5>
+                <button type='button' class='btn-close' data-bs-dismiss='modal' aria-label='Close'></button>
+            </div>
+            <form class='needs-validation' action="{{ url_for('board.credit_cards') }}" novalidate
+                  method='post'>
+                <input type='hidden' name='_method' value='DELETE'/>
+                {{ csrf_token }}
+                <input type='hidden' id='del_credit_card' name='del_credit_card'/>
+                <div class='modal-body'>
+                    <p class='mb-4'>Tem certeza de que deseja prosseguir com a remoção do cartão de crédito?</p>
+                    <p class='mb-2 modal_name'><b>Nome | Apelido:</b> <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_description'>Descrição: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_flag'>Bandeira: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_last_digits'>Últimos 4 Digitos: <span class='text-primary'></span></p>
+                    <p class='mb-2 modal_due_date'>Data de Vencimento: <span class='text-primary'></span></p>
+                </div>
+                <div class='modal-footer'>
+                    <button type='button' class='btn btn-secondary waves-effect' data-bs-dismiss='modal'>Cancelar
+                    </button>
+                    <button type='submit' class='btn btn-primary waves-effect waves-light'>Remover</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<!-- end labelRemoveModal -->
