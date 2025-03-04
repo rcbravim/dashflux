@@ -1,0 +1,120 @@
+name: Deploy to AWS EC2
+
+env:
+  # deploy envs
+  EC2_PRIVATE_KEY: ${{ secrets.EC2_PRIVATE_KEY }}
+  HOSTNAME: ${{ secrets.HOSTNAME }}
+  USER_NAME: ${{ secrets.USER_NAME }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  WORKDIR: app-dashflux
+
+  # app envs
+  MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+  MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+  MAIL_DEFAULT_SENDER: ${{ secrets.MAIL_DEFAULT_SENDER }}
+  MAIL_SERVER: ${{ secrets.MAIL_SERVER }}
+  MAIL_PORT: ${{ secrets.MAIL_PORT }}
+  JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+  FLASK_SECRET_KEY: ${{ secrets.FLASK_SECRET_KEY }}
+  ADMIN_USER: ${{ secrets.ADMIN_USER }}
+  ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+  DEV_USER: ${{ secrets.DEV_USER }}
+  DEV_PASS: ${{ secrets.DEV_PASS }}
+
+  # dynamic vars
+  DATABASE_URI: ""
+  CONTAINER_NAME: ""
+  PORT: ""
+  BRANCH: ""
+  ENVIRONMENT: ""
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Manual Deploy'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - uat
+          - prd
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Define dynamic env vars based
+        run: |
+          if [ "${{ github.event.inputs.env }}" == "prd" ]; then
+            echo "CONTAINER_NAME=dashflux-prd" >> $GITHUB_ENV
+            echo "PORT=5000" >> $GITHUB_ENV
+            echo "DATABASE_URI=${{ secrets.DATABASE_URI }}" >> $GITHUB_ENV
+            echo "BRANCH=main" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.env }}" == "uat" ]; then
+            echo "CONTAINER_NAME=dashflux-uat" >> $GITHUB_ENV
+            echo "PORT=5001" >> $GITHUB_ENV
+            echo "DATABASE_URI=${{ secrets.DATABASE_URI }}_uat" >> $GITHUB_ENV
+            echo "BRANCH=uat" >> $GITHUB_ENV
+            echo "ENVIRONMENT=uat" >> $GITHUB_ENV
+          elif [ "${{ github.event.inputs.env }}" == "dev" ]; then
+            echo "CONTAINER_NAME=dashflux-dev" >> $GITHUB_ENV
+            echo "PORT=5002" >> $GITHUB_ENV
+            echo "DATABASE_URI=${{ secrets.DATABASE_URI }}_dev" >> $GITHUB_ENV
+            echo "BRANCH=dev" >> $GITHUB_ENV
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          fi
+
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.BRANCH }}
+
+      - name: Deploying in EC2
+
+        run: |
+          echo "$EC2_PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} "
+        
+            sudo mkdir -p /$WORKDIR/$CONTAINER_NAME
+            cd /$WORKDIR/$CONTAINER_NAME
+            sudo chown -R ${USER_NAME}:${USER_NAME} /$WORKDIR/$CONTAINER_NAME
+          
+            if [ ! -d .git ]; then
+              echo 'Cloning the repository for the first time'
+              git clone https://github.com/rcbravim/dashflux.git .
+              git checkout $BRANCH
+            else
+              echo 'Fetching the latest code from $BRANCH branch'
+              git checkout $BRANCH
+              git fetch --all
+              git reset --hard origin/$BRANCH
+              git pull origin $BRANCH
+            fi
+            
+            echo 'Removing container $CONTAINER_NAME'
+            sudo docker stop $CONTAINER_NAME || true
+            sudo docker rm $CONTAINER_NAME || true
+            sudo docker system prune -f || true
+
+            echo 'Building new container $CONTAINER_NAME'
+            sudo docker build -t $CONTAINER_NAME .
+
+            echo 'Running new container $CONTAINER_NAME'
+            sudo docker run -d --name $CONTAINER_NAME -p $PORT:5000 \
+              -e DATABASE_URI=$DATABASE_URI \
+              -e MAIL_USERNAME=$MAIL_USERNAME \
+              -e MAIL_PASSWORD=$MAIL_PASSWORD \
+              -e MAIL_DEFAULT_SENDER=$MAIL_DEFAULT_SENDER \
+              -e MAIL_SERVER=$MAIL_SERVER \
+              -e MAIL_PORT=$MAIL_PORT \
+              -e JWT_SECRET_KEY=$JWT_SECRET_KEY \
+              -e FLASK_SECRET_KEY=$FLASK_SECRET_KEY \
+              -e ADMIN_USER=$ADMIN_USER \
+              -e ADMIN_PASS=$ADMIN_PASS \
+              -e DEV_USER=$DEV_USER \
+              -e DEV_PASS=$DEV_PASS \
+              -e ENVIRONMENT=$ENVIRONMENT \
+              --restart always $CONTAINER_NAME
+          "
